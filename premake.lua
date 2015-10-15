@@ -1,6 +1,6 @@
 solution "playground"
 	platforms { "Win32" }
-	configurations { "Debug", "Release" }
+	configurations { "debug", "release" }
 	
 	location("project/" .. _ACTION)
 
@@ -25,3 +25,28 @@ solution "playground"
 		includedirs {
 			"src/",
 		}
+		
+		includedirs {
+			"extern/SFML/include"
+		}
+		
+		libdirs {
+			"extern/SFML/lib/%{cfg.buildcfg}/",
+		}
+		
+		links {
+			"opengl32",
+			"winmm",
+			"gdi32",
+			"sfml-system-s",
+			"sfml-window-s",
+		}
+		
+		defines "SFML_STATIC"
+		
+		filter "configurations:debug"
+			
+			defines "DEBUG"
+			
+		filter "configurations:release"
+		
