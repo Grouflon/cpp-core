@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="extern">
+      <UniqueIdentifier>{7BE134FC-6783-5FD2-503E-73263C7FE622}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="extern\imgui">
+      <UniqueIdentifier>{25DF20B4-1142-B058-BAC7-E80EA6097CDB}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{2DAB880B-99B4-887C-2230-9F7C8E38947C}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\extern\imgui\imconfig.h">
+      <Filter>extern\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\extern\imgui\imgui.h">
+      <Filter>extern\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\extern\imgui\imgui_internal.h">
+      <Filter>extern\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\extern\imgui\stb_rect_pack.h">
+      <Filter>extern\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\extern\imgui\stb_textedit.h">
+      <Filter>extern\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\extern\imgui\stb_truetype.h">
+      <Filter>extern\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Application.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\imgui_impl_sfml.h">
+      <Filter>src</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\extern\imgui\imgui.cpp">
+      <Filter>extern\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\extern\imgui\imgui_demo.cpp">
+      <Filter>extern\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\extern\imgui\imgui_draw.cpp">
+      <Filter>extern\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Application.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\main.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\imgui_impl_sfml.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

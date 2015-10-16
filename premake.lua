@@ -20,14 +20,15 @@ solution "playground"
 			"src/**.cpp",
 			"src/**.c",
 			"src/**.h",
+			"extern/imgui/**.cpp",
+			"extern/imgui/**.c",
+			"extern/imgui/**.h",
 		}
 		
 		includedirs {
 			"src/",
-		}
-		
-		includedirs {
-			"extern/SFML/include"
+			"extern/SFML/include",
+			"extern/imgui/"
 		}
 		
 		libdirs {
@@ -46,7 +47,7 @@ solution "playground"
 		
 		filter "configurations:debug"
 			
-			defines "DEBUG"
+			defines "_DEBUG"
 			
 		filter "configurations:release"
 		

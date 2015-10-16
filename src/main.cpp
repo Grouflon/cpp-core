@@ -1,43 +1,11 @@
 #include <iostream>
-#include <SFML/Window.hpp>
-#include <SFML/OpenGL.hpp>
+#include "Application.h"
 
 int main(int argc, char** argv)
 {
-
-	sf::Window window;
-	sf::VideoMode windowVideoMode(800, 600);
-	sf::ContextSettings windowContextSettings(24, 8, 4, 4, 0);
-
-	window.create(windowVideoMode, "playground", sf::Style::Default, windowContextSettings);
-
-	bool running = true;
-	while (running)
-	{
-		// handle events
-		sf::Event event;
-		while (window.pollEvent(event))
-		{
-			if (event.type == sf::Event::Closed)
-			{
-				// end the program
-				running = false;
-			}
-			else if (event.type == sf::Event::Resized)
-			{
-				// adjust the viewport when the window is resized
-				glViewport(0, 0, event.size.width, event.size.height);
-			}
-		}
-
-		// clear the buffers
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		// draw...
-
-		// end the current frame (internally swaps the front and back buffers)
-		window.display();
-	}
-
+	Application app;
+	app.init(800, 600, "playground");
+	app.start();
+	app.shutdown();
 	return EXIT_SUCCESS;
 }
