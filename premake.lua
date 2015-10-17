@@ -16,6 +16,11 @@ solution "playground"
 		targetdir "bin/%{cfg.platform}/%{cfg.buildcfg}/"
 		objdir "obj/%{cfg.platform}/%{cfg.buildcfg}/"
 		
+		debugdir "."
+		
+		pchheader "stdafx.h"
+		pchsource "src/stdafx.cpp"
+		
 		files {
 			"src/**.cpp",
 			"src/**.c",

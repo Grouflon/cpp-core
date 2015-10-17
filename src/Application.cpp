@@ -1,6 +1,6 @@
-﻿#include "Application.h"
-#include <SFML/OpenGL.hpp>
-#include <imgui.h>
+﻿#include "stdafx.h"
+
+#include "Application.h"
 #include "imgui_impl_sfml.h"
 
 Application::Application()
@@ -13,7 +13,7 @@ Application::~Application()
 {
 }
 
-void Application::init(int width, int height, const char* name)
+bool Application::init(int width, int height, const char* name)
 {
 	if (!m_initialized)
 	{
@@ -26,15 +26,21 @@ void Application::init(int width, int height, const char* name)
 
 		if (!ImGui_ImplSfml_Init(&m_window))
 		{
-			// TODO: Error, make function return a bool;
+			// TODO: Use proper logging system;
+			std::cerr << "Application::init -> ImGui initialization failed" << std::endl;
+			return false;
 		};
 
 		m_initialized = true;
 	}
 	else
 	{
-		// TODO: Assert and shutdown/init again;
+		// TODO: Assert
+		shutdown();
+		return init(width, height, name);
 	}
+
+	return true;
 }
 
 void Application::shutdown()
@@ -70,6 +76,11 @@ void Application::start()
 					requestStop();
 				} break;
 
+			case sf::Event::Resized:
+				{
+					glViewport(0, 0, event.size.width, event.size.height);
+				} break;
+
 			default:
 				{
 
@@ -81,6 +92,7 @@ void Application::start()
 		// CODE HERE
 		ImGui::ShowTestWindow();
 
+		// RENDER
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		ImGui::Render();
 		m_window.display();
