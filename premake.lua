@@ -50,6 +50,10 @@ solution "playground"
 		
 		defines "SFML_STATIC"
 		
+		filter "files:extern/**"
+		
+			flags "noPCH"
+		
 		filter "configurations:debug"
 			
 			defines "_DEBUG"

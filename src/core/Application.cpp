@@ -1,7 +1,8 @@
 ﻿#include "stdafx.h"
 
-#include "Application.h"
-#include "imgui_impl_sfml.h"
+#include <imgui_impl_sfml.h>
+
+#include "core/Application.h"
 
 Application::Application()
 	: m_initialized(false)
@@ -26,7 +27,6 @@ bool Application::init(int width, int height, const char* name)
 
 		if (!ImGui_ImplSfml_Init(&m_window))
 		{
-			// TODO: Use proper logging system;
 			std::cerr << "Application::init -> ImGui initialization failed" << std::endl;
 			return false;
 		};
@@ -35,7 +35,7 @@ bool Application::init(int width, int height, const char* name)
 	}
 	else
 	{
-		// TODO: Assert
+		ASSERT(false); // Should not call init two times in a row
 		shutdown();
 		return init(width, height, name);
 	}
@@ -51,13 +51,13 @@ void Application::shutdown()
 	}
 	else
 	{
-		// TODO: Assert
+		ASSERT(false); // Should not call shutdown two times in a row
 	}
 }
 
 void Application::start()
 {
-	// TODO: Assert initialized;
+	ASSERT(m_initialized) // Should not call start before init
 
 	m_running = true;
 	while(m_running)

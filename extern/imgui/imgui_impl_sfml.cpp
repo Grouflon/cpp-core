@@ -121,7 +121,6 @@ bool ImGui_ImplSfml_ProcessEvent(sf::Event* event)
         }
 	case sf::Event::TextEntered:
         {
-            ImGuiIO& io = ImGui::GetIO();
 			io.AddInputCharacter(event->text.unicode);
             return true;
         }
@@ -135,6 +134,8 @@ bool ImGui_ImplSfml_ProcessEvent(sf::Event* event)
             io.KeyAlt = event->key.alt;
             return true;
         }
+	default:
+		{} break;
     }
     return false;
 }
