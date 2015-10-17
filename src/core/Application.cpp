@@ -35,7 +35,7 @@ bool Application::init(int width, int height, const char* name)
 	}
 	else
 	{
-		ASSERT(false); // Should not call init two times in a row
+		ASSERT(false) // Should not call init two times in a row
 		shutdown();
 		return init(width, height, name);
 	}
@@ -51,7 +51,7 @@ void Application::shutdown()
 	}
 	else
 	{
-		ASSERT(false); // Should not call shutdown two times in a row
+		ASSERT(false) // Should not call shutdown two times in a row
 	}
 }
 
@@ -90,7 +90,7 @@ void Application::start()
 		ImGui_ImplSfml_NewFrame(&m_window);
 
 		// CODE HERE
-		ImGui::ShowTestWindow();
+
 
 		// RENDER
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
