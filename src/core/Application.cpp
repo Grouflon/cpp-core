@@ -1,8 +1,9 @@
 ﻿#include "stdafx.h"
+#include "core/Application.h"
 
 #include <imgui_impl_sfml.h>
 
-#include "core/Application.h"
+#include "core/ResourceManager.h"
 
 Application::Application()
 	: m_initialized(false)
@@ -79,6 +80,9 @@ void Application::start()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		ImGui::Render();
 		m_window.display();
+
+		// CLEANING
+		g_resourceManager.flush();
 	}
 
 	onStop();

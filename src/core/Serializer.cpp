@@ -1,5 +1,6 @@
 ﻿#include "stdafx.h"
 #include "core/Serializer.h"
+
 #include "core/File.h"
 
 Serializer::Serializer(File* file, Mode mode)
