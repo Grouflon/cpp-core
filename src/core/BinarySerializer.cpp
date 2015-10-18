@@ -81,7 +81,7 @@ void BinarySerializer::serialize(const char*, std::string& value)
 	}
 }
 
-void BinarySerializer::serialize(const char* name, Serializable& serializable)
+void BinarySerializer::serialize(const char*, Serializable& serializable)
 {
 	serializable.serialize(this);
 }

@@ -59,47 +59,69 @@ void Application::start()
 {
 	ASSERT(m_initialized) // Should not call start before init
 
+	onStart();
+
+	m_clock.restart();
+
 	m_running = true;
 	while(m_running)
 	{
 		// GAME LOOP
+		// EVENTS
+		_processEvents();
 
-		sf::Event event;
-		while(m_window.pollEvent(event))
-		{
-			ImGui_ImplSfml_ProcessEvent(&event);
-
-			switch(event.type)
-			{
-			case sf::Event::Closed:
-				{
-					requestStop();
-				} break;
-
-			case sf::Event::Resized:
-				{
-					glViewport(0, 0, event.size.width, event.size.height);
-				} break;
-
-			default:
-				{
-
-				} break;
-			}
-		}
+		// UPDATE
 		ImGui_ImplSfml_NewFrame(&m_window);
-
-		// CODE HERE
-
+		float dt = m_clock.restart().asSeconds();
+		onUpdate(dt);
 
 		// RENDER
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		ImGui::Render();
 		m_window.display();
 	}
+
+	onStop();
 }
 
 void Application::requestStop()
 {
 	m_running = false;
+}
+
+void Application::onStart()
+{
+}
+
+void Application::onUpdate(float)
+{
+}
+
+void Application::onStop()
+{
+}
+
+void Application::_processEvents()
+{
+	sf::Event event;
+	while(m_window.pollEvent(event))
+	{
+		ImGui_ImplSfml_ProcessEvent(&event);
+
+		switch(event.type)
+		{
+		case sf::Event::Closed:
+			{
+				requestStop();
+			} break;
+
+		case sf::Event::Resized:
+			{
+				glViewport(0, 0, event.size.width, event.size.height);
+			} break;
+
+		default:
+			break;
+		}
+	}
 }

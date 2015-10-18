@@ -48,7 +48,10 @@ solution "playground"
 			"sfml-window-s",
 		}
 		
-		defines "SFML_STATIC"
+		defines {
+			"SFML_STATIC",
+			"_CRT_SECURE_NO_WARNINGS",
+		}
 		
 		filter "files:extern/**"
 		
@@ -56,7 +59,10 @@ solution "playground"
 		
 		filter "configurations:debug"
 			
+			optimize "Off"
 			defines "_DEBUG"
 			
 		filter "configurations:release"
+		
+			optimize "Full"
 		

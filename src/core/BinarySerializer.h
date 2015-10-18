@@ -18,6 +18,7 @@ public:
 
 	virtual void serialize(const char* name, int8& value) override;
 	virtual void serialize(const char* name, int16& value) override;
+
 	virtual void serialize(const char* name, int32& value) override;
 	virtual void serialize(const char* name, int64& value) override;
 

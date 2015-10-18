@@ -59,7 +59,7 @@ bool File::write(const void* buffer, size_t size)
 {
 	if (m_file)
 	{
-		return fwrite(buffer, size, 1, m_file);
+		return size == 0 || fwrite(buffer, size, 1, m_file) != 0;
 	}
 	return 0;
 }

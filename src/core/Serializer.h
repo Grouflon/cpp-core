@@ -1,9 +1,5 @@
 ﻿#pragma once
 
-#include <string>
-
-#include "core/Types.h"
-
 class File;
 class Serializable;
 
