@@ -2,6 +2,8 @@
 
 #include <SFML/Window.hpp>
 
+class RenderContext;
+
 class Application
 {
 public:
@@ -16,10 +18,13 @@ public:
 
 	virtual void onStart();
 	virtual void onUpdate(float dt);
+	virtual void onRender(RenderContext* ctx);
 	virtual void onStop();
 
 private:
 	void _processEvents();
+	void _update();
+	void _render();
 
 	bool		m_initialized;
 	bool		m_running;

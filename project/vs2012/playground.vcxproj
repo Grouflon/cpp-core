@@ -111,11 +111,13 @@
     <ClInclude Include="..\..\src\core\Assert.h" />
     <ClInclude Include="..\..\src\core\BinarySerializer.h" />
     <ClInclude Include="..\..\src\core\File.h" />
+    <ClInclude Include="..\..\src\core\RenderContext.h" />
     <ClInclude Include="..\..\src\core\Resource.h" />
     <ClInclude Include="..\..\src\core\ResourceManager.h" />
     <ClInclude Include="..\..\src\core\Serializable.h" />
     <ClInclude Include="..\..\src\core\Serializer.h" />
     <ClInclude Include="..\..\src\core\Types.h" />
+    <ClInclude Include="..\..\src\core\Vector2.h" />
     <ClInclude Include="..\..\src\stdafx.h" />
   </ItemGroup>
   <ItemGroup>
@@ -138,6 +140,7 @@
     <ClCompile Include="..\..\src\core\Application.cpp" />
     <ClCompile Include="..\..\src\core\BinarySerializer.cpp" />
     <ClCompile Include="..\..\src\core\File.cpp" />
+    <ClCompile Include="..\..\src\core\RenderContext.cpp" />
     <ClCompile Include="..\..\src\core\Resource.cpp" />
     <ClCompile Include="..\..\src\core\ResourceManager.cpp" />
     <ClCompile Include="..\..\src\core\Serializable.cpp" />
@@ -147,6 +150,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\src\core\Vector2.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

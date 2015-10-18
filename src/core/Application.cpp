@@ -4,6 +4,7 @@
 #include <imgui_impl_sfml.h>
 
 #include "core/ResourceManager.h"
+#include "core/RenderContext.h"
 
 Application::Application()
 	: m_initialized(false)
@@ -68,20 +69,10 @@ void Application::start()
 	while(m_running)
 	{
 		// GAME LOOP
-		// EVENTS
 		_processEvents();
+		_update();
+		_render();
 
-		// UPDATE
-		ImGui_ImplSfml_NewFrame(&m_window);
-		float dt = m_clock.restart().asSeconds();
-		onUpdate(dt);
-
-		// RENDER
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		ImGui::Render();
-		m_window.display();
-
-		// CLEANING
 		g_resourceManager.flushResources();
 	}
 
@@ -97,8 +88,13 @@ void Application::onStart()
 {
 }
 
+void Application::onRender(RenderContext*)
+{
+}
+
 void Application::onUpdate(float)
 {
+	ImGui::ShowTestWindow();
 }
 
 void Application::onStop()
@@ -128,4 +124,20 @@ void Application::_processEvents()
 			break;
 		}
 	}
+}
+
+void Application::_update()
+{
+	ImGui_ImplSfml_NewFrame(&m_window);
+	float dt = m_clock.restart().asSeconds();
+	onUpdate(dt);
+}
+
+void Application::_render()
+{
+	RenderContext ctx;
+	ctx.clear();
+	onRender(&ctx);
+	ImGui::Render();
+	m_window.display();
 }

@@ -23,6 +23,7 @@ solution "playground"
 		
 		files {
 			"src/**.cpp",
+			"src/**.inl",
 			"src/**.c",
 			"src/**.h",
 			"extern/imgui/**.cpp",
