@@ -82,7 +82,7 @@ void Application::start()
 		m_window.display();
 
 		// CLEANING
-		g_resourceManager.flush();
+		g_resourceManager.flushResources();
 	}
 
 	onStop();
