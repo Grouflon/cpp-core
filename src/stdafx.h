@@ -11,3 +11,4 @@
 #include "core/Types.h"
 #include "core/Assert.h"
 #include "core/Vector2.h"
+#include "core/Vector3.h"

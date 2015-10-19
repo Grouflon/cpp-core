@@ -29,16 +29,20 @@ solution "playground"
 			"extern/imgui/**.cpp",
 			"extern/imgui/**.c",
 			"extern/imgui/**.h",
+			"extern/SFML/**.h",
+			"extern/openAL/**.h",
 		}
 		
 		includedirs {
 			"src/",
 			"extern/SFML/include",
-			"extern/imgui/"
+			"extern/imgui/",
+			"extern/openAL/include",
 		}
 		
 		libdirs {
-			"extern/SFML/lib/%{cfg.buildcfg}/",
+			"extern/SFML/libs/%{cfg.buildcfg}/",
+			"extern/openAL/libs/%{cfg.platform}/",
 		}
 		
 		links {
@@ -47,6 +51,7 @@ solution "playground"
 			"gdi32",
 			"sfml-system-s",
 			"sfml-window-s",
+			"OpenAL32"
 		}
 		
 		defines {

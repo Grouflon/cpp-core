@@ -2,6 +2,7 @@
 
 #include "core/Serializable.h"
 
+// TODO-THINK: Should Math structures inherit Serializable or should Serializer force implentation of Math structures serialization ?
 template <typename T>
 class Vector2_t : public Serializable
 {

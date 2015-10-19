@@ -13,7 +13,7 @@ ResourceManager::~ResourceManager()
 
 void ResourceManager::registerResource(Resource* resource)
 {
-#ifdef _DEBUG
+#if DEBUG_CHECK_DOUBLE_REGISTRATION
 	std::vector<Resource*>::iterator it = std::find(m_resources.begin(), m_resources.end(), resource);
 	if (it != m_resources.end())
 	{

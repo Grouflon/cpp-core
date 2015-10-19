@@ -2,6 +2,12 @@
 
 class Resource;
 
+#ifdef _DEBUG
+#define DEBUG_CHECK_DOUBLE_REGISTRATION 1
+#else
+#define DEBUG_CHECK_DOUBLE_REGISTRATION 0
+#endif
+
 class ResourceManager
 {
 public:

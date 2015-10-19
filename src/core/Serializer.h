@@ -34,6 +34,8 @@ public:
 	virtual void serialize(const char* name, Serializable& serializable) = 0;
 
 	// TODO: Container types
+	// TODO: float
+	// TODO: pointers/size
 
 protected:
 	File* _getFile();

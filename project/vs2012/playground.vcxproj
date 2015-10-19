@@ -58,7 +58,7 @@
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>SFML_STATIC;_CRT_SECURE_NO_WARNINGS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\src;..\..\extern\SFML\include;..\..\extern\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\src;..\..\extern\SFML\include;..\..\extern\imgui;..\..\extern\openAL\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>false</MinimalRebuild>
@@ -68,8 +68,8 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;winmm.lib;gdi32.lib;sfml-system-s.lib;sfml-window-s.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\extern\SFML\lib\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;winmm.lib;gdi32.lib;sfml-system-s.lib;sfml-window-s.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\extern\SFML\libs\debug;..\..\extern\openAL\libs\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
   </ItemDefinitionGroup>
@@ -79,7 +79,7 @@
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>SFML_STATIC;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\src;..\..\extern\SFML\include;..\..\extern\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\src;..\..\extern\SFML\include;..\..\extern\imgui;..\..\extern\openAL\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -94,8 +94,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>opengl32.lib;winmm.lib;gdi32.lib;sfml-system-s.lib;sfml-window-s.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\extern\SFML\lib\release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;winmm.lib;gdi32.lib;sfml-system-s.lib;sfml-window-s.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\extern\SFML\libs\release;..\..\extern\openAL\libs\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
   </ItemDefinitionGroup>
@@ -107,10 +107,18 @@
     <ClInclude Include="..\..\extern\imgui\stb_rect_pack.h" />
     <ClInclude Include="..\..\extern\imgui\stb_textedit.h" />
     <ClInclude Include="..\..\extern\imgui\stb_truetype.h" />
+    <ClInclude Include="..\..\extern\openAL\include\EFX-Util.h" />
+    <ClInclude Include="..\..\extern\openAL\include\al.h" />
+    <ClInclude Include="..\..\extern\openAL\include\alc.h" />
+    <ClInclude Include="..\..\extern\openAL\include\efx-creative.h" />
+    <ClInclude Include="..\..\extern\openAL\include\efx.h" />
+    <ClInclude Include="..\..\extern\openAL\include\xram.h" />
+    <ClInclude Include="..\..\src\SandboxApp.h" />
     <ClInclude Include="..\..\src\core\Application.h" />
     <ClInclude Include="..\..\src\core\Assert.h" />
     <ClInclude Include="..\..\src\core\BinarySerializer.h" />
     <ClInclude Include="..\..\src\core\File.h" />
+    <ClInclude Include="..\..\src\core\Matrix44.h" />
     <ClInclude Include="..\..\src\core\RenderContext.h" />
     <ClInclude Include="..\..\src\core\Resource.h" />
     <ClInclude Include="..\..\src\core\ResourceManager.h" />
@@ -118,6 +126,7 @@
     <ClInclude Include="..\..\src\core\Serializer.h" />
     <ClInclude Include="..\..\src\core\Types.h" />
     <ClInclude Include="..\..\src\core\Vector2.h" />
+    <ClInclude Include="..\..\src\core\Vector3.h" />
     <ClInclude Include="..\..\src\stdafx.h" />
   </ItemGroup>
   <ItemGroup>
@@ -137,6 +146,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='release|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="..\..\src\SandboxApp.cpp" />
     <ClCompile Include="..\..\src\core\Application.cpp" />
     <ClCompile Include="..\..\src\core\BinarySerializer.cpp" />
     <ClCompile Include="..\..\src\core\File.cpp" />
@@ -152,7 +162,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\src\core\Matrix44.inl" />
     <None Include="..\..\src\core\Vector2.inl" />
+    <None Include="..\..\src\core\Vector3.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

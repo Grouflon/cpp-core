@@ -1,10 +1,10 @@
 #include "stdafx.h"
 
-#include "core/Application.h"
+#include "SandboxApp.h"
 
 int main(int argc, char** argv)
 {
-	Application app;
+	SandboxApp app;
 	if (!app.init(800, 600, "playground"))
 	{
 		std::cerr << "main -> Failed to initialize application." << std::endl;

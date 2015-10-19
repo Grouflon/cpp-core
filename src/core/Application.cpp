@@ -94,7 +94,6 @@ void Application::onRender(RenderContext*)
 
 void Application::onUpdate(float)
 {
-	ImGui::ShowTestWindow();
 }
 
 void Application::onStop()

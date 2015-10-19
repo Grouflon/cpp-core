@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="extern">
@@ -6,6 +6,12 @@
     </Filter>
     <Filter Include="extern\imgui">
       <UniqueIdentifier>{25DF20B4-1142-B058-BAC7-E80EA6097CDB}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="extern\openAL">
+      <UniqueIdentifier>{A9C57046-1586-EC7C-DEC0-35FA4A403159}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="extern\openAL\include">
+      <UniqueIdentifier>{1C86195A-88F2-D454-51E6-6CB2BD11F7BC}</UniqueIdentifier>
     </Filter>
     <Filter Include="src">
       <UniqueIdentifier>{2DAB880B-99B4-887C-2230-9F7C8E38947C}</UniqueIdentifier>
@@ -15,7 +21,13 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\src\core\Matrix44.inl">
+      <Filter>src\core</Filter>
+    </None>
     <None Include="..\..\src\core\Vector2.inl">
+      <Filter>src\core</Filter>
+    </None>
+    <None Include="..\..\src\core\Vector3.inl">
       <Filter>src\core</Filter>
     </None>
   </ItemGroup>
@@ -41,6 +53,27 @@
     <ClInclude Include="..\..\extern\imgui\stb_truetype.h">
       <Filter>extern\imgui</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\extern\openAL\include\EFX-Util.h">
+      <Filter>extern\openAL\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\extern\openAL\include\al.h">
+      <Filter>extern\openAL\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\extern\openAL\include\alc.h">
+      <Filter>extern\openAL\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\extern\openAL\include\efx-creative.h">
+      <Filter>extern\openAL\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\extern\openAL\include\efx.h">
+      <Filter>extern\openAL\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\extern\openAL\include\xram.h">
+      <Filter>extern\openAL\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\SandboxApp.h">
+      <Filter>src</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\core\Application.h">
       <Filter>src\core</Filter>
     </ClInclude>
@@ -51,6 +84,9 @@
       <Filter>src\core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\core\File.h">
+      <Filter>src\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\core\Matrix44.h">
       <Filter>src\core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\core\RenderContext.h">
@@ -74,6 +110,9 @@
     <ClInclude Include="..\..\src\core\Vector2.h">
       <Filter>src\core</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\core\Vector3.h">
+      <Filter>src\core</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\stdafx.h">
       <Filter>src</Filter>
     </ClInclude>
@@ -90,6 +129,9 @@
     </ClCompile>
     <ClCompile Include="..\..\extern\imgui\imgui_impl_sfml.cpp">
       <Filter>extern\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\SandboxApp.cpp">
+      <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\core\Application.cpp">
       <Filter>src\core</Filter>
