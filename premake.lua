@@ -29,33 +29,41 @@ solution "playground"
 			"extern/imgui/**.cpp",
 			"extern/imgui/**.c",
 			"extern/imgui/**.h",
-			"extern/SFML/**.h",
+			"extern/glfw/**.h",
+			"extern/gl3w/**.c",
+			"extern/gl3w/**.h",
+			"extern/glm/**.hpp",
 			"extern/openAL/**.h",
+		}
+		
+		removefiles {
+			"extern/imgui/imgui_impl_sfml**",
 		}
 		
 		includedirs {
 			"src/",
 			"extern/SFML/include",
+			"extern/glfw/include",
+			"extern/gl3w/",
+			"extern/glm/",
 			"extern/imgui/",
 			"extern/openAL/include",
 		}
 		
 		libdirs {
-			"extern/SFML/libs/%{cfg.buildcfg}/",
+			"extern/glfw/libs/%{cfg.buildcfg}/",
 			"extern/openAL/libs/%{cfg.platform}/",
 		}
 		
 		links {
+			"glfw3",
 			"opengl32",
-			"winmm",
-			"gdi32",
-			"sfml-system-s",
-			"sfml-window-s",
+			--"winmm",
+			--"gdi32",
 			"OpenAL32"
 		}
 		
 		defines {
-			"SFML_STATIC",
 			"_CRT_SECURE_NO_WARNINGS",
 		}
 		

@@ -10,8 +10,8 @@ public:
 	SandboxApp();
 	virtual ~SandboxApp();
 
-	void onStart() override;
-	void onUpdate(float dt) override;
-	void onRender(RenderContext* ctx) override;
-	void onStop() override;
+	virtual void started() override;
+	virtual void update(float dt) override;
+	virtual void render() override;
+	virtual void stopped() override;
 };

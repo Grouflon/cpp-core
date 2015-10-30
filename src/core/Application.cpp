@@ -1,14 +1,18 @@
 ﻿#include "stdafx.h"
 #include "core/Application.h"
 
-#include <imgui_impl_sfml.h>
+#include <imgui_impl_glfw_gl3.h>
 
 #include "core/ResourceManager.h"
-#include "core/RenderContext.h"
+
+void glfw_errorCallback(int error, const char* descritpion)
+{
+	std::cerr << "Error " << error << ": " << descritpion << std::endl;
+}
 
 Application::Application()
 	: m_initialized(false)
-	, m_running(false)
+	, m_previousTime(0.0)
 {
 }
 
@@ -20,18 +24,35 @@ bool Application::init(int width, int height, const char* name)
 {
 	if (!m_initialized)
 	{
-		m_window.create(
-			sf::VideoMode(width, height),
-			name,
-			sf::Style::Default,
-			sf::ContextSettings(24, 8, 4, 4, 0)
-		);
-
-		if (!ImGui_ImplSfml_Init(&m_window))
+		if (!glfwInit())
 		{
-			std::cerr << "Application::init -> ImGui initialization failed" << std::endl;
+			std::cerr << "Application::init -> glfw initialization failed." << std::endl;
 			return false;
-		};
+		}
+		glfwSetErrorCallback(glfw_errorCallback);
+
+		m_window = glfwCreateWindow(width, height, name, nullptr, nullptr);
+		if (!m_window)
+		{
+			glfwTerminate();
+			std::cerr << "Application::init -> glfw window creation failed." << std::endl;
+			return false;
+		}
+
+		glfwMakeContextCurrent(m_window);
+		glfwSwapInterval(1); // VSYNC
+
+		if (gl3wInit() == -1)
+		{
+			std::cerr << "Application::init -> gl3w initialization failed." << std::endl;
+			return false;
+		}
+
+		if (!ImGui_ImplGlfwGL3_Init(m_window, true))// pass to false and call callbacks manually when we have custom callbacks
+		{
+			std::cerr << "Application::init -> ImGui initialization failed." << std::endl;
+			return false;
+		}
 
 		m_initialized = true;
 	}
@@ -49,7 +70,9 @@ void Application::shutdown()
 {
 	if (m_initialized)
 	{
-		ImGui_ImplSfml_Shutdown();
+		ImGui_ImplGlfwGL3_Shutdown();
+		glfwDestroyWindow(m_window);
+		glfwTerminate();
 	}
 	else
 	{
@@ -61,12 +84,11 @@ void Application::start()
 {
 	ASSERT(m_initialized) // Should not call start before init
 
-	onStart();
+	started();
 
-	m_clock.restart();
+	m_previousTime = glfwGetTime();
 
-	m_running = true;
-	while(m_running)
+	while(!glfwWindowShouldClose(m_window))
 	{
 		// GAME LOOP
 		_processEvents();
@@ -76,67 +98,47 @@ void Application::start()
 		g_resourceManager.flushResources();
 	}
 
-	onStop();
+	stopped();
 }
 
 void Application::requestStop()
 {
-	m_running = false;
+	glfwSetWindowShouldClose(m_window, GL_TRUE);
 }
 
-void Application::onStart()
+void Application::started()
 {
 }
 
-void Application::onRender(RenderContext*)
+void Application::render()
 {
 }
 
-void Application::onUpdate(float)
+void Application::update(float)
 {
 }
 
-void Application::onStop()
+void Application::stopped()
 {
 }
 
 void Application::_processEvents()
 {
-	sf::Event event;
-	while(m_window.pollEvent(event))
-	{
-		ImGui_ImplSfml_ProcessEvent(&event);
-
-		switch(event.type)
-		{
-		case sf::Event::Closed:
-			{
-				requestStop();
-			} break;
-
-		case sf::Event::Resized:
-			{
-				glViewport(0, 0, event.size.width, event.size.height);
-			} break;
-
-		default:
-			break;
-		}
-	}
+	glfwPollEvents();
 }
 
 void Application::_update()
 {
-	ImGui_ImplSfml_NewFrame(&m_window);
-	float dt = m_clock.restart().asSeconds();
-	onUpdate(dt);
+	ImGui_ImplGlfwGL3_NewFrame();
+	double time = glfwGetTime();
+	float dt = static_cast<float>(time - m_previousTime);
+	m_previousTime = time;
+	update(dt);
 }
 
 void Application::_render()
 {
-	RenderContext ctx;
-	ctx.clear();
-	onRender(&ctx);
+	render();
+	glfwSwapBuffers(m_window);
 	ImGui::Render();
-	m_window.display();
 }

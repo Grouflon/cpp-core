@@ -5,10 +5,12 @@
 #include <vector>
 #include <cmath>
 
-#include <SFML/OpenGL.hpp>
+#include <GL/gl3w.h>
+#include <GLFW/glfw3.h>
 #include <imgui.h>
+#include <glm.hpp>
 
 #include "core/Types.h"
 #include "core/Assert.h"
-#include "core/Vector2.h"
-#include "core/Vector3.h"
+
+#define MATH_PI 3.14159265359f
