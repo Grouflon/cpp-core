@@ -82,7 +82,9 @@ void BlonkApp::render()
 	glScissor(0, 0, windowSize[0], windowSize[1]);
 	glClearColor(.5f, .5f, .5f, 1.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glDisable(GL_CULL_FACE);
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
+	glEnable(GL_DEPTH_TEST);
 
 	glm::mat4 projection = glm::perspective(degToRad(g_gameData.fov), windowRatio, 0.001f, 1000.f);
 

@@ -1,8 +1,12 @@
 #version 400
 
-out vec4 oResult;
+in float	vLightWeighting;
+
+out vec4	oResult;
+
+const vec4	ambientColor = vec4(0.3, 0.3, 0.3, 1.0);
 
 void main()
 {
-	oResult = vec4 (0.5, 0.0, 0.5, 1.0);
+	oResult = ambientColor + (vec4(1.0, 1.0, 1.0, 1.0) * vLightWeighting);
 }

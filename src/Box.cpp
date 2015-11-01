@@ -8,7 +8,6 @@ Box::Box(const glm::vec3& position, const glm::vec3& dimensions)
 	, m_dimensions(dimensions)
 	, m_shaderProgram(0)
 	, m_uModelLocation(0)
-	, m_vbo(0)
 	, m_vao(0)
 	, m_indexBuffer(0)
 {
@@ -27,8 +26,47 @@ bool Box::init()
 		return false;
 	}
 
-	GLuint aPositionLocation = glGetAttribLocation(m_shaderProgram, "aPosition");
+	m_aPosition = glGetAttribLocation(m_shaderProgram, "aPosition");
+	m_aNormal = glGetAttribLocation(m_shaderProgram, "aNormal");
 	m_uModelLocation = glGetUniformLocation(m_shaderProgram, "uModel");
+
+	float normals[] = {
+		// FRONT
+		0.0f, 0.0f, 1.0f,
+		0.0f, 0.0f, 1.0f,
+		0.0f, 0.0f, 1.0f,
+		0.0f, 0.0f, 1.0f,
+
+		// BACK
+		0.0f, 0.0f, -1.0f,
+		0.0f, 0.0f, -1.0f,
+		0.0f, 0.0f, -1.0f,
+		0.0f, 0.0f, -1.0f,
+
+		// TOP
+		0.0f, 1.0f, 0.0f,
+		0.0f, 1.0f, 0.0f,
+		0.0f, 1.0f, 0.0f,
+		0.0f, 1.0f, 0.0f,
+
+		// BOTTOM
+		0.0f, -1.0f, 0.0f,
+		0.0f, -1.0f, 0.0f,
+		0.0f, -1.0f, 0.0f,
+		0.0f, -1.0f, 0.0f,
+
+		// RIGHT
+		1.0f, 0.0f, 0.0f,
+		1.0f, 0.0f, 0.0f,
+		1.0f, 0.0f, 0.0f,
+		1.0f, 0.0f, 0.0f,
+
+		// LEFT
+		-1.0f, 0.0f, 0.0f,
+		-1.0f, 0.0f, 0.0f,
+		-1.0f, 0.0f, 0.0f,
+		-1.0f, 0.0f, 0.0f
+	};
 
 	uint16 indices[] = {
 		0, 1, 2, 0, 2, 3,
@@ -39,27 +77,30 @@ bool Box::init()
 		20, 21, 22, 20, 22, 23
 	};
 
-	glGenBuffers(1, &m_vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-
 	glGenVertexArrays(1, &m_vao);
 	glBindVertexArray(m_vao);
-	glVertexAttribPointer(aPositionLocation, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
-	glEnableVertexAttribArray(aPositionLocation);
+
+	glGenBuffers(2, m_vbo);
+	_updateVertices();
+	glVertexAttribPointer(m_aPosition, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+	glEnableVertexAttribArray(m_aPosition);
+
+	glBindBuffer(GL_ARRAY_BUFFER, m_vbo[1]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(normals), normals, GL_STATIC_DRAW);
+	glVertexAttribPointer(m_aNormal, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+	glEnableVertexAttribArray(m_aNormal);
 
 	glGenBuffers(1, &m_indexBuffer);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexBuffer);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	m_initialized = true;
-
-	_updateVbo();
 	return true;
 }
 
 void Box::shutdown()
 {
-	glDeleteBuffers(1, &m_vbo);
+	glDeleteBuffers(2, m_vbo);
 	glDeleteVertexArrays(1, &m_vao);
 	glDeleteBuffers(1, &m_indexBuffer);
 	m_initialized = false;
@@ -68,10 +109,9 @@ void Box::shutdown()
 void Box::render()
 {
 	glUseProgram(m_shaderProgram);
-	glUniformMatrix4fv(m_uModelLocation, 1, GL_FALSE, glm::value_ptr(m_transform.getWorldMatrix()));
-	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexBuffer);
 	glBindVertexArray(m_vao);
+	glUniformMatrix4fv(m_uModelLocation, 1, GL_FALSE, glm::value_ptr(m_transform.getWorldMatrix()));
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexBuffer);
 	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, nullptr);
 }
 
@@ -80,10 +120,8 @@ Transform& Box::getTransform()
 	return m_transform;
 }
 
-void Box::_updateVbo()
+void Box::_updateVertices()
 {
-	ASSERT(m_initialized);
-
 	float w = m_dimensions[0] * 0.5f;
 	float h = m_dimensions[1] * 0.5f;
 	float d = m_dimensions[2] * 0.5f;
@@ -125,6 +163,6 @@ void Box::_updateVbo()
 		-w,  h,  d
 	};
 
-	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, m_vbo[0]);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(points), points, GL_STATIC_DRAW);
 }

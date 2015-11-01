@@ -81,10 +81,10 @@ GLuint ShaderManager::loadShaderProgram(const char* name, const char* vertexShad
 			int max_length = 2048;
 			int actual_length = 0;
 			char log[2048];
-			glGetShaderInfoLog (vs, max_length, &actual_length, log);
+			glGetShaderInfoLog (fs, max_length, &actual_length, log);
 			LOG_ERROR("ERROR: ShaderManager::loadShaderProgram -> Shader \"%s\" failed to compile:\n%s", fragmentShaderPath, log);
 
-			glDeleteShader(vs);
+			glDeleteShader(fs);
 			return INVALID_SHADER_PROGRAM;
 		}
 	}

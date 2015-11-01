@@ -15,7 +15,7 @@ public:
 	Transform& getTransform();
 
 private:
-	void	_updateVbo();
+	void	_updateVertices();
 
 	bool		m_initialized;
 
@@ -23,8 +23,10 @@ private:
 	Transform	m_transform;
 
 	GLuint		m_shaderProgram;
+	GLuint		m_aPosition;
+	GLuint		m_aNormal;
 	GLuint		m_uModelLocation;
-	GLuint		m_vbo;
+	GLuint		m_vbo[2];
 	GLuint		m_vao;
 	GLuint		m_indexBuffer;
 };
