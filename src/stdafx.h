@@ -20,5 +20,4 @@
 #include "core/Log.h"
 #include "core/HashTools.h"
 #include "core/StringHash.h"
-
-#define MATH_PI 3.14159265359f
+#include "core/Math.h"

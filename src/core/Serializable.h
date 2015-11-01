@@ -9,5 +9,5 @@ public:
 	Serializable() {}
 	virtual ~Serializable() {}
 
-	virtual void serialize(Serializer* serializer) = 0;
+	virtual bool serialize(Serializer* serializer) = 0;
 };

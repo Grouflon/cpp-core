@@ -5,8 +5,7 @@
 #include "core/Serializer.h"
 #include "core/Serializable.h"
 
-BinarySerializer::BinarySerializer(File* file, Mode mode)
-	: Serializer(file, mode)
+BinarySerializer::BinarySerializer()
 {
 }
 
@@ -14,57 +13,117 @@ BinarySerializer::~BinarySerializer()
 {
 }
 
-void BinarySerializer::serialize(const char*, bool& value)
+bool BinarySerializer::serialize(const char*, bool& value)
 {
-	_rawSerialize(&value, sizeof(value));
+	return _rawSerialize(&value, sizeof(value));
 }
 
-void BinarySerializer::serialize(const char*, uint8& value)
+bool BinarySerializer::serialize(const char*, uint8& value)
 {
-	_rawSerialize(&value, sizeof(value));
+	return _rawSerialize(&value, sizeof(value));
 }
 
-void BinarySerializer::serialize(const char*, uint16& value)
+bool BinarySerializer::serialize(const char*, uint16& value)
 {
-	_rawSerialize(&value, sizeof(value));
+	return _rawSerialize(&value, sizeof(value));
 }
 
-void BinarySerializer::serialize(const char*, uint32& value)
+bool BinarySerializer::serialize(const char*, uint32& value)
 {
-	_rawSerialize(&value, sizeof(value));
+	return _rawSerialize(&value, sizeof(value));
 }
 
-void BinarySerializer::serialize(const char*, uint64& value)
+bool BinarySerializer::serialize(const char*, uint64& value)
 {
-	_rawSerialize(&value, sizeof(value));
+	return _rawSerialize(&value, sizeof(value));
 }
 
-void BinarySerializer::serialize(const char*, int8& value)
+bool BinarySerializer::serialize(const char*, int8& value)
 {
-	_rawSerialize(&value, sizeof(value));
+	return _rawSerialize(&value, sizeof(value));
 }
 
-void BinarySerializer::serialize(const char*, int16& value)
+bool BinarySerializer::serialize(const char*, int16& value)
 {
-	_rawSerialize(&value, sizeof(value));
+	return _rawSerialize(&value, sizeof(value));
 }
 
-void BinarySerializer::serialize(const char*, int32& value)
+bool BinarySerializer::serialize(const char*, int32& value)
 {
-	_rawSerialize(&value, sizeof(value));
+	return _rawSerialize(&value, sizeof(value));
 }
 
-void BinarySerializer::serialize(const char*, int64& value)
+bool BinarySerializer::serialize(const char*, int64& value)
 {
-	_rawSerialize(&value, sizeof(value));
+	return _rawSerialize(&value, sizeof(value));
 }
 
-void BinarySerializer::serialize(const char*, std::string& value)
+bool BinarySerializer::serialize(const char*, float& value)
 {
-	if (_getMode() == MODE_READ)
+	return _rawSerialize(&value, sizeof(value));
+}
+
+bool BinarySerializer::serialize(const char*, double& value)
+{
+	return _rawSerialize(&value, sizeof(value));
+}
+
+bool BinarySerializer::serialize(const char* name, uint8* value, size_t size)
+{
+	return _rawSerialize(value, size * sizeof(value));
+}
+
+bool BinarySerializer::serialize(const char* name, uint16* value, size_t size)
+{
+	return _rawSerialize(value, size * sizeof(value));
+}
+
+bool BinarySerializer::serialize(const char* name, uint32* value, size_t size)
+{
+	return _rawSerialize(value, size * sizeof(value));
+}
+
+bool BinarySerializer::serialize(const char* name, uint64* value, size_t size)
+{
+	return _rawSerialize(value, size * sizeof(value));
+}
+
+bool BinarySerializer::serialize(const char* name, int8* value, size_t size)
+{
+	return _rawSerialize(value, size * sizeof(value));
+}
+
+bool BinarySerializer::serialize(const char* name, int16* value, size_t size)
+{
+	return _rawSerialize(value, size * sizeof(value));
+}
+
+bool BinarySerializer::serialize(const char* name, int32* value, size_t size)
+{
+	return _rawSerialize(value, size * sizeof(value));
+}
+
+bool BinarySerializer::serialize(const char* name, int64* value, size_t size)
+{
+	return _rawSerialize(value, size * sizeof(value));
+}
+
+bool BinarySerializer::serialize(const char* name, float* value, size_t size)
+{
+	return _rawSerialize(value, size * sizeof(value));
+}
+
+bool BinarySerializer::serialize(const char* name, double* value, size_t size)
+{
+	return _rawSerialize(value, size * sizeof(value));
+}
+
+bool BinarySerializer::serialize(const char*, std::string& value)
+{
+	if (isReading())
 	{
 		value.clear();
-		File* file = _getFile();
+		const File* file = _getReadFile();
 		char buf;
 		while (true)
 		{
@@ -74,26 +133,37 @@ void BinarySerializer::serialize(const char*, std::string& value)
 			}
 			value += buf;
 		}
+		return true;
 	}
 	else
 	{
-		_getFile()->write(value.c_str(), value.size()+1);
+		return _getWriteFile()->write(value.c_str(), value.size()+1);
 	}
 }
 
-void BinarySerializer::serialize(const char*, Serializable& serializable)
+bool BinarySerializer::serialize(const char*, Serializable& serializable)
 {
-	serializable.serialize(this);
+	return serializable.serialize(this);
 }
 
-void BinarySerializer::_rawSerialize(void* data, int size)
+bool BinarySerializer::serialize(const char*, Serializable* serializable, size_t size)
 {
-	if (_getMode() == MODE_READ)
+	for (size_t i = 0; i < size; ++i)
 	{
-		_getFile()->read(data, size);
+		if (!serializable->serialize(this))
+			return false;
+	}
+	return true;
+}
+
+bool BinarySerializer::_rawSerialize(void* data, int size)
+{
+	if (isReading())
+	{
+		return _getReadFile()->read(data, size) == size;
 	}
 	else
 	{
-		_getFile()->write(data, size);
+		return _getWriteFile()->write(data, size);
 	}
 }

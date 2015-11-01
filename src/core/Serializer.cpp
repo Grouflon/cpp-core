@@ -3,25 +3,48 @@
 
 #include "core/File.h"
 
-Serializer::Serializer(File* file, Mode mode)
+Serializer::Serializer()
+	: m_readFile(nullptr)
+	, m_writeFile(nullptr)
 {
-	ASSERT(file && file->isOpen()) // File should be given opened
-	// TODO: test if the file is opened in the right mode
-
-	m_file = file;
-	m_mode = mode;
 }
 
 Serializer::~Serializer()
 {
 }
 
-File* Serializer::_getFile()
+void Serializer::beginRead(const File* file)
 {
-	return m_file;
+	ASSERT(!m_readFile && !m_writeFile); // end() not called
+	ASSERT(file);
+	m_readFile = file;
 }
 
-Serializer::Mode Serializer::_getMode() const
+void Serializer::beginWrite(File* file)
 {
-	return m_mode;
+	ASSERT(!m_readFile && !m_writeFile); // end() not called
+	ASSERT(file);
+	m_writeFile = file;
+}
+
+void Serializer::end()
+{
+	m_readFile = nullptr;
+	m_writeFile = nullptr;
+}
+
+bool Serializer::isReading() const
+{
+	ASSERT(m_readFile || m_writeFile); // This result has no sense if not between startRead/Write() and end().
+	return m_readFile != nullptr;
+}
+
+const File* Serializer::_getReadFile() const
+{
+	return m_readFile;
+}
+
+File* Serializer::_getWriteFile() const
+{
+	return m_writeFile;
 }

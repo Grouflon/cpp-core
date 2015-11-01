@@ -1,6 +1,7 @@
 ﻿#include "stdafx.h"
 #include "BlonkApp.h"
 #include "core/File.h"
+#include "core/BinarySerializer.h"
 #include "core/ShaderManager.h"
 
 BlonkApp::BlonkApp()
@@ -20,8 +21,25 @@ static GLuint ib;
 static float angle;
 static float distance;
 
+struct GameData
+{
+	float cameraVerticalAngle;
+	float cameraDistance;
+	float fov;
+};
+
+static GameData		g_gameData;
+static const char*	gameDataPath = "data/game.data";
+
 void BlonkApp::started()
 {
+	if (!_loadGameData())
+	{
+		g_gameData.cameraVerticalAngle = 45.f;
+		g_gameData.cameraDistance = 10.f;
+		g_gameData.fov = degToRad(55.f);
+	}
+
 	GLuint shaderProgram = ShaderManager::loadShaderProgram("default", "data/shaders/basic_vs.glsl", "data/shaders/basic_fs.glsl");
 	if (shaderProgram == INVALID_SHADER_PROGRAM)
 	{
@@ -87,7 +105,7 @@ void BlonkApp::started()
 	vbo = 0;
 	glGenBuffers(1, &vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, 24 * 3 * sizeof (float), points, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof (points), points, GL_STATIC_DRAW);
 
 	vao = 0;
 	glGenVertexArrays(1, &vao);
@@ -99,7 +117,30 @@ void BlonkApp::started()
 	ib = 0;
 	glGenBuffers(1, &ib);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 36 * sizeof(uint16), indices, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+}
+
+void BlonkApp::update(float dt)
+{
+	ImGui::Begin("GameData");
+	ImGui::SliderFloat("distance", &g_gameData.cameraDistance, 0.f, 100.f);
+	ImGui::SliderFloat("angle", &g_gameData.cameraVerticalAngle, 0.f, 90.f);
+	ImGui::SliderFloat("fov", &g_gameData.fov, 5.f, 180.f);
+	if (ImGui::Button("save"))
+	{
+		if (!_saveGameData())
+		{
+			LOG_ERROR("ERROR: failed to save game data.");
+		}
+	}
+	if (ImGui::Button("load"))
+	{
+		if (!_loadGameData())
+		{
+			LOG_ERROR("ERROR: failed to save game data.");
+		}
+	}
+	ImGui::End();
 }
 
 void BlonkApp::render()
@@ -112,17 +153,13 @@ void BlonkApp::render()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glDisable(GL_CULL_FACE);
 
-	ImGui::SliderFloat("distance", &distance, .6f, 2.f);
-	ImGui::DragFloat("angle", &angle, 0.01f);
+	glm::mat4 projection = glm::perspective(degToRad(g_gameData.fov), windowRatio, 0.001f, 1000.f);
 
-	glm::mat4 projection = glm::perspective(5.f, windowRatio, 0.001f, 1000.f);
-	glm::vec4 camPos = glm::vec4(0.f, 0.f, 0.f, 1.f);
-	camPos[2] += distance;
-	glm::mat4 view = glm::rotate(glm::mat4(), angle, glm::vec3(0.f, 1.f, 0.f));
-	view =  glm::translate(view, glm::vec3(camPos));
+	glm::mat4 view = glm::rotate(glm::mat4(), degToRad(45.f), glm::vec3(0.f, 1.f, 0.f));
+	view = glm::rotate(view, degToRad(-g_gameData.cameraVerticalAngle), glm::vec3(1.f, 0.f, 0.f));
+	view = glm::translate(view, glm::vec3(glm::vec3(0.f, 0.f, g_gameData.cameraDistance)));
 
 	glm::mat4 mvp = projection * glm::inverse(view);
-
 
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib);
@@ -135,4 +172,36 @@ void BlonkApp::render()
 void BlonkApp::onKeyEvent(int key, int scancode, int action, int mods)
 {
 	LOG("%d %d", key, scancode);
+}
+
+bool BlonkApp::_saveGameData() const
+{
+	BinarySerializer serializer;
+	File file(gameDataPath);
+	bool result = file.open(File::MODE_WRITE);
+	serializer.beginWrite(&file);
+
+	result = result && serializer.serialize("cameraDistance", g_gameData.cameraDistance);
+	result = result && serializer.serialize("cameraVerticalAngle", g_gameData.cameraVerticalAngle);
+	result = result && serializer.serialize("fov", g_gameData.fov);
+
+	serializer.end();
+	file.close();
+	return result;
+}
+
+bool BlonkApp::_loadGameData()
+{
+	BinarySerializer serializer;
+	File file(gameDataPath);
+	bool result = file.open(File::MODE_READ);
+	serializer.beginRead(&file);
+
+	result = result && serializer.serialize("cameraDistance", g_gameData.cameraDistance);
+	result = result && serializer.serialize("cameraVerticalAngle", g_gameData.cameraVerticalAngle);
+	result = result && serializer.serialize("fov", g_gameData.fov);
+
+	serializer.end();
+	file.close();
+	return result;
 }

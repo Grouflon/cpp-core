@@ -19,7 +19,7 @@ public:
 	void close();
 
 	bool write(const void* buffer, size_t size);
-	size_t read(void* buffer, size_t size);
+	size_t read(void* buffer, size_t size) const;
 
 	bool isOpen() const;
 	long getSize() const;

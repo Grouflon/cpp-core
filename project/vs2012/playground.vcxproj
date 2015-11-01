@@ -267,6 +267,7 @@
     <ClInclude Include="..\..\src\core\File.h" />
     <ClInclude Include="..\..\src\core\HashTools.h" />
     <ClInclude Include="..\..\src\core\Log.h" />
+    <ClInclude Include="..\..\src\core\Math.h" />
     <ClInclude Include="..\..\src\core\Resource.h" />
     <ClInclude Include="..\..\src\core\ResourceManager.h" />
     <ClInclude Include="..\..\src\core\Serializable.h" />
@@ -304,6 +305,7 @@
     <ClCompile Include="..\..\src\core\File.cpp" />
     <ClCompile Include="..\..\src\core\HashTools.cpp" />
     <ClCompile Include="..\..\src\core\Log.cpp" />
+    <ClCompile Include="..\..\src\core\Math.cpp" />
     <ClCompile Include="..\..\src\core\Resource.cpp" />
     <ClCompile Include="..\..\src\core\ResourceManager.cpp" />
     <ClCompile Include="..\..\src\core\Serializable.cpp" />

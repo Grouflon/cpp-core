@@ -11,5 +11,10 @@ public:
 
 	virtual void started() override;
 	virtual void render() override;
+	virtual void update(float dt) override;
 	void onKeyEvent(int key, int scancode, int action, int mods) override;
+
+private:
+	bool _saveGameData() const;
+	bool _loadGameData();
 };
