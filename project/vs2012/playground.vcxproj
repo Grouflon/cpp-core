@@ -260,6 +260,7 @@
     <ClInclude Include="..\..\extern\openAL\include\efx.h" />
     <ClInclude Include="..\..\extern\openAL\include\xram.h" />
     <ClInclude Include="..\..\src\BlonkApp.h" />
+    <ClInclude Include="..\..\src\Box.h" />
     <ClInclude Include="..\..\src\SandboxApp.h" />
     <ClInclude Include="..\..\src\core\Application.h" />
     <ClInclude Include="..\..\src\core\Assert.h" />
@@ -274,6 +275,7 @@
     <ClInclude Include="..\..\src\core\Serializer.h" />
     <ClInclude Include="..\..\src\core\ShaderManager.h" />
     <ClInclude Include="..\..\src\core\StringHash.h" />
+    <ClInclude Include="..\..\src\core\Transform.h" />
     <ClInclude Include="..\..\src\core\Types.h" />
     <ClInclude Include="..\..\src\stdafx.h" />
   </ItemGroup>
@@ -299,6 +301,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='release|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\..\src\BlonkApp.cpp" />
+    <ClCompile Include="..\..\src\Box.cpp" />
     <ClCompile Include="..\..\src\SandboxApp.cpp" />
     <ClCompile Include="..\..\src\core\Application.cpp" />
     <ClCompile Include="..\..\src\core\BinarySerializer.cpp" />
@@ -312,6 +315,7 @@
     <ClCompile Include="..\..\src\core\Serializer.cpp" />
     <ClCompile Include="..\..\src\core\ShaderManager.cpp" />
     <ClCompile Include="..\..\src\core\StringHash.cpp" />
+    <ClCompile Include="..\..\src\core\Transform.cpp" />
     <ClCompile Include="..\..\src\main.cpp" />
     <ClCompile Include="..\..\src\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">Create</PrecompiledHeader>

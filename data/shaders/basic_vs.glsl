@@ -2,9 +2,10 @@
 
 in vec3 aPosition;
 
-uniform mat4	uMVP;
+uniform mat4	uModel;
+uniform mat4	uViewProjection;
 
 void main()
 {
-	gl_Position = uMVP * vec4(aPosition, 1.0);
+	gl_Position = uViewProjection * uModel * vec4(aPosition, 1.0);
 }

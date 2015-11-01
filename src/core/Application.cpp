@@ -13,8 +13,8 @@ static void glfw_errorCallback(int error, const char* description)
 
 static void glfw_keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-	Application* app = static_cast<Application*>(glfwGetWindowUserPointer(window));
 	ImGui_ImplGlfwGL3_KeyCallback(window, key, scancode, action, mods);
+	Application* app = static_cast<Application*>(glfwGetWindowUserPointer(window));
 	app->onKeyEvent(key, scancode, action, mods);
 }
 

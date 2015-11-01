@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="extern">
@@ -531,6 +531,9 @@
     <ClInclude Include="..\..\src\BlonkApp.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Box.h">
+      <Filter>src</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\SandboxApp.h">
       <Filter>src</Filter>
     </ClInclude>
@@ -552,6 +555,9 @@
     <ClInclude Include="..\..\src\core\Log.h">
       <Filter>src\core</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\core\Math.h">
+      <Filter>src\core</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\core\Resource.h">
       <Filter>src\core</Filter>
     </ClInclude>
@@ -570,14 +576,14 @@
     <ClInclude Include="..\..\src\core\StringHash.h">
       <Filter>src\core</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\core\Transform.h">
+      <Filter>src\core</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\core\Types.h">
       <Filter>src\core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\stdafx.h">
       <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\core\Math.h">
-      <Filter>src\core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -599,6 +605,9 @@
     <ClCompile Include="..\..\src\BlonkApp.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Box.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\SandboxApp.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -615,6 +624,9 @@
       <Filter>src\core</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\core\Log.cpp">
+      <Filter>src\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\core\Math.cpp">
       <Filter>src\core</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\core\Resource.cpp">
@@ -635,14 +647,14 @@
     <ClCompile Include="..\..\src\core\StringHash.cpp">
       <Filter>src\core</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\core\Transform.cpp">
+      <Filter>src\core</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\main.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\stdafx.cpp">
       <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\core\Math.cpp">
-      <Filter>src\core</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
