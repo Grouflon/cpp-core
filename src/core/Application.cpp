@@ -5,11 +5,34 @@
 
 #include "core/ResourceManager.h"
 
-void glfw_errorCallback(int error, const char* description)
+static void glfw_errorCallback(int error, const char* description)
 {
 	LOG_ERROR("ERROR: GLFW ERROR: code %d msg: %s", error, description);
 	ASSERT(false);
 }
+
+static void glfw_keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+	Application* app = static_cast<Application*>(glfwGetWindowUserPointer(window));
+	ImGui_ImplGlfwGL3_KeyCallback(window, key, scancode, action, mods);
+	app->onKeyEvent(key, scancode, action, mods);
+}
+
+static void glfw_mouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
+{
+	ImGui_ImplGlfwGL3_MouseButtonCallback(window, button, action, mods);
+}
+
+static void glfw_scrollCallback(GLFWwindow* window, double xoffset, double yoffset)
+{
+	ImGui_ImplGlfwGL3_ScrollCallback(window, xoffset, yoffset);
+}
+
+static void glfw_charCallback(GLFWwindow* window, unsigned int c)
+{
+	ImGui_ImplGlfwGL3_CharCallback(window, c);
+}
+
 
 Application::Application()
 	: m_initialized(false)
@@ -48,6 +71,9 @@ bool Application::init(int width, int height, const char* name)
 			return false;
 		}
 
+		glfwSetWindowUserPointer(m_window, this);
+		glfwSetKeyCallback(m_window, glfw_keyCallback);
+
 		glfwMakeContextCurrent(m_window);
 		glfwSwapInterval(1); // VSYNC
 
@@ -57,7 +83,7 @@ bool Application::init(int width, int height, const char* name)
 			return false;
 		}
 
-		if (!ImGui_ImplGlfwGL3_Init(m_window, true)) // pass to false and call callbacks manually when we have custom callbacks
+		if (!ImGui_ImplGlfwGL3_Init(m_window, false)) // pass to false and call callbacks manually when we have custom callbacks
 		{
 			LOG_ERROR("ERROR: Application::init -> ImGui initialization failed.");
 			return false;
@@ -133,6 +159,24 @@ void Application::stopped()
 {
 }
 
+void Application::onKeyEvent(int key, int scancode, int action, int mods)
+{
+}
+
+glm::ivec2 Application::getWindowSize() const
+{
+	glm::ivec2 size;
+	glfwGetWindowSize(m_window, &size[0], &size[1]);
+	return size;
+}
+
+float Application::getWindowRatio() const
+{
+	int w, h;
+	glfwGetWindowSize(m_window, &w, &h);
+	return static_cast<float>(w) / static_cast<float>(h);
+}
+
 void Application::_processEvents()
 {
 	glfwPollEvents();
@@ -150,6 +194,6 @@ void Application::_update()
 void Application::_render()
 {
 	render();
-	glfwSwapBuffers(m_window);
 	ImGui::Render();
+	glfwSwapBuffers(m_window);
 }

@@ -11,4 +11,5 @@ public:
 
 	virtual void started() override;
 	virtual void render() override;
+	void onKeyEvent(int key, int scancode, int action, int mods) override;
 };
