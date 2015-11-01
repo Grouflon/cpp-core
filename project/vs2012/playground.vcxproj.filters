@@ -525,6 +525,9 @@
     <ClInclude Include="..\..\extern\openAL\include\xram.h">
       <Filter>extern\openAL\include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\BlonkApp.h">
+      <Filter>src</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\SandboxApp.h">
       <Filter>src</Filter>
     </ClInclude>
@@ -540,6 +543,12 @@
     <ClInclude Include="..\..\src\core\File.h">
       <Filter>src\core</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\core\HashTools.h">
+      <Filter>src\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\core\Log.h">
+      <Filter>src\core</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\core\Resource.h">
       <Filter>src\core</Filter>
     </ClInclude>
@@ -550,6 +559,12 @@
       <Filter>src\core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\core\Serializer.h">
+      <Filter>src\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\core\ShaderManager.h">
+      <Filter>src\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\core\StringHash.h">
       <Filter>src\core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\core\Types.h">
@@ -575,6 +590,9 @@
     <ClCompile Include="..\..\extern\imgui\imgui_impl_glfw_gl3.cpp">
       <Filter>extern\imgui</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\BlonkApp.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\SandboxApp.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -587,6 +605,12 @@
     <ClCompile Include="..\..\src\core\File.cpp">
       <Filter>src\core</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\core\HashTools.cpp">
+      <Filter>src\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\core\Log.cpp">
+      <Filter>src\core</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\core\Resource.cpp">
       <Filter>src\core</Filter>
     </ClCompile>
@@ -597,6 +621,12 @@
       <Filter>src\core</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\core\Serializer.cpp">
+      <Filter>src\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\core\ShaderManager.cpp">
+      <Filter>src\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\core\StringHash.cpp">
       <Filter>src\core</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\main.cpp">

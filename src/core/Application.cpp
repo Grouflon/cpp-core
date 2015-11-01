@@ -5,13 +5,15 @@
 
 #include "core/ResourceManager.h"
 
-void glfw_errorCallback(int error, const char* descritpion)
+void glfw_errorCallback(int error, const char* description)
 {
-	std::cerr << "Error " << error << ": " << descritpion << std::endl;
+	LOG_ERROR("ERROR: GLFW ERROR: code %d msg: %s", error, description);
+	ASSERT(false);
 }
 
 Application::Application()
 	: m_initialized(false)
+	, m_window(nullptr)
 	, m_previousTime(0.0)
 {
 }
@@ -26,16 +28,23 @@ bool Application::init(int width, int height, const char* name)
 	{
 		if (!glfwInit())
 		{
-			std::cerr << "Application::init -> glfw initialization failed." << std::endl;
+			LOG_ERROR("ERROR: Application::init -> glfw initialization failed.");
 			return false;
 		}
 		glfwSetErrorCallback(glfw_errorCallback);
 
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+		glfwWindowHint(GLFW_SAMPLES, 4);
+
+		// NOTE: Maybe window should be opened only when start is called
 		m_window = glfwCreateWindow(width, height, name, nullptr, nullptr);
 		if (!m_window)
 		{
 			glfwTerminate();
-			std::cerr << "Application::init -> glfw window creation failed." << std::endl;
+			LOG_ERROR("ERROR: Application::init -> glfw window creation failed.");
 			return false;
 		}
 
@@ -44,13 +53,13 @@ bool Application::init(int width, int height, const char* name)
 
 		if (gl3wInit() == -1)
 		{
-			std::cerr << "Application::init -> gl3w initialization failed." << std::endl;
+			LOG_ERROR("ERROR: Application::init -> gl3w initialization failed.");
 			return false;
 		}
 
-		if (!ImGui_ImplGlfwGL3_Init(m_window, true))// pass to false and call callbacks manually when we have custom callbacks
+		if (!ImGui_ImplGlfwGL3_Init(m_window, true)) // pass to false and call callbacks manually when we have custom callbacks
 		{
-			std::cerr << "Application::init -> ImGui initialization failed." << std::endl;
+			LOG_ERROR("ERROR: Application::init -> ImGui initialization failed.");
 			return false;
 		}
 
@@ -73,6 +82,8 @@ void Application::shutdown()
 		ImGui_ImplGlfwGL3_Shutdown();
 		glfwDestroyWindow(m_window);
 		glfwTerminate();
+
+		m_window = nullptr;
 	}
 	else
 	{

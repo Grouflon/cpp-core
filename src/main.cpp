@@ -1,13 +1,13 @@
 #include "stdafx.h"
 
-#include "SandboxApp.h"
+#include "BlonkApp.h"
 
 int main(int argc, char** argv)
 {
-	SandboxApp app;
+	BlonkApp app;
 	if (!app.init(800, 600, "playground"))
 	{
-		std::cerr << "main -> Failed to initialize application." << std::endl;
+		LOG_ERROR("ERROR: main -> Failed to initialize application.");
 		return EXIT_FAILURE;
 	}
 

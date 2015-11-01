@@ -135,7 +135,7 @@ void SandboxApp::started()
 	}
 	else
 	{
-		std::cerr << "SandboxApp -> Error creating ALDevice." << std::endl;
+		LOG_ERROR("ERROR: SandboxApp -> Error creating ALDevice.");
 	}
 }
 
