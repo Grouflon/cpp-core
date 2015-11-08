@@ -9,11 +9,10 @@ public:
 	Serializer();
 	virtual ~Serializer();
 
-	void beginRead(const File* file);
-	void beginWrite(File* file);
-	void end();
+	virtual bool beginRead(const File* file);
+	virtual bool beginWrite(File* file);
+	virtual bool end();
 
-	// TODO-THINK: all serialize methods could be const so far. do I want that ?
 	virtual bool serialize(const char* name, bool& value) = 0;
 
 	virtual bool serialize(const char* name, uint8& value) = 0;
@@ -38,8 +37,8 @@ public:
 	virtual bool serialize(const char* name, float* value, size_t size) = 0;
 	virtual bool serialize(const char* name, double* value, size_t size) = 0;
 
-	// TODO-THINK: is const char* serialization relevant ? is allocation free serialization possible ?
 	virtual bool serialize(const char* name, std::string& value) = 0;
+	virtual bool serialize(const char* name, std::string* value, size_t size) = 0;
 
 	virtual bool serialize(const char* name, Serializable& serializable) = 0;
 	virtual bool serialize(const char* name, Serializable* serializable, size_t size) = 0;

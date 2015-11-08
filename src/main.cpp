@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "BlonkApp.h"
+#include <vld.h>
 
 int main(int argc, char** argv)
 {
@@ -12,7 +13,7 @@ int main(int argc, char** argv)
 	}
 
 	app.start();
-	//app.shutdown();
+	app.shutdown();
 
 	return EXIT_SUCCESS;
 }

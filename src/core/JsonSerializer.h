@@ -2,15 +2,24 @@
 
 #include "core/Serializer.h"
 
-class BinarySerializer
+struct json_value_s;
+struct json_object_s;
+struct json_string_s;
+struct json_number_s;
+
+class JsonSerializer
 	: public Serializer
 {
 public:
-	BinarySerializer();
-	virtual ~BinarySerializer();
+
+	JsonSerializer();
+	virtual ~JsonSerializer();
+
+	virtual bool beginRead(const File* file) override;
+	virtual bool beginWrite(File* file) override;
+	virtual bool end() override;
 
 	virtual bool serialize(const char* name, bool& value) override;
-
 	virtual bool serialize(const char* name, uint8& value) override;
 	virtual bool serialize(const char* name, uint16& value) override;
 	virtual bool serialize(const char* name, uint32& value) override;
@@ -21,7 +30,6 @@ public:
 	virtual bool serialize(const char* name, int64& value) override;
 	virtual bool serialize(const char* name, float& value) override;
 	virtual bool serialize(const char* name, double& value) override;
-
 	virtual bool serialize(const char* name, uint8* value, size_t size) override;
 	virtual bool serialize(const char* name, uint16* value, size_t size) override;
 	virtual bool serialize(const char* name, uint32* value, size_t size) override;
@@ -32,13 +40,23 @@ public:
 	virtual bool serialize(const char* name, int64* value, size_t size) override;
 	virtual bool serialize(const char* name, float* value, size_t size) override;
 	virtual bool serialize(const char* name, double* value, size_t size) override;
-
 	virtual bool serialize(const char* name, std::string& value) override;
 	virtual bool serialize(const char* name, std::string* value, size_t size) override;
-
 	virtual bool serialize(const char* name, Serializable& serializable) override;
 	virtual bool serialize(const char* name, Serializable* serializable, size_t size) override;
 
 private:
-	bool _rawSerialize(void* data, int size);
+	void			_addValueToObject(json_object_s* object, const char* name, json_value_s* value);
+	json_value_s*	_findObjectValue(json_object_s* object, const char* name);
+	json_string_s*	_createString(const char* str);
+	json_number_s*	_createNumber(double number);
+	json_number_s*	_createNumber(float number);
+	json_number_s*	_createNumber(int64 number);
+	json_number_s*	_createNumber(int number);
+	json_number_s*	_createNumber(uint64 number);
+	json_number_s*	_createNumber(unsigned int number);
+	void			_deleteJsonValue(json_value_s* jsonValue);
+
+	json_value_s*	m_root;
+	json_value_s*	m_currentValue;
 };

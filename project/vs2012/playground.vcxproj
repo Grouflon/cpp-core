@@ -58,7 +58,7 @@
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\src;..\..\extern\SFML\include;..\..\extern\glfw\include;..\..\extern\gl3w;..\..\extern\glm;..\..\extern\imgui;..\..\extern\openAL\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\src;..\..\extern\SFML\include;..\..\extern\glfw\include;..\..\extern\gl3w;..\..\extern\glm;..\..\extern\imgui;..\..\extern\json;..\..\extern\openAL\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>false</MinimalRebuild>
@@ -68,7 +68,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;OpenAL32.lib;vld.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\extern\glfw\libs\debug;..\..\extern\openAL\libs\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
@@ -79,7 +79,7 @@
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\src;..\..\extern\SFML\include;..\..\extern\glfw\include;..\..\extern\gl3w;..\..\extern\glm;..\..\extern\imgui;..\..\extern\openAL\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\src;..\..\extern\SFML\include;..\..\extern\glfw\include;..\..\extern\gl3w;..\..\extern\glm;..\..\extern\imgui;..\..\extern\json;..\..\extern\openAL\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -94,7 +94,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;OpenAL32.lib;vld.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\extern\glfw\libs\release;..\..\extern\openAL\libs\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
@@ -253,6 +253,7 @@
     <ClInclude Include="..\..\extern\imgui\stb_rect_pack.h" />
     <ClInclude Include="..\..\extern\imgui\stb_textedit.h" />
     <ClInclude Include="..\..\extern\imgui\stb_truetype.h" />
+    <ClInclude Include="..\..\extern\json\json.h" />
     <ClInclude Include="..\..\extern\openAL\include\EFX-Util.h" />
     <ClInclude Include="..\..\extern\openAL\include\al.h" />
     <ClInclude Include="..\..\extern\openAL\include\alc.h" />
@@ -262,11 +263,13 @@
     <ClInclude Include="..\..\src\BlonkApp.h" />
     <ClInclude Include="..\..\src\Box.h" />
     <ClInclude Include="..\..\src\SandboxApp.h" />
+    <ClInclude Include="..\..\src\ZonkApp.h" />
     <ClInclude Include="..\..\src\core\Application.h" />
     <ClInclude Include="..\..\src\core\Assert.h" />
     <ClInclude Include="..\..\src\core\BinarySerializer.h" />
     <ClInclude Include="..\..\src\core\File.h" />
     <ClInclude Include="..\..\src\core\HashTools.h" />
+    <ClInclude Include="..\..\src\core\JsonSerializer.h" />
     <ClInclude Include="..\..\src\core\Log.h" />
     <ClInclude Include="..\..\src\core\Math.h" />
     <ClInclude Include="..\..\src\core\Resource.h" />
@@ -300,13 +303,19 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='release|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="..\..\extern\json\json.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='release|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\..\src\BlonkApp.cpp" />
     <ClCompile Include="..\..\src\Box.cpp" />
     <ClCompile Include="..\..\src\SandboxApp.cpp" />
+    <ClCompile Include="..\..\src\ZonkApp.cpp" />
     <ClCompile Include="..\..\src\core\Application.cpp" />
     <ClCompile Include="..\..\src\core\BinarySerializer.cpp" />
     <ClCompile Include="..\..\src\core\File.cpp" />
     <ClCompile Include="..\..\src\core\HashTools.cpp" />
+    <ClCompile Include="..\..\src\core\JsonSerializer.cpp" />
     <ClCompile Include="..\..\src\core\Log.cpp" />
     <ClCompile Include="..\..\src\core\Math.cpp" />
     <ClCompile Include="..\..\src\core\Resource.cpp" />
@@ -321,6 +330,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\data\game.json" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

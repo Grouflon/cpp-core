@@ -3,6 +3,7 @@
 
 #include "core/File.h"
 #include "core/BinarySerializer.h"
+#include "core/JsonSerializer.h"
 #include "core/ShaderManager.h"
 #include "Box.h"
 
@@ -24,7 +25,7 @@ struct GameData
 };
 
 static GameData		g_gameData;
-static const char*	gameDataPath = "data/game.data";
+static const char*	gameDataPath = "data/game.json";
 static Box*			box;
 
 void BlonkApp::started()
@@ -105,32 +106,32 @@ void BlonkApp::onKeyEvent(int key, int scancode, int action, int mods)
 
 bool BlonkApp::_saveGameData() const
 {
-	BinarySerializer serializer;
+	JsonSerializer serializer;
 	File file(gameDataPath);
 	bool result = file.open(File::MODE_WRITE);
-	serializer.beginWrite(&file);
+	result = result && serializer.beginWrite(&file);
 
 	result = result && serializer.serialize("cameraDistance", g_gameData.cameraDistance);
 	result = result && serializer.serialize("cameraVerticalAngle", g_gameData.cameraVerticalAngle);
 	result = result && serializer.serialize("fov", g_gameData.fov);
 
-	serializer.end();
+	result = result && serializer.end();
 	file.close();
 	return result;
 }
 
 bool BlonkApp::_loadGameData()
 {
-	BinarySerializer serializer;
+	JsonSerializer serializer;
 	File file(gameDataPath);
 	bool result = file.open(File::MODE_READ);
-	serializer.beginRead(&file);
+	result = result && serializer.beginRead(&file);
 
 	result = result && serializer.serialize("cameraDistance", g_gameData.cameraDistance);
 	result = result && serializer.serialize("cameraVerticalAngle", g_gameData.cameraVerticalAngle);
 	result = result && serializer.serialize("fov", g_gameData.fov);
 
-	serializer.end();
+	result = result && serializer.end();
 	file.close();
 	return result;
 }

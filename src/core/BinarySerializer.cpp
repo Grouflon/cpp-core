@@ -141,6 +141,16 @@ bool BinarySerializer::serialize(const char*, std::string& value)
 	}
 }
 
+bool BinarySerializer::serialize(const char* name, std::string* value, size_t size)
+{
+	for (size_t i = 0; i < size; ++i)
+	{
+		if (!serialize(name, value[i]))
+			return false;
+	}
+	return true;
+}
+
 bool BinarySerializer::serialize(const char*, Serializable& serializable)
 {
 	return serializable.serialize(this);

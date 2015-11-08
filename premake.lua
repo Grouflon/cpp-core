@@ -33,7 +33,11 @@ solution "playground"
 			"extern/gl3w/**.c",
 			"extern/gl3w/**.h",
 			"extern/glm/**.hpp",
+			"extern/json/**.c",
+			"extern/json/**.h",
 			"extern/openAL/**.h",
+			
+			"data/**.json"
 		}
 		
 		removefiles {
@@ -47,6 +51,7 @@ solution "playground"
 			"extern/gl3w/",
 			"extern/glm/",
 			"extern/imgui/",
+			"extern/json/",
 			"extern/openAL/include",
 		}
 		
@@ -60,7 +65,8 @@ solution "playground"
 			"opengl32",
 			--"winmm",
 			--"gdi32",
-			"OpenAL32"
+			"OpenAL32",
+			"vld"
 		}
 		
 		defines {

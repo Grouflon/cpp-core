@@ -13,24 +13,29 @@ Serializer::~Serializer()
 {
 }
 
-void Serializer::beginRead(const File* file)
+bool Serializer::beginRead(const File* file)
 {
-	ASSERT(!m_readFile && !m_writeFile); // end() not called
-	ASSERT(file);
+	if (m_readFile || m_writeFile) return false; // end() not called
+	if (!file || !file->isOpen()) return false;
+
 	m_readFile = file;
+	return true;
 }
 
-void Serializer::beginWrite(File* file)
+bool Serializer::beginWrite(File* file)
 {
-	ASSERT(!m_readFile && !m_writeFile); // end() not called
-	ASSERT(file);
+	if (m_readFile || m_writeFile) return false; // end() not called
+	if (!file || !file->isOpen()) return false;
+
 	m_writeFile = file;
+	return true;
 }
 
-void Serializer::end()
+bool Serializer::end()
 {
 	m_readFile = nullptr;
 	m_writeFile = nullptr;
+	return true;
 }
 
 bool Serializer::isReading() const
