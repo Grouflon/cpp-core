@@ -60,7 +60,7 @@ bool JsonSerializer::end()
 		size_t outSize;
 		void* out = json_write_pretty(m_root, "\t", "\n", &outSize);
 		File* file = _getWriteFile();
-		file->write(out, outSize+1);
+		file->write(out, outSize - 1); // size counts \0
 		free(out);
 
 		// json value hand built

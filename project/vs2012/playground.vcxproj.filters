@@ -563,6 +563,9 @@
     <ClInclude Include="..\..\src\core\BinarySerializer.h">
       <Filter>src\core</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\core\Clock.h">
+      <Filter>src\core</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\core\File.h">
       <Filter>src\core</Filter>
     </ClInclude>
@@ -594,6 +597,12 @@
       <Filter>src\core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\core\StringHash.h">
+      <Filter>src\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\core\StringTools.h">
+      <Filter>src\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\core\Time.h">
       <Filter>src\core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\core\Transform.h">
@@ -643,6 +652,9 @@
     <ClCompile Include="..\..\src\core\BinarySerializer.cpp">
       <Filter>src\core</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\core\Clock.cpp">
+      <Filter>src\core</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\core\File.cpp">
       <Filter>src\core</Filter>
     </ClCompile>
@@ -674,6 +686,12 @@
       <Filter>src\core</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\core\StringHash.cpp">
+      <Filter>src\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\core\StringTools.cpp">
+      <Filter>src\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\core\Time.cpp">
       <Filter>src\core</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\core\Transform.cpp">

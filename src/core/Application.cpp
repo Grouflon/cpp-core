@@ -31,6 +31,8 @@ static void glfw_scrollCallback(GLFWwindow* window, double xoffset, double yoffs
 static void glfw_charCallback(GLFWwindow* window, unsigned int c)
 {
 	ImGui_ImplGlfwGL3_CharCallback(window, c);
+	Application* app = static_cast<Application*>(glfwGetWindowUserPointer(window));
+	app->onCharEvent(c);
 }
 
 
@@ -73,6 +75,9 @@ bool Application::init(int width, int height, const char* name)
 
 		glfwSetWindowUserPointer(m_window, this);
 		glfwSetKeyCallback(m_window, glfw_keyCallback);
+		glfwSetCharCallback(m_window, glfw_charCallback);
+		glfwSetMouseButtonCallback(m_window, glfw_mouseButtonCallback);
+		glfwSetScrollCallback(m_window, glfw_scrollCallback);
 
 		glfwMakeContextCurrent(m_window);
 		glfwSwapInterval(1); // VSYNC
@@ -119,7 +124,9 @@ void Application::shutdown()
 
 void Application::start()
 {
-	ASSERT(m_initialized) // Should not call start before init
+	ASSERT(m_initialized); // Should not call start before init
+
+	m_clock.start();
 
 	started();
 
@@ -163,6 +170,10 @@ void Application::onKeyEvent(int key, int scancode, int action, int mods)
 {
 }
 
+void Application::onCharEvent(char c)
+{
+}
+
 glm::ivec2 Application::getWindowSize() const
 {
 	glm::ivec2 size;
@@ -175,6 +186,11 @@ float Application::getWindowRatio() const
 	int w, h;
 	glfwGetWindowSize(m_window, &w, &h);
 	return static_cast<float>(w) / static_cast<float>(h);
+}
+
+const Clock& Application::getClock() const
+{
+	return m_clock;
 }
 
 void Application::_processEvents()

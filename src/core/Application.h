@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include "core/Clock.h"
+
 class Application
 {
 public:
@@ -19,9 +21,12 @@ public:
 
 	// TODO: proper input helpers
 	virtual void onKeyEvent(int key, int scancode, int action, int mods);
+	virtual void onCharEvent(char c);
 
 	glm::ivec2	getWindowSize() const;
 	float		getWindowRatio() const;
+
+	const Clock&	getClock() const;
 
 private:
 	void _processEvents();
@@ -31,5 +36,5 @@ private:
 	bool		m_initialized;
 	GLFWwindow* m_window;
 	double		m_previousTime;
-
+	Clock		m_clock;
 };
