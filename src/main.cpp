@@ -2,7 +2,12 @@
 
 #include "BlonkApp.h"
 #include "ZonkApp.h"
-#include <vld.h>
+
+struct Foo
+{
+	Foo() { a = 5; }
+	int a;
+};
 
 int main(int argc, char** argv)
 {

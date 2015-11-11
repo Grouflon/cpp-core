@@ -44,8 +44,6 @@ public:
 	virtual bool serialize(const char* name, Serializable* serializable, size_t size) = 0;
 
 	// TODO: Container types
-	// TODO: float
-	// TODO: pointers/size
 
 	bool isReading() const;
 

@@ -9,6 +9,7 @@ solution "playground"
 	project "playground"
 		kind "ConsoleApp"
 		language "C++"
+		toolset "v120_CTP_Nov2012"
 		flags { "Symbols", "MultiProcessorCompile" }
 		rtti "On"
 		editandcontinue "On"

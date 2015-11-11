@@ -52,6 +52,9 @@
     <Filter Include="src">
       <UniqueIdentifier>{2DAB880B-99B4-887C-2230-9F7C8E38947C}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\adventure">
+      <UniqueIdentifier>{6A12AE0D-D6D2-2944-9F0D-73C10B8D6E20}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\core">
       <UniqueIdentifier>{C55F2ECF-B12C-89DA-DA45-7782C671BE68}</UniqueIdentifier>
     </Filter>
@@ -59,6 +62,9 @@
   <ItemGroup>
     <None Include="..\..\data\game.json">
       <Filter>data</Filter>
+    </None>
+    <None Include="..\..\src\core\Factory.inl">
+      <Filter>src\core</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -554,6 +560,15 @@
     <ClInclude Include="..\..\src\ZonkApp.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\adventure\Object.h">
+      <Filter>src\adventure</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\adventure\Room.h">
+      <Filter>src\adventure</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\adventure\World.h">
+      <Filter>src\adventure</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\core\Application.h">
       <Filter>src\core</Filter>
     </ClInclude>
@@ -564,6 +579,9 @@
       <Filter>src\core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\core\Clock.h">
+      <Filter>src\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\core\Factory.h">
       <Filter>src\core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\core\File.h">
@@ -646,6 +664,15 @@
     <ClCompile Include="..\..\src\ZonkApp.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\adventure\Object.cpp">
+      <Filter>src\adventure</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\adventure\Room.cpp">
+      <Filter>src\adventure</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\adventure\World.cpp">
+      <Filter>src\adventure</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\core\Application.cpp">
       <Filter>src\core</Filter>
     </ClCompile>
@@ -653,6 +680,9 @@
       <Filter>src\core</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\core\Clock.cpp">
+      <Filter>src\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\core\Factory.cpp">
       <Filter>src\core</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\core\File.cpp">

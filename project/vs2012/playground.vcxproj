@@ -20,13 +20,13 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v120_ctp_nov2012</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v120_ctp_nov2012</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -264,10 +264,14 @@
     <ClInclude Include="..\..\src\Box.h" />
     <ClInclude Include="..\..\src\SandboxApp.h" />
     <ClInclude Include="..\..\src\ZonkApp.h" />
+    <ClInclude Include="..\..\src\adventure\Object.h" />
+    <ClInclude Include="..\..\src\adventure\Room.h" />
+    <ClInclude Include="..\..\src\adventure\World.h" />
     <ClInclude Include="..\..\src\core\Application.h" />
     <ClInclude Include="..\..\src\core\Assert.h" />
     <ClInclude Include="..\..\src\core\BinarySerializer.h" />
     <ClInclude Include="..\..\src\core\Clock.h" />
+    <ClInclude Include="..\..\src\core\Factory.h" />
     <ClInclude Include="..\..\src\core\File.h" />
     <ClInclude Include="..\..\src\core\HashTools.h" />
     <ClInclude Include="..\..\src\core\JsonSerializer.h" />
@@ -314,9 +318,13 @@
     <ClCompile Include="..\..\src\Box.cpp" />
     <ClCompile Include="..\..\src\SandboxApp.cpp" />
     <ClCompile Include="..\..\src\ZonkApp.cpp" />
+    <ClCompile Include="..\..\src\adventure\Object.cpp" />
+    <ClCompile Include="..\..\src\adventure\Room.cpp" />
+    <ClCompile Include="..\..\src\adventure\World.cpp" />
     <ClCompile Include="..\..\src\core\Application.cpp" />
     <ClCompile Include="..\..\src\core\BinarySerializer.cpp" />
     <ClCompile Include="..\..\src\core\Clock.cpp" />
+    <ClCompile Include="..\..\src\core\Factory.cpp" />
     <ClCompile Include="..\..\src\core\File.cpp" />
     <ClCompile Include="..\..\src\core\HashTools.cpp" />
     <ClCompile Include="..\..\src\core\JsonSerializer.cpp" />
@@ -339,6 +347,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\data\game.json" />
+    <None Include="..\..\src\core\Factory.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
