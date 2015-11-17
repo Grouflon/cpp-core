@@ -3,6 +3,8 @@
 
 #include "core/HashTools.h"
 
+std::unordered_map<uint32, char*> g_stringHashes;
+
 StringHash::StringHash(const char* str)
 {
 	m_hash = hashString(str);

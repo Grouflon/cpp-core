@@ -5,7 +5,7 @@ class Factory
 public:
 
 	template<typename T>
-	static void registerContructor(const char* factoryId);
+	static void registerConstructor(const char* factoryId);
 
 	static void* create(const char* factoryId);
 

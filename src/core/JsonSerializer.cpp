@@ -4,7 +4,8 @@
 #include <json.h>
 
 #include "core/File.h"
-#include "core/Serializable.h"
+#include "core/ClassDesc.h"
+#include "core/Factory.h"
 
 JsonSerializer::JsonSerializer()
 	: m_root(nullptr)
@@ -16,6 +17,8 @@ JsonSerializer::~JsonSerializer()
 {
 }
 
+
+// TODO: refactor duplicated code
 bool JsonSerializer::beginRead(const File* file)
 {
 	if (!Serializer::beginRead(file)) return false;
@@ -938,6 +941,36 @@ bool JsonSerializer::serialize(const char* name, double* value, size_t size)
 	return false;
 }
 
+bool JsonSerializer::serialize(const char* name, char* value, size_t size)
+{
+	if (m_currentValue->type != json_type_object && m_currentValue->type != json_type_array)
+		return false;
+
+	json_object_s* currentObject = static_cast<json_object_s*>(m_currentValue->payload);
+
+	if (isReading())
+	{
+		json_value_s* match = _findObjectValue(currentObject, name);
+		if (!match || match->type != json_type_string)
+			return false;
+
+		json_string_s* string = static_cast<json_string_s*>(match->payload);
+
+		if ((size - 1) != string->string_size)
+			return false;
+
+		strcpy(value, static_cast<char*>(string->string));
+	}
+	else
+	{
+		json_value_s* jsonValue = new json_value_s;
+		jsonValue->type = json_type_string;
+		jsonValue->payload = _createString(value, size);
+		_addValueToObject(currentObject, name, jsonValue);
+	}
+	return true;
+}
+
 bool JsonSerializer::serialize(const char* name, std::string& value)
 {
 	if (m_currentValue->type == json_type_object)
@@ -1022,7 +1055,195 @@ bool JsonSerializer::serialize(const char* name, std::string* value, size_t size
 	return false;
 }
 
-bool JsonSerializer::serialize(const char* name, Serializable& serializable)
+bool JsonSerializer::beginVectorSerialization(const char* _name, size_t& size)
+{
+	// TODO
+	return true;
+}
+
+bool JsonSerializer::endVectorSerialization()
+{
+	// TODO
+	return true;
+}
+
+bool JsonSerializer::serialize(const char* _name, void** _pointer, const ClassDesc* _classDesc)
+{
+	if (m_currentValue->type != json_type_object)
+		return false;
+
+	json_object_s* currentObject = static_cast<json_object_s*>(m_currentValue->payload);
+
+	if (isReading())
+	{
+		json_value_s* match = _findObjectValue(currentObject, "className");
+		if (!match || match->type != json_type_string)
+			return false;
+
+		json_string_s* className = static_cast<json_string_s*>(match->payload);
+		_classDesc = getClassDesc(static_cast<char*>(className->string));
+
+		if (!_classDesc)
+			return false;
+
+		*_pointer = Factory::create(_classDesc->getName());
+
+		bool result = true;
+
+		for (const auto& member : _classDesc->getMembers())
+		{
+			switch(member.type)
+			{
+			case ClassDesc::TYPE_INT:
+				{
+					result = result && serialize(member.name, *(*reinterpret_cast<int**>(_pointer) + member.address));
+				} break;
+
+			default: break;
+			}
+		}
+
+		return result;
+	}
+	else
+	{
+		json_value_s* jsonValue = new json_value_s;
+		jsonValue->type = json_type_object;
+		json_object_s* object = new json_object_s;
+		jsonValue->payload = object;
+
+		json_value_s* currentValue = m_currentValue;
+		m_currentValue = jsonValue;
+
+		// const_cast is ok since I know the char wont be stored nor modified.
+		bool result = serialize("className", const_cast<char*>(_classDesc->getName()), strlen(_classDesc->getName()));
+		
+		for (const auto& member : _classDesc->getMembers())
+		{
+			switch(member.type)
+			{
+			case ClassDesc::TYPE_INT:
+				{
+					result = result && serialize(member.name, *(*reinterpret_cast<int**>(_pointer) + member.address));
+				} break;
+
+			default: break;
+			}
+		}
+
+		m_currentValue = currentValue;
+
+		if (result)
+		{
+			_addValueToObject(currentObject, _name, jsonValue);
+		}
+
+		return result;
+	}
+}
+
+bool JsonSerializer::serialize(const char* _name, void* _pointer, const ClassDesc* _classDesc)
+{
+	if (m_currentValue->type != json_type_object)
+		return false;
+
+	json_object_s* currentObject = static_cast<json_object_s*>(m_currentValue->payload);
+
+	if (isReading())
+	{
+		json_value_s* match = _findObjectValue(currentObject, _name);
+		if (!match || match->type != json_type_object)
+			return false;
+
+		json_value_s* current_value = m_currentValue;
+		m_currentValue = match;
+
+		currentObject = static_cast<json_object_s*>(m_currentValue->payload);
+
+		match = _findObjectValue(currentObject, "className");
+		if (!match || match->type != json_type_string)
+		{
+			m_currentValue = current_value;
+			return false;
+		}
+
+		json_string_s* className = static_cast<json_string_s*>(match->payload);
+		_classDesc = getClassDesc(static_cast<char*>(className->string));
+
+		if (!_classDesc)
+		{
+			m_currentValue = current_value;
+			return false;
+		}
+
+		bool result = true;
+
+		for (const auto& member : _classDesc->getMembers())
+		{
+			switch(member.type)
+			{
+			case ClassDesc::TYPE_INT:
+				{
+					result = result && serialize(member.name, *(reinterpret_cast<int*>(_pointer) + member.address));
+				} break;
+
+			case ClassDesc::TYPE_FLOAT:
+				{
+					result = result && serialize(member.name, *(reinterpret_cast<float*>(_pointer) + member.address));
+				} break;
+
+			default: break;
+			}
+		}
+
+		m_currentValue = current_value;
+		return result;
+	}
+	else
+	{
+		json_value_s* jsonValue = new json_value_s;
+		jsonValue->type = json_type_object;
+		json_object_s* object = new json_object_s;
+		jsonValue->payload = object;
+		object->start = nullptr;
+		object->length = 0;
+
+		json_value_s* currentValue = m_currentValue;
+		m_currentValue = jsonValue;
+
+		// const_cast is ok since I know the char wont be stored nor modified.
+		bool result = serialize("className", const_cast<char*>(_classDesc->getName()), strlen(_classDesc->getName()));
+
+		for (const auto& member : _classDesc->getMembers())
+		{
+			switch(member.type)
+			{
+			case ClassDesc::TYPE_INT:
+				{
+					result = result && serialize(member.name, *(reinterpret_cast<int*>(_pointer) + member.address));
+				} break;
+
+			case ClassDesc::TYPE_FLOAT:
+				{
+					result = result && serialize(member.name, *(reinterpret_cast<float*>(_pointer) + member.address));
+				} break;
+
+			default: break;
+			}
+		}
+
+		m_currentValue = currentValue;
+
+		if (result)
+		{
+			_addValueToObject(currentObject, _name, jsonValue);
+		}
+
+		return result;
+	}
+}
+
+/*bool JsonSerializer::serialize(const char* name, Serializable& serializable)
 {
 	if (m_currentValue->type == json_type_object)
 	{
@@ -1133,7 +1354,7 @@ bool JsonSerializer::serialize(const char* name, Serializable* serializable, siz
 		}
 	}
 	return false;
-}
+}*/
 
 void JsonSerializer::_addValueToObject(json_object_s* object, const char* name, json_value_s* value)
 {
@@ -1172,10 +1393,10 @@ json_value_s* JsonSerializer::_findObjectValue(json_object_s* object, const char
 	return nullptr;
 }
 
-json_string_s* JsonSerializer::_createString(const char* str)
+json_string_s* JsonSerializer::_createString(const char* str, int size)
 {
 	json_string_s* result = new json_string_s;
-	result->string_size = strlen(str);
+	result->string_size = size < 0 ? strlen(str) : size;
 	char* strBuffer = new char[result->string_size + 1];
 	memcpy(strBuffer, str, result->string_size);
 	strBuffer[result->string_size] = '\0';

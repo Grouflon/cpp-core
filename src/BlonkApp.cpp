@@ -4,6 +4,7 @@
 #include "core/File.h"
 #include "core/BinarySerializer.h"
 #include "core/JsonSerializer.h"
+#include "core/Reflection.h"
 #include "core/ShaderManager.h"
 #include "Box.h"
 
@@ -19,6 +20,12 @@ static GLuint uViewProjection;
 
 struct GameData
 {
+	REFLECT_BEGIN(GameData)
+	REFLECT_AUTO(cameraVerticalAngle)
+	REFLECT_AUTO(cameraDistance)
+	REFLECT_AUTO(fov)
+	REFLECT_END()
+
 	float cameraVerticalAngle;
 	float cameraDistance;
 	float fov;
@@ -69,7 +76,7 @@ void BlonkApp::update(float dt)
 	{
 		if (!_loadGameData())
 		{
-			LOG_ERROR("ERROR: failed to save game data.");
+			LOG_ERROR("ERROR: failed to load game data.");
 		}
 	}
 	ImGui::End();
@@ -111,9 +118,8 @@ bool BlonkApp::_saveGameData() const
 	bool result = file.open(File::MODE_WRITE);
 	result = result && serializer.beginWrite(&file);
 
-	result = result && serializer.serialize("cameraDistance", g_gameData.cameraDistance);
-	result = result && serializer.serialize("cameraVerticalAngle", g_gameData.cameraVerticalAngle);
-	result = result && serializer.serialize("fov", g_gameData.fov);
+	result = result && serializer.serialize("gameData", &g_gameData);
+	result = result && serializer.serialize("gameData2", &g_gameData);
 
 	result = result && serializer.end();
 	file.close();
@@ -127,9 +133,8 @@ bool BlonkApp::_loadGameData()
 	bool result = file.open(File::MODE_READ);
 	result = result && serializer.beginRead(&file);
 
-	result = result && serializer.serialize("cameraDistance", g_gameData.cameraDistance);
-	result = result && serializer.serialize("cameraVerticalAngle", g_gameData.cameraVerticalAngle);
-	result = result && serializer.serialize("fov", g_gameData.fov);
+	result = result && serializer.serialize("gameData", &g_gameData);
+	result = result && serializer.serialize("gameData2", &g_gameData);
 
 	result = result && serializer.end();
 	file.close();

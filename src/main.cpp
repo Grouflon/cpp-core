@@ -3,18 +3,28 @@
 #include "BlonkApp.h"
 #include "ZonkApp.h"
 
-struct Foo
+#include "core/Reflection.h"
+
+class Foo
 {
-	Foo() { a = 5; }
-	int a;
+	REFLECT_BEGIN(Foo)
+	REFLECT_AUTO(m_1)
+	REFLECT_INT(m_3)
+	REFLECT_END()
+
+private:
+	int m_1;
+	int m_2;
+	int m_3;
 };
+
 
 int main(int argc, char** argv)
 {
-	ZonkApp app;
+	BlonkApp app;
 	if (!app.init(800, 600, "playground"))
 	{
-		LOG_ERROR("ERROR: main -> Failed to initialize application.");
+		LOG_ERROR("main -> Failed to initialize application.");
 		return EXIT_FAILURE;
 	}
 

@@ -27,7 +27,7 @@ private:
 #endif
 };
 
-static std::unordered_map<uint32, char*> g_stringHashes;
+extern std::unordered_map<uint32, char*> g_stringHashes;
 
 
 namespace std {

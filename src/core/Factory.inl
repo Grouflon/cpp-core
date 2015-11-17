@@ -1,5 +1,5 @@
 template<typename T>
-void Factory::registerContructor(const char* factoryId)
+void Factory::registerConstructor(const char* factoryId)
 {
 	s_creatorsMap[factoryId] = reinterpret_cast<void*(*)()>(&_constructor<T>);
 }

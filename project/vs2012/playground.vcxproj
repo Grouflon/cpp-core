@@ -270,6 +270,7 @@
     <ClInclude Include="..\..\src\core\Application.h" />
     <ClInclude Include="..\..\src\core\Assert.h" />
     <ClInclude Include="..\..\src\core\BinarySerializer.h" />
+    <ClInclude Include="..\..\src\core\ClassDesc.h" />
     <ClInclude Include="..\..\src\core\Clock.h" />
     <ClInclude Include="..\..\src\core\Factory.h" />
     <ClInclude Include="..\..\src\core\File.h" />
@@ -277,6 +278,7 @@
     <ClInclude Include="..\..\src\core\JsonSerializer.h" />
     <ClInclude Include="..\..\src\core\Log.h" />
     <ClInclude Include="..\..\src\core\Math.h" />
+    <ClInclude Include="..\..\src\core\Reflection.h" />
     <ClInclude Include="..\..\src\core\Resource.h" />
     <ClInclude Include="..\..\src\core\ResourceManager.h" />
     <ClInclude Include="..\..\src\core\Serializable.h" />
@@ -323,6 +325,7 @@
     <ClCompile Include="..\..\src\adventure\World.cpp" />
     <ClCompile Include="..\..\src\core\Application.cpp" />
     <ClCompile Include="..\..\src\core\BinarySerializer.cpp" />
+    <ClCompile Include="..\..\src\core\ClassDesc.cpp" />
     <ClCompile Include="..\..\src\core\Clock.cpp" />
     <ClCompile Include="..\..\src\core\Factory.cpp" />
     <ClCompile Include="..\..\src\core\File.cpp" />
@@ -330,6 +333,7 @@
     <ClCompile Include="..\..\src\core\JsonSerializer.cpp" />
     <ClCompile Include="..\..\src\core\Log.cpp" />
     <ClCompile Include="..\..\src\core\Math.cpp" />
+    <ClCompile Include="..\..\src\core\Reflection.cpp" />
     <ClCompile Include="..\..\src\core\Resource.cpp" />
     <ClCompile Include="..\..\src\core\ResourceManager.cpp" />
     <ClCompile Include="..\..\src\core\Serializable.cpp" />
@@ -348,6 +352,7 @@
   <ItemGroup>
     <None Include="..\..\data\game.json" />
     <None Include="..\..\src\core\Factory.inl" />
+    <None Include="..\..\src\core\Serializer.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

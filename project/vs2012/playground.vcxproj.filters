@@ -66,6 +66,9 @@
     <None Include="..\..\src\core\Factory.inl">
       <Filter>src\core</Filter>
     </None>
+    <None Include="..\..\src\core\Serializer.inl">
+      <Filter>src\core</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\extern\gl3w\GL\gl3w.h">
@@ -578,6 +581,9 @@
     <ClInclude Include="..\..\src\core\BinarySerializer.h">
       <Filter>src\core</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\core\ClassDesc.h">
+      <Filter>src\core</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\core\Clock.h">
       <Filter>src\core</Filter>
     </ClInclude>
@@ -597,6 +603,9 @@
       <Filter>src\core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\core\Math.h">
+      <Filter>src\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\core\Reflection.h">
       <Filter>src\core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\core\Resource.h">
@@ -679,6 +688,9 @@
     <ClCompile Include="..\..\src\core\BinarySerializer.cpp">
       <Filter>src\core</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\core\ClassDesc.cpp">
+      <Filter>src\core</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\core\Clock.cpp">
       <Filter>src\core</Filter>
     </ClCompile>
@@ -698,6 +710,9 @@
       <Filter>src\core</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\core\Math.cpp">
+      <Filter>src\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\core\Reflection.cpp">
       <Filter>src\core</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\core\Resource.cpp">

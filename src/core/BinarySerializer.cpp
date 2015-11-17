@@ -3,7 +3,8 @@
 
 #include "core/File.h"
 #include "core/Serializer.h"
-#include "core/Serializable.h"
+#include "core/ClassDesc.h"
+#include "core/Factory.h"
 
 BinarySerializer::BinarySerializer()
 {
@@ -151,19 +152,102 @@ bool BinarySerializer::serialize(const char* name, std::string* value, size_t si
 	return true;
 }
 
-bool BinarySerializer::serialize(const char*, Serializable& serializable)
+bool BinarySerializer::beginVectorSerialization(const char* _name, size_t& size)
 {
-	return serializable.serialize(this);
+	return serialize(nullptr, size);
 }
 
-bool BinarySerializer::serialize(const char*, Serializable* serializable, size_t size)
+bool BinarySerializer::endVectorSerialization()
 {
-	for (size_t i = 0; i < size; ++i)
+	return true;
+}
+
+
+// TODO: refactor duplicated code
+bool BinarySerializer::serialize(const char*, void** _pointer, const ClassDesc* _classDesc)
+{
+	std::string	className;
+
+	if (!isReading())
 	{
-		if (!serializable->serialize(this))
+		className = _classDesc->getName();
+	}
+
+	bool result = serialize("className", className);
+
+	if (isReading())
+	{
+		_classDesc = getClassDesc(className.c_str());
+
+		if (!_classDesc)
+			return false;
+
+		*_pointer = static_cast<void*>(Factory::create(className.c_str()));
+	}
+
+	for (const auto& member : _classDesc->getMembers())
+	{
+		switch (member.type)
+		{
+		case ClassDesc::TYPE_INT:
+			{
+				result = result && serialize(nullptr, *(*(reinterpret_cast<int**>(_pointer) + member.address)));
+			}
+			break;
+
+		case ClassDesc::TYPE_REFLECTIVE:
+			{
+
+			}
+			break;
+
+		default: break;
+		}
+	};
+
+	return result;
+}
+
+bool BinarySerializer::serialize(const char*, void* _pointer, const ClassDesc* _classDesc)
+{
+	std::string	className;
+
+	if (!isReading())
+	{
+		className = _classDesc->getName();
+	}
+
+	bool result = serialize("className", className);
+
+	if (isReading())
+	{
+		_classDesc = getClassDesc(className.c_str());
+
+		if (!_classDesc)
 			return false;
 	}
-	return true;
+
+	for (const auto& member : _classDesc->getMembers())
+	{
+		switch (member.type)
+		{
+		case ClassDesc::TYPE_INT:
+			{
+				result = result && serialize(nullptr, *(reinterpret_cast<int*>(_pointer) + member.address));
+			}
+			break;
+
+		case ClassDesc::TYPE_REFLECTIVE:
+			{
+
+			}
+			break;
+
+		default: break;
+		}
+	};
+
+	return result;
 }
 
 bool BinarySerializer::_rawSerialize(void* data, int size)

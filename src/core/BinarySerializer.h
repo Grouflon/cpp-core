@@ -36,8 +36,10 @@ public:
 	virtual bool serialize(const char* name, std::string& value) override;
 	virtual bool serialize(const char* name, std::string* value, size_t size) override;
 
-	virtual bool serialize(const char* name, Serializable& serializable) override;
-	virtual bool serialize(const char* name, Serializable* serializable, size_t size) override;
+	virtual bool beginVectorSerialization(const char* _name, size_t& _size) override;
+	virtual bool endVectorSerialization() override;
+	virtual bool serialize(const char* _name, void** _pointer, const ClassDesc* _classDesc) override;
+	virtual bool serialize(const char* _name, void* _pointer, const ClassDesc* _classDesc) override;
 
 private:
 	bool _rawSerialize(void* data, int size);
