@@ -43,7 +43,14 @@ bool File::open(OpenMode mode)
 	}
 
 	m_file = fopen(m_path.c_str(), modeStr);
-	return m_file != nullptr;
+
+	if (!m_file)
+	{
+		LOG_ERROR("Failed to open file \"%s\". %s", m_path.c_str(), strerror(errno));
+		return false;
+	}
+
+	return true;
 }
 
 void File::close()

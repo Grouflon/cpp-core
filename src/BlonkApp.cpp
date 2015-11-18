@@ -31,17 +31,20 @@ struct GameData
 	float fov;
 };
 
-static GameData		g_gameData;
-static const char*	gameDataPath = "data/game.json";
+static GameData*	g_gameData;
+static const char*	jsonGameDataPath = "data/game.json";
+static const char*	binGameDataPath = "data/game.data";
 static Box*			box;
+static bool			g_binary;
 
 void BlonkApp::started()
 {
 	if (!_loadGameData())
 	{
-		g_gameData.cameraVerticalAngle = 45.f;
-		g_gameData.cameraDistance = 10.f;
-		g_gameData.fov = degToRad(55.f);
+		g_gameData = new GameData;
+		g_gameData->cameraVerticalAngle = 45.f;
+		g_gameData->cameraDistance = 10.f;
+		g_gameData->fov = degToRad(55.f);
 	}
 
 	GLuint shaderProgram = ShaderManager::loadShaderProgram("default", "data/shaders/basic_vs.glsl", "data/shaders/basic_fs.glsl");
@@ -62,9 +65,15 @@ void BlonkApp::started()
 void BlonkApp::update(float dt)
 {
 	ImGui::Begin("GameData");
-	ImGui::SliderFloat("distance", &g_gameData.cameraDistance, 0.f, 100.f);
-	ImGui::SliderFloat("angle", &g_gameData.cameraVerticalAngle, 0.f, 90.f);
-	ImGui::SliderFloat("fov", &g_gameData.fov, 5.f, 180.f);
+
+	if (g_gameData)
+	{
+		ImGui::SliderFloat("distance", &g_gameData->cameraDistance, 0.f, 100.f);
+		ImGui::SliderFloat("angle", &g_gameData->cameraVerticalAngle, 0.f, 90.f);
+		ImGui::SliderFloat("fov", &g_gameData->fov, 5.f, 180.f);
+	}
+	
+	ImGui::Checkbox("Save as binary", &g_binary);
 	if (ImGui::Button("save"))
 	{
 		if (!_saveGameData())
@@ -94,11 +103,11 @@ void BlonkApp::render()
 	glCullFace(GL_BACK);
 	glEnable(GL_DEPTH_TEST);
 
-	glm::mat4 projection = glm::perspective(degToRad(g_gameData.fov), windowRatio, 0.001f, 1000.f);
+	glm::mat4 projection = glm::perspective(degToRad(g_gameData->fov), windowRatio, 0.001f, 1000.f);
 
 	glm::mat4 view = glm::rotate(glm::mat4(), degToRad(45.f), glm::vec3(0.f, 1.f, 0.f));
-	view = glm::rotate(view, degToRad(-g_gameData.cameraVerticalAngle), glm::vec3(1.f, 0.f, 0.f));
-	view = glm::translate(view, glm::vec3(glm::vec3(0.f, 0.f, g_gameData.cameraDistance)));
+	view = glm::rotate(view, degToRad(-g_gameData->cameraVerticalAngle), glm::vec3(1.f, 0.f, 0.f));
+	view = glm::translate(view, glm::vec3(glm::vec3(0.f, 0.f, g_gameData->cameraDistance)));
 
 	glm::mat4 vp = projection * glm::inverse(view);
 
@@ -113,30 +122,60 @@ void BlonkApp::onKeyEvent(int key, int scancode, int action, int mods)
 
 bool BlonkApp::_saveGameData() const
 {
-	JsonSerializer serializer;
-	File file(gameDataPath);
+	Serializer* serializer;
+	JsonSerializer jsonSerializer;
+	BinarySerializer binSerializer;
+
+	const char* dataPath;
+
+	if (g_binary)
+	{
+		serializer = &binSerializer;
+		dataPath = binGameDataPath;
+	}
+	else
+	{
+		serializer = &jsonSerializer;
+		dataPath = jsonGameDataPath;
+	}
+
+	File file(dataPath);
 	bool result = file.open(File::MODE_WRITE);
-	result = result && serializer.beginWrite(&file);
+	result = result && serializer->beginWrite(&file);
 
-	result = result && serializer.serialize("gameData", &g_gameData);
-	result = result && serializer.serialize("gameData2", &g_gameData);
+	result = result && serializer->serialize("gameData", &g_gameData);
 
-	result = result && serializer.end();
+	result = result && serializer->end();
 	file.close();
 	return result;
 }
 
 bool BlonkApp::_loadGameData()
 {
-	JsonSerializer serializer;
-	File file(gameDataPath);
+	Serializer* serializer;
+	JsonSerializer jsonSerializer;
+	BinarySerializer binSerializer;
+
+	const char* dataPath;
+
+	if (g_binary)
+	{
+		serializer = &binSerializer;
+		dataPath = binGameDataPath;
+	}
+	else
+	{
+		serializer = &jsonSerializer;
+		dataPath = jsonGameDataPath;
+	}
+
+	File file(dataPath);
 	bool result = file.open(File::MODE_READ);
-	result = result && serializer.beginRead(&file);
+	result = result && serializer->beginRead(&file);
 
-	result = result && serializer.serialize("gameData", &g_gameData);
-	result = result && serializer.serialize("gameData2", &g_gameData);
+	result = result && serializer->serialize("gameData", &g_gameData);
 
-	result = result && serializer.end();
+	result = result && serializer->end();
 	file.close();
 	return result;
 }

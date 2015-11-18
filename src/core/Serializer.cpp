@@ -13,21 +13,37 @@ Serializer::~Serializer()
 {
 }
 
-bool Serializer::beginRead(const File* file)
+bool Serializer::beginRead(const File* _file)
 {
-	if (m_readFile || m_writeFile) return false; // end() not called
-	if (!file || !file->isOpen()) return false;
+	if (m_readFile || m_writeFile)
+	{
+		setErrorDesc("end() must be called before calling begin() again.");
+		return false; // end() not called
+	}
+	if (!_file || !_file->isOpen())
+	{
+		setErrorDesc("_file parameter must be given already opened.");
+		return false;
+	}
 
-	m_readFile = file;
+	m_readFile = _file;
 	return true;
 }
 
-bool Serializer::beginWrite(File* file)
+bool Serializer::beginWrite(File* _file)
 {
-	if (m_readFile || m_writeFile) return false; // end() not called
-	if (!file || !file->isOpen()) return false;
+	if (m_readFile || m_writeFile)
+	{
+		setErrorDesc("end() must be called before calling begin() again.");
+		return false;
+	}
+	if (!_file || !_file->isOpen())
+	{
+		setErrorDesc("_file parameter must be given already opened.");
+		return false;
+	}
 
-	m_writeFile = file;
+	m_writeFile = _file;
 	return true;
 }
 
@@ -44,12 +60,24 @@ bool Serializer::isReading() const
 	return m_readFile != nullptr;
 }
 
-const File* Serializer::_getReadFile() const
+const char* Serializer::getErrorDesc()
+{
+	const char* errorDesc = m_errorDesc.c_str();
+	m_errorDesc.resize(0);
+	return errorDesc;
+}
+
+const File* Serializer::getReadFile() const
 {
 	return m_readFile;
 }
 
-File* Serializer::_getWriteFile() const
+File* Serializer::getWriteFile() const
 {
 	return m_writeFile;
+}
+
+void Serializer::setErrorDesc(const char* _errorDesc)
+{
+	m_errorDesc = _errorDesc;
 }

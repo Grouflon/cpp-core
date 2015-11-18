@@ -14,117 +14,122 @@ BinarySerializer::~BinarySerializer()
 {
 }
 
-bool BinarySerializer::serialize(const char*, bool& value)
+bool BinarySerializer::serialize(const char*, bool& _value)
 {
-	return _rawSerialize(&value, sizeof(value));
+	return _rawSerialize(&_value, sizeof(_value));
 }
 
-bool BinarySerializer::serialize(const char*, uint8& value)
+bool BinarySerializer::serialize(const char*, uint8& _value)
 {
-	return _rawSerialize(&value, sizeof(value));
+	return _rawSerialize(&_value, sizeof(_value));
 }
 
-bool BinarySerializer::serialize(const char*, uint16& value)
+bool BinarySerializer::serialize(const char*, uint16& _value)
 {
-	return _rawSerialize(&value, sizeof(value));
+	return _rawSerialize(&_value, sizeof(_value));
 }
 
-bool BinarySerializer::serialize(const char*, uint32& value)
+bool BinarySerializer::serialize(const char*, uint32& _value)
 {
-	return _rawSerialize(&value, sizeof(value));
+	return _rawSerialize(&_value, sizeof(_value));
 }
 
-bool BinarySerializer::serialize(const char*, uint64& value)
+bool BinarySerializer::serialize(const char*, uint64& _value)
 {
-	return _rawSerialize(&value, sizeof(value));
+	return _rawSerialize(&_value, sizeof(_value));
 }
 
-bool BinarySerializer::serialize(const char*, int8& value)
+bool BinarySerializer::serialize(const char*, int8& _value)
 {
-	return _rawSerialize(&value, sizeof(value));
+	return _rawSerialize(&_value, sizeof(_value));
 }
 
-bool BinarySerializer::serialize(const char*, int16& value)
+bool BinarySerializer::serialize(const char*, int16& _value)
 {
-	return _rawSerialize(&value, sizeof(value));
+	return _rawSerialize(&_value, sizeof(_value));
 }
 
-bool BinarySerializer::serialize(const char*, int32& value)
+bool BinarySerializer::serialize(const char*, int32& _value)
 {
-	return _rawSerialize(&value, sizeof(value));
+	return _rawSerialize(&_value, sizeof(_value));
 }
 
-bool BinarySerializer::serialize(const char*, int64& value)
+bool BinarySerializer::serialize(const char*, int64& _value)
 {
-	return _rawSerialize(&value, sizeof(value));
+	return _rawSerialize(&_value, sizeof(_value));
 }
 
-bool BinarySerializer::serialize(const char*, float& value)
+bool BinarySerializer::serialize(const char*, float& _value)
 {
-	return _rawSerialize(&value, sizeof(value));
+	return _rawSerialize(&_value, sizeof(_value));
 }
 
-bool BinarySerializer::serialize(const char*, double& value)
+bool BinarySerializer::serialize(const char*, double& _value)
 {
-	return _rawSerialize(&value, sizeof(value));
+	return _rawSerialize(&_value, sizeof(_value));
 }
 
-bool BinarySerializer::serialize(const char* name, uint8* value, size_t size)
+bool BinarySerializer::serialize(const char*, uint8* _value, size_t _size)
 {
-	return _rawSerialize(value, size * sizeof(value));
+	return _rawSerialize(_value, _size * sizeof(*_value));
 }
 
-bool BinarySerializer::serialize(const char* name, uint16* value, size_t size)
+bool BinarySerializer::serialize(const char*, uint16* _value, size_t _size)
 {
-	return _rawSerialize(value, size * sizeof(value));
+	return _rawSerialize(_value, _size * sizeof(*_value));
 }
 
-bool BinarySerializer::serialize(const char* name, uint32* value, size_t size)
+bool BinarySerializer::serialize(const char*, uint32* _value, size_t _size)
 {
-	return _rawSerialize(value, size * sizeof(value));
+	return _rawSerialize(_value, _size * sizeof(*_value));
 }
 
-bool BinarySerializer::serialize(const char* name, uint64* value, size_t size)
+bool BinarySerializer::serialize(const char*, uint64* _value, size_t _size)
 {
-	return _rawSerialize(value, size * sizeof(value));
+	return _rawSerialize(_value, _size * sizeof(*_value));
 }
 
-bool BinarySerializer::serialize(const char* name, int8* value, size_t size)
+bool BinarySerializer::serialize(const char*, int8* _value, size_t _size)
 {
-	return _rawSerialize(value, size * sizeof(value));
+	return _rawSerialize(_value, _size * sizeof(*_value));
 }
 
-bool BinarySerializer::serialize(const char* name, int16* value, size_t size)
+bool BinarySerializer::serialize(const char*, int16* _value, size_t _size)
 {
-	return _rawSerialize(value, size * sizeof(value));
+	return _rawSerialize(_value, _size * sizeof(*_value));
 }
 
-bool BinarySerializer::serialize(const char* name, int32* value, size_t size)
+bool BinarySerializer::serialize(const char*, int32* _value, size_t _size)
 {
-	return _rawSerialize(value, size * sizeof(value));
+	return _rawSerialize(_value, _size * sizeof(*_value));
 }
 
-bool BinarySerializer::serialize(const char* name, int64* value, size_t size)
+bool BinarySerializer::serialize(const char*, int64* _value, size_t _size)
 {
-	return _rawSerialize(value, size * sizeof(value));
+	return _rawSerialize(_value, _size * sizeof(*_value));
 }
 
-bool BinarySerializer::serialize(const char* name, float* value, size_t size)
+bool BinarySerializer::serialize(const char*, float* _value, size_t _size)
 {
-	return _rawSerialize(value, size * sizeof(value));
+	return _rawSerialize(_value, _size * sizeof(*_value));
 }
 
-bool BinarySerializer::serialize(const char* name, double* value, size_t size)
+bool BinarySerializer::serialize(const char*, double* _value, size_t _size)
 {
-	return _rawSerialize(value, size * sizeof(value));
+	return _rawSerialize(_value, _size * sizeof(*_value));
 }
 
-bool BinarySerializer::serialize(const char*, std::string& value)
+bool BinarySerializer::serialize(const char*, char* _value, size_t _size)
+{
+	return _rawSerialize(_value, (_size + 1) * sizeof(*_value));
+}
+
+bool BinarySerializer::serialize(const char*, std::string& _value)
 {
 	if (isReading())
 	{
-		value.clear();
-		const File* file = _getReadFile();
+		_value.clear();
+		const File* file = getReadFile();
 		char buf;
 		while (true)
 		{
@@ -132,29 +137,29 @@ bool BinarySerializer::serialize(const char*, std::string& value)
 			{
 				break;
 			}
-			value += buf;
+			_value += buf;
 		}
 		return true;
 	}
 	else
 	{
-		return _getWriteFile()->write(value.c_str(), value.size()+1);
+		return getWriteFile()->write(_value.c_str(), _value.size()+1);
 	}
 }
 
-bool BinarySerializer::serialize(const char* name, std::string* value, size_t size)
+bool BinarySerializer::serialize(const char* _name, std::string* _value, size_t _size)
 {
-	for (size_t i = 0; i < size; ++i)
+	for (size_t i = 0; i < _size; ++i)
 	{
-		if (!serialize(name, value[i]))
+		if (!serialize(_name, _value[i]))
 			return false;
 	}
 	return true;
 }
 
-bool BinarySerializer::beginVectorSerialization(const char* _name, size_t& size)
+bool BinarySerializer::beginVectorSerialization(const char*, size_t& _size)
 {
-	return serialize(nullptr, size);
+	return serialize(nullptr, _size);
 }
 
 bool BinarySerializer::endVectorSerialization()
@@ -191,7 +196,13 @@ bool BinarySerializer::serialize(const char*, void** _pointer, const ClassDesc* 
 		{
 		case ClassDesc::TYPE_INT:
 			{
-				result = result && serialize(nullptr, *(*(reinterpret_cast<int**>(_pointer) + member.address)));
+				result = result && serialize(nullptr, *reinterpret_cast<int*>((*(uint8**)_pointer) + member.address));
+			}
+			break;
+
+		case ClassDesc::TYPE_FLOAT:
+			{
+				result = result && serialize(nullptr, *reinterpret_cast<int*>((*(uint8**)_pointer) + member.address));
 			}
 			break;
 
@@ -233,7 +244,13 @@ bool BinarySerializer::serialize(const char*, void* _pointer, const ClassDesc* _
 		{
 		case ClassDesc::TYPE_INT:
 			{
-				result = result && serialize(nullptr, *(reinterpret_cast<int*>(_pointer) + member.address));
+				result = result && serialize(nullptr, *(reinterpret_cast<int*>((uint8*)_pointer + member.address)));
+			}
+			break;
+
+		case ClassDesc::TYPE_FLOAT:
+			{
+				result = result && serialize(nullptr, *(reinterpret_cast<float*>((uint8*)_pointer + member.address)));
 			}
 			break;
 
@@ -250,14 +267,14 @@ bool BinarySerializer::serialize(const char*, void* _pointer, const ClassDesc* _
 	return result;
 }
 
-bool BinarySerializer::_rawSerialize(void* data, int size)
+bool BinarySerializer::_rawSerialize(void* _data, int _size)
 {
 	if (isReading())
 	{
-		return _getReadFile()->read(data, size) == size;
+		return getReadFile()->read(_data, _size) == _size;
 	}
 	else
 	{
-		return _getWriteFile()->write(data, size);
+		return getWriteFile()->write(_data, _size);
 	}
 }

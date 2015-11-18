@@ -11,7 +11,7 @@ bool Serializer::serialize(const char* _name, std::vector<T>& _value)
 
 	for (T& element : _value)
 	{
-		result = result && serialize(nullptr, _value);
+		result = result && serialize(nullptr, element);
 	}
 	result = result && endVectorSerialization();
 	return result;
@@ -21,7 +21,7 @@ bool Serializer::serialize(const char* _name, std::vector<T>& _value)
 template <typename T>
 bool Serializer::serialize(const char* _name, T** _value)
 {
-	return serialize(_name, _value, (*_value)->getClassDesc());
+	return serialize(_name, reinterpret_cast<void**>(_value), (*_value)->getClassDesc());
 }
 
 template <typename T>

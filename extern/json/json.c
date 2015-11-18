@@ -1131,7 +1131,11 @@ static int json_write_pretty_get_object_size(const struct json_object_s* object,
   struct json_object_element_s* element;
 
   *size += 1; // '{'
-  *size += newline_size; // need a newline next
+
+  if (0 == depth) // else, newline is already added by parent object/array
+  {
+	  *size += newline_size; // need a newline next
+  }
 
   if (1 < object->length) {
     *size += object->length - 1; // ','s seperate each element

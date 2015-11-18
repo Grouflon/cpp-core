@@ -62,7 +62,7 @@ bool JsonSerializer::end()
 	{
 		size_t outSize;
 		void* out = json_write_pretty(m_root, "\t", "\n", &outSize);
-		File* file = _getWriteFile();
+		File* file = getWriteFile();
 		file->write(out, outSize - 1); // size counts \0
 		free(out);
 
@@ -1076,9 +1076,21 @@ bool JsonSerializer::serialize(const char* _name, void** _pointer, const ClassDe
 
 	if (isReading())
 	{
-		json_value_s* match = _findObjectValue(currentObject, "className");
-		if (!match || match->type != json_type_string)
+		json_value_s* match = _findObjectValue(currentObject, _name);
+		if (!match || match->type != json_type_object)
 			return false;
+
+		json_value_s* current_value = m_currentValue;
+		m_currentValue = match;
+
+		currentObject = static_cast<json_object_s*>(m_currentValue->payload);
+
+		match = _findObjectValue(currentObject, "className");
+		if (!match || match->type != json_type_string)
+		{
+			m_currentValue = current_value;
+			return false;
+		}
 
 		json_string_s* className = static_cast<json_string_s*>(match->payload);
 		_classDesc = getClassDesc(static_cast<char*>(className->string));
@@ -1096,7 +1108,12 @@ bool JsonSerializer::serialize(const char* _name, void** _pointer, const ClassDe
 			{
 			case ClassDesc::TYPE_INT:
 				{
-					result = result && serialize(member.name, *(*reinterpret_cast<int**>(_pointer) + member.address));
+					result = result && serialize(member.name, *reinterpret_cast<int*>((*(uint8**)_pointer) + member.address));
+				} break;
+
+			case ClassDesc::TYPE_FLOAT:
+				{
+					result = result && serialize(member.name, *reinterpret_cast<float*>((*(uint8**)_pointer) + member.address));
 				} break;
 
 			default: break;
@@ -1111,6 +1128,8 @@ bool JsonSerializer::serialize(const char* _name, void** _pointer, const ClassDe
 		jsonValue->type = json_type_object;
 		json_object_s* object = new json_object_s;
 		jsonValue->payload = object;
+		object->length = 0;
+		object->start = nullptr;
 
 		json_value_s* currentValue = m_currentValue;
 		m_currentValue = jsonValue;
@@ -1124,7 +1143,12 @@ bool JsonSerializer::serialize(const char* _name, void** _pointer, const ClassDe
 			{
 			case ClassDesc::TYPE_INT:
 				{
-					result = result && serialize(member.name, *(*reinterpret_cast<int**>(_pointer) + member.address));
+					result = result && serialize(member.name, *reinterpret_cast<int*>((*(uint8**)_pointer) + member.address));
+				} break;
+
+			case ClassDesc::TYPE_FLOAT:
+				{
+					result = result && serialize(member.name, *reinterpret_cast<float*>((*(uint8**)_pointer) + member.address));
 				} break;
 
 			default: break;
@@ -1184,12 +1208,12 @@ bool JsonSerializer::serialize(const char* _name, void* _pointer, const ClassDes
 			{
 			case ClassDesc::TYPE_INT:
 				{
-					result = result && serialize(member.name, *(reinterpret_cast<int*>(_pointer) + member.address));
+					result = result && serialize(member.name, *(reinterpret_cast<int*>((uint8*)_pointer + member.address)));
 				} break;
 
 			case ClassDesc::TYPE_FLOAT:
 				{
-					result = result && serialize(member.name, *(reinterpret_cast<float*>(_pointer) + member.address));
+					result = result && serialize(member.name, *(reinterpret_cast<float*>((uint8*)_pointer + member.address)));
 				} break;
 
 			default: break;
@@ -1220,12 +1244,12 @@ bool JsonSerializer::serialize(const char* _name, void* _pointer, const ClassDes
 			{
 			case ClassDesc::TYPE_INT:
 				{
-					result = result && serialize(member.name, *(reinterpret_cast<int*>(_pointer) + member.address));
+					result = result && serialize(member.name, *(reinterpret_cast<int*>((uint8*)_pointer + member.address)));
 				} break;
 
 			case ClassDesc::TYPE_FLOAT:
 				{
-					result = result && serialize(member.name, *(reinterpret_cast<float*>(_pointer) + member.address));
+					result = result && serialize(member.name, *(reinterpret_cast<float*>((uint8*)_pointer + member.address)));
 				} break;
 
 			default: break;

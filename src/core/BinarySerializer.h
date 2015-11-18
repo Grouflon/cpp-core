@@ -9,32 +9,34 @@ public:
 	BinarySerializer();
 	virtual ~BinarySerializer();
 
-	virtual bool serialize(const char* name, bool& value) override;
+	virtual bool serialize(const char* _name, bool& _value) override;
 
-	virtual bool serialize(const char* name, uint8& value) override;
-	virtual bool serialize(const char* name, uint16& value) override;
-	virtual bool serialize(const char* name, uint32& value) override;
-	virtual bool serialize(const char* name, uint64& value) override;
-	virtual bool serialize(const char* name, int8& value) override;
-	virtual bool serialize(const char* name, int16& value) override;
-	virtual bool serialize(const char* name, int32& value) override;
-	virtual bool serialize(const char* name, int64& value) override;
-	virtual bool serialize(const char* name, float& value) override;
-	virtual bool serialize(const char* name, double& value) override;
+	virtual bool serialize(const char* _name, uint8& _value) override;
+	virtual bool serialize(const char* _name, uint16& _value) override;
+	virtual bool serialize(const char* _name, uint32& _value) override;
+	virtual bool serialize(const char* _name, uint64& _value) override;
+	virtual bool serialize(const char* _name, int8& _value) override;
+	virtual bool serialize(const char* _name, int16& _value) override;
+	virtual bool serialize(const char* _name, int32& _value) override;
+	virtual bool serialize(const char* _name, int64& _value) override;
+	virtual bool serialize(const char* _name, float& _value) override;
+	virtual bool serialize(const char* _name, double& _value) override;
 
-	virtual bool serialize(const char* name, uint8* value, size_t size) override;
-	virtual bool serialize(const char* name, uint16* value, size_t size) override;
-	virtual bool serialize(const char* name, uint32* value, size_t size) override;
-	virtual bool serialize(const char* name, uint64* value, size_t size) override;
-	virtual bool serialize(const char* name, int8* value, size_t size) override;
-	virtual bool serialize(const char* name, int16* value, size_t size) override;
-	virtual bool serialize(const char* name, int32* value, size_t size) override;
-	virtual bool serialize(const char* name, int64* value, size_t size) override;
-	virtual bool serialize(const char* name, float* value, size_t size) override;
-	virtual bool serialize(const char* name, double* value, size_t size) override;
+	virtual bool serialize(const char* _name, uint8* _value, size_t _size) override;
+	virtual bool serialize(const char* _name, uint16* _value, size_t _size) override;
+	virtual bool serialize(const char* _name, uint32* _value, size_t _size) override;
+	virtual bool serialize(const char* _name, uint64* _value, size_t _size) override;
+	virtual bool serialize(const char* _name, int8* _value, size_t _size) override;
+	virtual bool serialize(const char* _name, int16* _value, size_t _size) override;
+	virtual bool serialize(const char* _name, int32* _value, size_t _size) override;
+	virtual bool serialize(const char* _name, int64* _value, size_t _size) override;
+	virtual bool serialize(const char* _name, float* _value, size_t _size) override;
+	virtual bool serialize(const char* _name, double* _value, size_t _size) override;
 
-	virtual bool serialize(const char* name, std::string& value) override;
-	virtual bool serialize(const char* name, std::string* value, size_t size) override;
+
+	virtual bool serialize(const char* _name, char* _value, size_t _size) override;
+	virtual bool serialize(const char* _name, std::string& _value) override;
+	virtual bool serialize(const char* _name, std::string* _value, size_t _size) override;
 
 	virtual bool beginVectorSerialization(const char* _name, size_t& _size) override;
 	virtual bool endVectorSerialization() override;
@@ -42,5 +44,5 @@ public:
 	virtual bool serialize(const char* _name, void* _pointer, const ClassDesc* _classDesc) override;
 
 private:
-	bool _rawSerialize(void* data, int size);
+	bool _rawSerialize(void* data, int _size);
 };
