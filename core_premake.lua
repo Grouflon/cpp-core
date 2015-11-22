@@ -13,8 +13,6 @@ files {
 	"extern/json/**.c",
 	"extern/json/**.h",
 	"extern/openAL/**.h",
-	
-	"data/**.json"
 }
 		
 removefiles {
