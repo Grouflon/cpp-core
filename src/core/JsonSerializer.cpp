@@ -371,6 +371,33 @@ bool JsonSerializer::serialize(const char* name, double& value)
 	return false;
 }
 
+bool JsonSerializer::serialize(const char* name, char& value)
+{
+	if (m_currentValue->type == json_type_object)
+	{
+		json_object_s* currentObject = static_cast<json_object_s*>(m_currentValue->payload);
+
+		if (isReading())
+		{
+			json_value_s* match = _findObjectValue(currentObject, name);
+			if (match && match->type == json_type_string)
+			{
+				value = *static_cast<char*>((static_cast<json_string_s*>(match->payload)->string));
+				return true;
+			}
+		}
+		else
+		{
+			json_value_s* jsonValue = new json_value_s;
+			jsonValue->type = json_type_string;
+			jsonValue->payload = _createString(&value, 1);
+			_addValueToObject(currentObject, name, jsonValue);
+			return true;
+		}
+	}
+	return false;
+}
+
 bool JsonSerializer::serialize(const char* name, uint8* value, size_t size)
 {
 	if (m_currentValue->type == json_type_object)
@@ -956,10 +983,10 @@ bool JsonSerializer::serialize(const char* name, char* value, size_t size)
 
 		json_string_s* string = static_cast<json_string_s*>(match->payload);
 
-		if ((size - 1) != string->string_size)
+		if ((size) != string->string_size)
 			return false;
 
-		strcpy(value, static_cast<char*>(string->string));
+		strncpy(value, static_cast<char*>(string->string), size);
 	}
 	else
 	{
@@ -1067,6 +1094,7 @@ bool JsonSerializer::endVectorSerialization()
 	return true;
 }
 
+// NOTE: so much duplicated code between void** & void* function
 bool JsonSerializer::serialize(const char* _name, void** _pointer, const ClassDesc* _classDesc)
 {
 	if (m_currentValue->type != json_type_object)
@@ -1106,14 +1134,19 @@ bool JsonSerializer::serialize(const char* _name, void** _pointer, const ClassDe
 		{
 			switch(member.type)
 			{
-			case ClassDesc::TYPE_INT:
-				{
-					result = result && serialize(member.name, *reinterpret_cast<int*>((*(uint8**)_pointer) + member.address));
-				} break;
+			case ClassDesc::TYPE_INT:	{ result = result && serialize(member.name, *reinterpret_cast<int*>((*(uint8**)_pointer) + member.address)); } break;
+			case ClassDesc::TYPE_FLOAT:	{ result = result && serialize(member.name, *reinterpret_cast<float*>((*(uint8**)_pointer) + member.address)); } break;
+			case ClassDesc::TYPE_CHAR:	{ result = result && serialize(member.name, *reinterpret_cast<char*>((*(uint8**)_pointer) + member.address)); } break;
 
-			case ClassDesc::TYPE_FLOAT:
+			case ClassDesc::TYPE_ARRAY:
 				{
-					result = result && serialize(member.name, *reinterpret_cast<float*>((*(uint8**)_pointer) + member.address));
+					switch(member.elementType)
+					{
+					case ClassDesc::TYPE_INT:	{ result = result && serialize(member.name, reinterpret_cast<int*>((*(uint8**)_pointer) + member.address), member.elementCount); } break;
+					case ClassDesc::TYPE_FLOAT:	{ result = result && serialize(member.name, reinterpret_cast<float*>((*(uint8**)_pointer) + member.address), member.elementCount); } break;
+					case ClassDesc::TYPE_CHAR:	{ result = result && serialize(member.name, reinterpret_cast<char*>((*(uint8**)_pointer) + member.address), member.elementCount); } break;
+					default: break;
+					}
 				} break;
 
 			default: break;
@@ -1141,14 +1174,19 @@ bool JsonSerializer::serialize(const char* _name, void** _pointer, const ClassDe
 		{
 			switch(member.type)
 			{
-			case ClassDesc::TYPE_INT:
-				{
-					result = result && serialize(member.name, *reinterpret_cast<int*>((*(uint8**)_pointer) + member.address));
-				} break;
+			case ClassDesc::TYPE_INT:	{ result = result && serialize(member.name, *reinterpret_cast<int*>((*(uint8**)_pointer) + member.address)); } break;
+			case ClassDesc::TYPE_FLOAT:	{ result = result && serialize(member.name, *reinterpret_cast<float*>((*(uint8**)_pointer) + member.address)); } break;
+			case ClassDesc::TYPE_CHAR:	{ result = result && serialize(member.name, *reinterpret_cast<char*>((*(uint8**)_pointer) + member.address)); } break;
 
-			case ClassDesc::TYPE_FLOAT:
+			case ClassDesc::TYPE_ARRAY:
 				{
-					result = result && serialize(member.name, *reinterpret_cast<float*>((*(uint8**)_pointer) + member.address));
+					switch(member.elementType)
+					{
+					case ClassDesc::TYPE_INT:	{ result = result && serialize(member.name, reinterpret_cast<int*>((*(uint8**)_pointer) + member.address), member.elementCount); } break;
+					case ClassDesc::TYPE_FLOAT:	{ result = result && serialize(member.name, reinterpret_cast<float*>((*(uint8**)_pointer) + member.address), member.elementCount); } break;
+					case ClassDesc::TYPE_CHAR:	{ result = result && serialize(member.name, reinterpret_cast<char*>((*(uint8**)_pointer) + member.address), member.elementCount); } break;
+					default: break;
+					}
 				} break;
 
 			default: break;
@@ -1266,119 +1304,6 @@ bool JsonSerializer::serialize(const char* _name, void* _pointer, const ClassDes
 		return result;
 	}
 }
-
-/*bool JsonSerializer::serialize(const char* name, Serializable& serializable)
-{
-	if (m_currentValue->type == json_type_object)
-	{
-		json_object_s* currentObject = static_cast<json_object_s*>(m_currentValue->payload);
-
-		if (isReading())
-		{
-			json_value_s* match = _findObjectValue(currentObject, name);
-			if (match && match->type == json_type_object)
-			{
-				json_value_s* currentValue = m_currentValue;
-				m_currentValue = match;
-				bool result = serializable.serialize(this);
-				m_currentValue = currentValue;
-				return result;
-			}
-		}
-		else
-		{
-			json_value_s* jsonValue = new json_value_s;
-			jsonValue->type = json_type_object;
-			json_object_s* object = new json_object_s;
-			jsonValue->payload = object;
-
-			json_value_s* currentValue = m_currentValue;
-			m_currentValue = jsonValue;
-			bool result = serializable.serialize(this);
-			m_currentValue = currentValue;
-
-			if (result)
-			{
-				_addValueToObject(currentObject, name, jsonValue);
-				return result;
-			}
-		}
-	}
-	return false;
-}
-
-bool JsonSerializer::serialize(const char* name, Serializable* serializable, size_t size)
-{
-	if (m_currentValue->type == json_type_object)
-	{
-		json_object_s* currentObject = static_cast<json_object_s*>(m_currentValue->payload);
-
-		if (isReading())
-		{
-			json_value_s* match = _findObjectValue(currentObject, name);
-			if (match && match->type == json_type_array)
-			{
-				json_array_s* array = static_cast<json_array_s*>(match->payload);
-				if (size <= array->length)
-				{
-					json_array_element_s* currentElement = array->start;
-					int i = 0;
-					while (currentElement)
-					{
-						if (currentElement->value->type != json_type_object)
-							return false;
-
-						json_value_s* currentValue = m_currentValue;
-						m_currentValue = currentElement->value;
-						bool result = serializable[i].serialize(this);
-						m_currentValue = currentValue;
-
-						if (!result)
-							return false;
-
-						++i;
-						currentElement = currentElement->next;
-					}
-					return true;
-				}
-			}
-		}
-		else
-		{
-			json_value_s* jsonValue = new json_value_s;
-			jsonValue->type = json_type_array;
-			json_array_s* array = new json_array_s;
-			jsonValue->payload = array;
-
-			array->length = size;
-
-			json_array_element_s** elementPtr = &array->start;
-			for (size_t i = 0; i < size; i++)
-			{
-				json_array_element_s* element = new json_array_element_s;
-				element->value = new json_value_s;
-				element->value->type = json_type_object;
-				json_object_s* object = new json_object_s;
-				element->value->payload = object;
-
-				json_value_s* currentValue = m_currentValue;
-				m_currentValue = element->value;
-				bool result = serializable[i].serialize(this);
-				m_currentValue = currentValue;
-
-				if (!result)
-					return false;
-
-				*elementPtr = element;
-				elementPtr = &element->next;
-			}
-
-			_addValueToObject(currentObject, name, jsonValue);
-			return true;
-		}
-	}
-	return false;
-}*/
 
 void JsonSerializer::_addValueToObject(json_object_s* object, const char* name, json_value_s* value)
 {

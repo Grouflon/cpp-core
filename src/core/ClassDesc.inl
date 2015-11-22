@@ -1,5 +1,17 @@
 template <typename T>
-void ClassDesc::addMember(const char* _name, T*, uint32 _address)
+void ClassDesc::addMember(const char* _name, uint32 _address, T* _value)
 {
-	m_members.push_back(ClassMember(_name, TYPE_REFLECTIVE, _address));
+	addMember(_name, _address, getType(_value));
+}
+
+template <typename T>
+void ClassDesc::addArrayMember(const char* _name, uint32 _address, T* _value, size_t _elementCount)
+{
+	addArrayMember(_name, _address, getType(_value), _elementCount);
+}
+
+template <typename T>
+ClassDesc::MemberType ClassDesc::getType(T*) const
+{
+	return TYPE_UNKNOWN;
 }

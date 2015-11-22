@@ -60,6 +60,12 @@ bool Serializer::isReading() const
 	return m_readFile != nullptr;
 }
 
+bool Serializer::isWriting() const
+{
+	ASSERT(m_readFile || m_writeFile); // This result has no sense if not between startRead/Write() and end().
+	return m_writeFile != nullptr;
+}
+
 const char* Serializer::getErrorDesc()
 {
 	const char* errorDesc = m_errorDesc.c_str();

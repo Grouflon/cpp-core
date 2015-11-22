@@ -34,6 +34,7 @@ public:
 	virtual bool serialize(const char* _name, int64& _value) = 0;
 	virtual bool serialize(const char* _name, float& _value) = 0;
 	virtual bool serialize(const char* _name, double& _value) = 0;
+	virtual bool serialize(const char* _name, char& _value) = 0;
 
 	virtual bool serialize(const char* _name, uint8* _value, size_t _size) = 0;
 	virtual bool serialize(const char* _name, uint16* _value, size_t _size) = 0;
@@ -60,6 +61,7 @@ public:
 	virtual bool serialize(const char* _name, void* _pointer, const ClassDesc* _classDesc) = 0;
 
 	bool isReading() const;
+	bool isWriting() const;
 
 	const char* getErrorDesc();
 

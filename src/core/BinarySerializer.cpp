@@ -16,112 +16,117 @@ BinarySerializer::~BinarySerializer()
 
 bool BinarySerializer::serialize(const char*, bool& _value)
 {
-	return _rawSerialize(&_value, sizeof(_value));
+	return rawSerialize(&_value, sizeof(_value));
 }
 
 bool BinarySerializer::serialize(const char*, uint8& _value)
 {
-	return _rawSerialize(&_value, sizeof(_value));
+	return rawSerialize(&_value, sizeof(_value));
 }
 
 bool BinarySerializer::serialize(const char*, uint16& _value)
 {
-	return _rawSerialize(&_value, sizeof(_value));
+	return rawSerialize(&_value, sizeof(_value));
 }
 
 bool BinarySerializer::serialize(const char*, uint32& _value)
 {
-	return _rawSerialize(&_value, sizeof(_value));
+	return rawSerialize(&_value, sizeof(_value));
 }
 
 bool BinarySerializer::serialize(const char*, uint64& _value)
 {
-	return _rawSerialize(&_value, sizeof(_value));
+	return rawSerialize(&_value, sizeof(_value));
 }
 
 bool BinarySerializer::serialize(const char*, int8& _value)
 {
-	return _rawSerialize(&_value, sizeof(_value));
+	return rawSerialize(&_value, sizeof(_value));
 }
 
 bool BinarySerializer::serialize(const char*, int16& _value)
 {
-	return _rawSerialize(&_value, sizeof(_value));
+	return rawSerialize(&_value, sizeof(_value));
 }
 
 bool BinarySerializer::serialize(const char*, int32& _value)
 {
-	return _rawSerialize(&_value, sizeof(_value));
+	return rawSerialize(&_value, sizeof(_value));
 }
 
 bool BinarySerializer::serialize(const char*, int64& _value)
 {
-	return _rawSerialize(&_value, sizeof(_value));
+	return rawSerialize(&_value, sizeof(_value));
 }
 
 bool BinarySerializer::serialize(const char*, float& _value)
 {
-	return _rawSerialize(&_value, sizeof(_value));
+	return rawSerialize(&_value, sizeof(_value));
 }
 
 bool BinarySerializer::serialize(const char*, double& _value)
 {
-	return _rawSerialize(&_value, sizeof(_value));
+	return rawSerialize(&_value, sizeof(_value));
+}
+
+bool BinarySerializer::serialize(const char*, char& _value)
+{
+	return rawSerialize(&_value, sizeof(_value));
 }
 
 bool BinarySerializer::serialize(const char*, uint8* _value, size_t _size)
 {
-	return _rawSerialize(_value, _size * sizeof(*_value));
+	return rawSerialize(_value, _size * sizeof(*_value));
 }
 
 bool BinarySerializer::serialize(const char*, uint16* _value, size_t _size)
 {
-	return _rawSerialize(_value, _size * sizeof(*_value));
+	return rawSerialize(_value, _size * sizeof(*_value));
 }
 
 bool BinarySerializer::serialize(const char*, uint32* _value, size_t _size)
 {
-	return _rawSerialize(_value, _size * sizeof(*_value));
+	return rawSerialize(_value, _size * sizeof(*_value));
 }
 
 bool BinarySerializer::serialize(const char*, uint64* _value, size_t _size)
 {
-	return _rawSerialize(_value, _size * sizeof(*_value));
+	return rawSerialize(_value, _size * sizeof(*_value));
 }
 
 bool BinarySerializer::serialize(const char*, int8* _value, size_t _size)
 {
-	return _rawSerialize(_value, _size * sizeof(*_value));
+	return rawSerialize(_value, _size * sizeof(*_value));
 }
 
 bool BinarySerializer::serialize(const char*, int16* _value, size_t _size)
 {
-	return _rawSerialize(_value, _size * sizeof(*_value));
+	return rawSerialize(_value, _size * sizeof(*_value));
 }
 
 bool BinarySerializer::serialize(const char*, int32* _value, size_t _size)
 {
-	return _rawSerialize(_value, _size * sizeof(*_value));
+	return rawSerialize(_value, _size * sizeof(*_value));
 }
 
 bool BinarySerializer::serialize(const char*, int64* _value, size_t _size)
 {
-	return _rawSerialize(_value, _size * sizeof(*_value));
+	return rawSerialize(_value, _size * sizeof(*_value));
 }
 
 bool BinarySerializer::serialize(const char*, float* _value, size_t _size)
 {
-	return _rawSerialize(_value, _size * sizeof(*_value));
+	return rawSerialize(_value, _size * sizeof(*_value));
 }
 
 bool BinarySerializer::serialize(const char*, double* _value, size_t _size)
 {
-	return _rawSerialize(_value, _size * sizeof(*_value));
+	return rawSerialize(_value, _size * sizeof(*_value));
 }
 
 bool BinarySerializer::serialize(const char*, char* _value, size_t _size)
 {
-	return _rawSerialize(_value, (_size + 1) * sizeof(*_value));
+	return rawSerialize(_value, (_size) * sizeof(*_value));
 }
 
 bool BinarySerializer::serialize(const char*, std::string& _value)
@@ -167,98 +172,68 @@ bool BinarySerializer::endVectorSerialization()
 	return true;
 }
 
-
-// TODO: refactor duplicated code
 bool BinarySerializer::serialize(const char*, void** _pointer, const ClassDesc* _classDesc)
 {
-	std::string	className;
-
-	if (!isReading())
-	{
-		className = _classDesc->getName();
-	}
-
-	bool result = serialize("className", className);
+	bool result = serializeClassDesc(&_classDesc);
 
 	if (isReading())
 	{
-		_classDesc = getClassDesc(className.c_str());
-
-		if (!_classDesc)
-			return false;
-
-		*_pointer = static_cast<void*>(Factory::create(className.c_str()));
+		*_pointer = static_cast<void*>(Factory::create(_classDesc->getName()));
 	}
 
-	for (const auto& member : _classDesc->getMembers())
-	{
-		switch (member.type)
-		{
-		case ClassDesc::TYPE_INT:
-			{
-				result = result && serialize(nullptr, *reinterpret_cast<int*>((*(uint8**)_pointer) + member.address));
-			}
-			break;
-
-		case ClassDesc::TYPE_FLOAT:
-			{
-				result = result && serialize(nullptr, *reinterpret_cast<int*>((*(uint8**)_pointer) + member.address));
-			}
-			break;
-
-		case ClassDesc::TYPE_REFLECTIVE:
-			{
-
-			}
-			break;
-
-		default: break;
-		}
-	};
-
+	result = result && serializeMembers(*_pointer, _classDesc);
 	return result;
 }
 
 bool BinarySerializer::serialize(const char*, void* _pointer, const ClassDesc* _classDesc)
 {
-	std::string	className;
+	bool result = serializeClassDesc(&_classDesc);
+	result = result && serializeMembers(_pointer, _classDesc);
+	return result;
+}
 
-	if (!isReading())
+bool BinarySerializer::serializeClassDesc(const ClassDesc** _classDesc)
+{
+	std::string className;
+	if (isWriting())
 	{
-		className = _classDesc->getName();
+		className = (*_classDesc)->getName();
 	}
 
 	bool result = serialize("className", className);
 
 	if (isReading())
 	{
-		_classDesc = getClassDesc(className.c_str());
+		*_classDesc = getClassDesc(className.c_str());
 
-		if (!_classDesc)
-			return false;
+		if (!*_classDesc)
+			result = false;
 	}
+	return result;
+}
+
+bool BinarySerializer::serializeMembers(void* _pointer, const ClassDesc* _classDesc)
+{
+	bool result = true;
 
 	for (const auto& member : _classDesc->getMembers())
 	{
 		switch (member.type)
 		{
-		case ClassDesc::TYPE_INT:
-			{
-				result = result && serialize(nullptr, *(reinterpret_cast<int*>((uint8*)_pointer + member.address)));
-			}
-			break;
+		case ClassDesc::TYPE_INT: { result = result && serialize(nullptr, *reinterpret_cast<int*>((uint8*)_pointer + member.address)); } break;
+		case ClassDesc::TYPE_FLOAT: { result = result && serialize(nullptr, *reinterpret_cast<float*>((uint8*)_pointer + member.address)); } break;
+		case ClassDesc::TYPE_CHAR: { result = result && serialize(nullptr, *reinterpret_cast<char*>((uint8*)_pointer + member.address)); } break;
 
-		case ClassDesc::TYPE_FLOAT:
+		case ClassDesc::TYPE_ARRAY:
 			{
-				result = result && serialize(nullptr, *(reinterpret_cast<float*>((uint8*)_pointer + member.address)));
-			}
-			break;
-
-		case ClassDesc::TYPE_REFLECTIVE:
-			{
-
-			}
-			break;
+				switch(member.elementType)
+				{
+				case ClassDesc::TYPE_INT: { result = result && serialize(nullptr, reinterpret_cast<int*>((uint8*)_pointer + member.address), member.elementCount); } break;
+				case ClassDesc::TYPE_FLOAT: { result = result && serialize(nullptr, reinterpret_cast<float*>((uint8*)_pointer + member.address), member.elementCount); } break;
+				case ClassDesc::TYPE_CHAR: { result = result && serialize(nullptr, reinterpret_cast<char*>((uint8*)_pointer + member.address), member.elementCount); } break;
+				default: break;
+				}
+			} break;
 
 		default: break;
 		}
@@ -267,7 +242,7 @@ bool BinarySerializer::serialize(const char*, void* _pointer, const ClassDesc* _
 	return result;
 }
 
-bool BinarySerializer::_rawSerialize(void* _data, int _size)
+bool BinarySerializer::rawSerialize(void* _data, int _size)
 {
 	if (isReading())
 	{

@@ -19,7 +19,7 @@ public:
 	virtual bool beginWrite(File* file) override;
 	virtual bool end() override;
 
-	// TODO : handle value write / read into array currentValue;
+	// TODO : handle value write / read into array currentValue (will be used for vectors)
 	virtual bool serialize(const char* name, bool& value) override;
 	virtual bool serialize(const char* name, uint8& value) override;
 	virtual bool serialize(const char* name, uint16& value) override;
@@ -31,6 +31,7 @@ public:
 	virtual bool serialize(const char* name, int64& value) override;
 	virtual bool serialize(const char* name, float& value) override;
 	virtual bool serialize(const char* name, double& value) override;
+	virtual bool serialize(const char* name, char& value) override;
 	virtual bool serialize(const char* name, uint8* value, size_t size) override;
 	virtual bool serialize(const char* name, uint16* value, size_t size) override;
 	virtual bool serialize(const char* name, uint32* value, size_t size) override;
@@ -44,6 +45,8 @@ public:
 	virtual bool serialize(const char* name, char* value, size_t size) override;
 	virtual bool serialize(const char* name, std::string& value) override;
 	virtual bool serialize(const char* name, std::string* value, size_t size) override;
+
+	// TODO
 	virtual bool beginVectorSerialization(const char* _name, size_t& size) override;
 	virtual bool endVectorSerialization() override;
 

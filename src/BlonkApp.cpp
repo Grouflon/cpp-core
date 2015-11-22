@@ -24,11 +24,14 @@ struct GameData
 	REFLECT_AUTO(cameraVerticalAngle)
 	REFLECT_AUTO(cameraDistance)
 	REFLECT_AUTO(fov)
+	REFLECT_ARRAY_AUTO(text, 5);
 	REFLECT_END()
 
 	float cameraVerticalAngle;
 	float cameraDistance;
 	float fov;
+
+	char text[5];
 };
 
 static GameData*	g_gameData;
@@ -71,6 +74,8 @@ void BlonkApp::update(float dt)
 		ImGui::SliderFloat("distance", &g_gameData->cameraDistance, 0.f, 100.f);
 		ImGui::SliderFloat("angle", &g_gameData->cameraVerticalAngle, 0.f, 90.f);
 		ImGui::SliderFloat("fov", &g_gameData->fov, 5.f, 180.f);
+
+		ImGui::InputText("text", g_gameData->text, 5);
 	}
 	
 	ImGui::Checkbox("Save as binary", &g_binary);

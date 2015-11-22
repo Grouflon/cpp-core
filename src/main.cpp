@@ -9,7 +9,7 @@ class Foo
 {
 	REFLECT_BEGIN(Foo)
 	REFLECT_AUTO(m_1)
-	REFLECT_INT(m_3)
+	REFLECT_AUTO(m_3)
 	REFLECT_END()
 
 private:

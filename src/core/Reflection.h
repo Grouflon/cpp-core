@@ -22,7 +22,7 @@ public: \
 }
 
 #define REFLECT_AUTO(_memberName) \
-	classDesc->addMember(#_memberName, &prototype._memberName, reinterpret_cast<uint32>(&prototype._memberName) - reinterpret_cast<uint32>(&prototype));
+	classDesc->addMember(#_memberName, reinterpret_cast<uint32>(&prototype._memberName) - reinterpret_cast<uint32>(&prototype), &prototype._memberName);
 
-#define REFLECT_INT(_memberName) \
-	classDesc->addMember(#_memberName, ClassDesc::TYPE_INT, reinterpret_cast<uint32>(&prototype._memberName) - reinterpret_cast<uint32>(&prototype));
+#define REFLECT_ARRAY_AUTO(_memberName, _size) \
+	classDesc->addArrayMember(#_memberName, reinterpret_cast<uint32>(&prototype._memberName) - reinterpret_cast<uint32>(&prototype), prototype._memberName, _size); 

@@ -18,29 +18,38 @@ const char* ClassDesc::getName() const
 	return m_name;
 }
 
-template <>
-void ClassDesc::addMember(const char* _name, int*, uint32 _address)
+void ClassDesc::addMember(const char* _name, uint32 _address, MemberType _type)
 {
-	addMember(_name, TYPE_INT, _address);
+	m_members.push_back(ClassMember(_name, _address, _type));
 }
 
-template <>
-void ClassDesc::addMember(const char* _name, float*, uint32 _address)
+void ClassDesc::addArrayMember(const char* _name, uint32 _address, MemberType _elementType, size_t _elementCount)
 {
-	addMember(_name, TYPE_FLOAT, _address);
+	m_members.push_back(ClassMember(_name, _address, _elementType, _elementCount));
 }
 
-void ClassDesc::addMember(const char* _name, MemberType _type, uint32 _address)
-{
-	m_members.push_back(ClassMember(_name, _type, _address));
-}
-
-ClassDesc::ClassMember::ClassMember(const char* _name, MemberType _type, uint32 _address)
+ClassDesc::ClassMember::ClassMember(const char* _name, uint32 _address, MemberType _type)
 	: name(_name)
-	, type(_type)
 	, address(_address)
+	, type(_type)
+	, elementType(TYPE_UNKNOWN)
+	, elementCount(0)
 {
 }
+
+ClassDesc::ClassMember::ClassMember(const char* _name, uint32 _address, MemberType _elementType, size_t _elementCount)
+	: name(_name)
+	, address(_address)
+	, type(TYPE_ARRAY)
+	, elementType(_elementType)
+	, elementCount(_elementCount)
+{
+
+}
+
+template <> ClassDesc::MemberType ClassDesc::getType(int*) const	{ return TYPE_INT; }
+template <> ClassDesc::MemberType ClassDesc::getType(char*) const	{ return TYPE_CHAR; }
+template <> ClassDesc::MemberType ClassDesc::getType(float*) const	{ return TYPE_FLOAT; }
 
 ClassSet::~ClassSet()
 {
@@ -66,5 +75,3 @@ ClassDesc* getClassDesc(const char* _className)
 {
 	return g_classSet.getClassDesc(_className);
 }
-
-#include "core/ClassDesc.inl"
