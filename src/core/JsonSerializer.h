@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include <json.h>
+
 #include "core/Serializer.h"
 
 struct json_value_s;
@@ -21,6 +23,7 @@ public:
 
 	// TODO : handle value write / read into array currentValue (will be used for vectors)
 	virtual bool serialize(const char* name, bool& value) override;
+	virtual bool serialize(const char* name, char& value) override;
 	virtual bool serialize(const char* name, uint8& value) override;
 	virtual bool serialize(const char* name, uint16& value) override;
 	virtual bool serialize(const char* name, uint32& value) override;
@@ -31,7 +34,8 @@ public:
 	virtual bool serialize(const char* name, int64& value) override;
 	virtual bool serialize(const char* name, float& value) override;
 	virtual bool serialize(const char* name, double& value) override;
-	virtual bool serialize(const char* name, char& value) override;
+	virtual bool serialize(const char* name, bool* value, size_t size) override;
+	virtual bool serialize(const char* name, char* value, size_t size) override;
 	virtual bool serialize(const char* name, uint8* value, size_t size) override;
 	virtual bool serialize(const char* name, uint16* value, size_t size) override;
 	virtual bool serialize(const char* name, uint32* value, size_t size) override;
@@ -42,7 +46,6 @@ public:
 	virtual bool serialize(const char* name, int64* value, size_t size) override;
 	virtual bool serialize(const char* name, float* value, size_t size) override;
 	virtual bool serialize(const char* name, double* value, size_t size) override;
-	virtual bool serialize(const char* name, char* value, size_t size) override;
 	virtual bool serialize(const char* name, std::string& value) override;
 	virtual bool serialize(const char* name, std::string* value, size_t size) override;
 
@@ -60,16 +63,31 @@ public:
 	virtual bool serialize(const char* _name, void* _pointer, const ClassDesc* _classDesc) override;
 
 private:
-	void			_addValueToObject(json_object_s* object, const char* name, json_value_s* value);
-	json_value_s*	_findObjectValue(json_object_s* object, const char* name);
-	json_string_s*	_createString(const char* str, int size = -1);
-	json_number_s*	_createNumber(double number);
-	json_number_s*	_createNumber(float number);
-	json_number_s*	_createNumber(int64 number);
-	json_number_s*	_createNumber(int number);
-	json_number_s*	_createNumber(uint64 number);
-	json_number_s*	_createNumber(unsigned int number);
-	void			_deleteJsonValue(json_value_s* jsonValue);
+	bool	serializeArray(const char* _name, size_t _size, std::function<bool(const json_array_element_s*, int)> _readCallback, std::function<bool(json_array_element_s*, int)> _writeCallback);
+	bool	serializeClassDesc(const ClassDesc** _classDesc);
+	bool	serializeMembers(void* _pointer, const ClassDesc* _classDesc);
+
+	static void				addValueToObject(json_object_s* _object, const char* _name, json_value_s* _value);
+	static json_value_s*	findObjectValue(json_object_s* _object, const char* _name);
+	static json_value_s*	findObjectValue(json_object_s* _object, const char* _name, json_type_e _type);
+	static json_string_s*	createString(const char* _str, int _size = -1);
+	static json_number_s*	createNumber(double _number);
+	static json_number_s*	createNumber(float _number);
+	static json_number_s*	createNumber(int64 _number);
+	static json_number_s*	createNumber(int _number);
+	static json_number_s*	createNumber(uint64 _number);
+	static json_number_s*	createNumber(unsigned int _number);
+	static json_value_s*	createStringValue(const char* _str, int _size = -1);
+	static json_value_s*	createNumberValue(double _number);
+	static json_value_s*	createNumberValue(float _number);
+	static json_value_s*	createNumberValue(int64 _number);
+	static json_value_s*	createNumberValue(int _number);
+	static json_value_s*	createNumberValue(uint64 _number);
+	static json_value_s*	createNumberValue(unsigned int _number);
+	static json_value_s*	createBoolValue(bool _value);
+	static json_value_s*	createObjectValue();
+
+	static void				deleteJsonValue(json_value_s* _jsonValue);
 
 	json_value_s*	m_root;
 	json_value_s*	m_currentValue;

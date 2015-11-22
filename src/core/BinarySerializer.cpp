@@ -74,6 +74,11 @@ bool BinarySerializer::serialize(const char*, char& _value)
 	return rawSerialize(&_value, sizeof(_value));
 }
 
+bool BinarySerializer::serialize(const char*, bool* _value, size_t _size)
+{
+	return rawSerialize(_value, _size * sizeof(*_value));
+}
+
 bool BinarySerializer::serialize(const char*, uint8* _value, size_t _size)
 {
 	return rawSerialize(_value, _size * sizeof(*_value));
@@ -220,17 +225,37 @@ bool BinarySerializer::serializeMembers(void* _pointer, const ClassDesc* _classD
 	{
 		switch (member.type)
 		{
-		case ClassDesc::TYPE_INT: { result = result && serialize(nullptr, *reinterpret_cast<int*>((uint8*)_pointer + member.address)); } break;
-		case ClassDesc::TYPE_FLOAT: { result = result && serialize(nullptr, *reinterpret_cast<float*>((uint8*)_pointer + member.address)); } break;
-		case ClassDesc::TYPE_CHAR: { result = result && serialize(nullptr, *reinterpret_cast<char*>((uint8*)_pointer + member.address)); } break;
+		case ClassDesc::TYPE_BOOL: { result = result && serialize(nullptr, *reinterpret_cast<bool*>(static_cast<uint8*>(_pointer) + member.address)); } break;
+		case ClassDesc::TYPE_CHAR: { result = result && serialize(nullptr, *reinterpret_cast<char*>(static_cast<uint8*>(_pointer) + member.address)); } break;
+		case ClassDesc::TYPE_INT8: { result = result && serialize(nullptr, *reinterpret_cast<int8*>(static_cast<uint8*>(_pointer) + member.address)); } break;
+		case ClassDesc::TYPE_INT16: { result = result && serialize(nullptr, *reinterpret_cast<int16*>(static_cast<uint8*>(_pointer) + member.address)); } break;
+		case ClassDesc::TYPE_INT32: { result = result && serialize(nullptr, *reinterpret_cast<int32*>(static_cast<uint8*>(_pointer) + member.address)); } break;
+		case ClassDesc::TYPE_INT64: { result = result && serialize(nullptr, *reinterpret_cast<int64*>(static_cast<uint8*>(_pointer) + member.address)); } break;
+		case ClassDesc::TYPE_UINT8: { result = result && serialize(nullptr, *reinterpret_cast<uint8*>(static_cast<uint8*>(_pointer) + member.address)); } break;
+		case ClassDesc::TYPE_UINT16: { result = result && serialize(nullptr, *reinterpret_cast<uint16*>(static_cast<uint8*>(_pointer) + member.address)); } break;
+		case ClassDesc::TYPE_UINT32: { result = result && serialize(nullptr, *reinterpret_cast<uint32*>(static_cast<uint8*>(_pointer) + member.address)); } break;
+		case ClassDesc::TYPE_UINT64: { result = result && serialize(nullptr, *reinterpret_cast<uint64*>(static_cast<uint8*>(_pointer) + member.address)); } break;
+		case ClassDesc::TYPE_FLOAT: { result = result && serialize(nullptr, *reinterpret_cast<float*>(static_cast<uint8*>(_pointer) + member.address)); } break;
+		case ClassDesc::TYPE_DOUBLE: { result = result && serialize(nullptr, *reinterpret_cast<double*>(static_cast<uint8*>(_pointer) + member.address)); } break;
+		case ClassDesc::TYPE_STRING: { result = result && serialize(nullptr, *reinterpret_cast<std::string*>(static_cast<uint8*>(_pointer) + member.address)); } break;
 
 		case ClassDesc::TYPE_ARRAY:
 			{
 				switch(member.elementType)
 				{
-				case ClassDesc::TYPE_INT: { result = result && serialize(nullptr, reinterpret_cast<int*>((uint8*)_pointer + member.address), member.elementCount); } break;
-				case ClassDesc::TYPE_FLOAT: { result = result && serialize(nullptr, reinterpret_cast<float*>((uint8*)_pointer + member.address), member.elementCount); } break;
-				case ClassDesc::TYPE_CHAR: { result = result && serialize(nullptr, reinterpret_cast<char*>((uint8*)_pointer + member.address), member.elementCount); } break;
+				case ClassDesc::TYPE_BOOL: { result = result && serialize(nullptr, reinterpret_cast<bool*>(static_cast<uint8*>(_pointer) + member.address), member.elementCount); } break;
+				case ClassDesc::TYPE_CHAR: { result = result && serialize(nullptr, reinterpret_cast<char*>(static_cast<uint8*>(_pointer) + member.address), member.elementCount); } break;
+				case ClassDesc::TYPE_INT8: { result = result && serialize(nullptr, reinterpret_cast<int8*>(static_cast<uint8*>(_pointer) + member.address), member.elementCount); } break;
+				case ClassDesc::TYPE_INT16: { result = result && serialize(nullptr, reinterpret_cast<int16*>(static_cast<uint8*>(_pointer) + member.address), member.elementCount); } break;
+				case ClassDesc::TYPE_INT32: { result = result && serialize(nullptr, reinterpret_cast<int32*>(static_cast<uint8*>(_pointer) + member.address), member.elementCount); } break;
+				case ClassDesc::TYPE_INT64: { result = result && serialize(nullptr, reinterpret_cast<int64*>(static_cast<uint8*>(_pointer) + member.address), member.elementCount); } break;
+				case ClassDesc::TYPE_UINT8: { result = result && serialize(nullptr, reinterpret_cast<uint8*>(static_cast<uint8*>(_pointer) + member.address), member.elementCount); } break;
+				case ClassDesc::TYPE_UINT16: { result = result && serialize(nullptr, reinterpret_cast<uint16*>(static_cast<uint8*>(_pointer) + member.address), member.elementCount); } break;
+				case ClassDesc::TYPE_UINT32: { result = result && serialize(nullptr, reinterpret_cast<uint32*>(static_cast<uint8*>(_pointer) + member.address), member.elementCount); } break;
+				case ClassDesc::TYPE_UINT64: { result = result && serialize(nullptr, reinterpret_cast<uint64*>(static_cast<uint8*>(_pointer) + member.address), member.elementCount); } break;
+				case ClassDesc::TYPE_FLOAT: { result = result && serialize(nullptr, reinterpret_cast<float*>(static_cast<uint8*>(_pointer) + member.address), member.elementCount); } break;
+				case ClassDesc::TYPE_DOUBLE: { result = result && serialize(nullptr, reinterpret_cast<double*>(static_cast<uint8*>(_pointer) + member.address), member.elementCount); } break;
+				case ClassDesc::TYPE_STRING: { result = result && serialize(nullptr, reinterpret_cast<std::string*>(static_cast<uint8*>(_pointer) + member.address), member.elementCount); } break;
 				default: break;
 				}
 			} break;

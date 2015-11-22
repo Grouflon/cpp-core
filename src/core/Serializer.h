@@ -23,7 +23,7 @@ public:
 	virtual bool endVectorSerialization() = 0;
 
 	virtual bool serialize(const char* _name, bool& _value) = 0;
-
+	virtual bool serialize(const char* _name, char& _value) = 0;
 	virtual bool serialize(const char* _name, uint8& _value) = 0;
 	virtual bool serialize(const char* _name, uint16& _value) = 0;
 	virtual bool serialize(const char* _name, uint32& _value) = 0;
@@ -34,8 +34,9 @@ public:
 	virtual bool serialize(const char* _name, int64& _value) = 0;
 	virtual bool serialize(const char* _name, float& _value) = 0;
 	virtual bool serialize(const char* _name, double& _value) = 0;
-	virtual bool serialize(const char* _name, char& _value) = 0;
 
+	virtual bool serialize(const char* _name, bool* _value, size_t _size) = 0;
+	virtual bool serialize(const char* _name, char* _value, size_t _size) = 0;
 	virtual bool serialize(const char* _name, uint8* _value, size_t _size) = 0;
 	virtual bool serialize(const char* _name, uint16* _value, size_t _size) = 0;
 	virtual bool serialize(const char* _name, uint32* _value, size_t _size) = 0;
@@ -46,7 +47,6 @@ public:
 	virtual bool serialize(const char* _name, int64* _value, size_t _size) = 0;
 	virtual bool serialize(const char* _name, float* _value, size_t _size) = 0;
 	virtual bool serialize(const char* _name, double* _value, size_t _size) = 0;
-	virtual bool serialize(const char* _name, char* _value, size_t _size) = 0;
 
 	virtual bool serialize(const char* _name, std::string& _value) = 0;
 	virtual bool serialize(const char* _name, std::string* _value, size_t _size) = 0;

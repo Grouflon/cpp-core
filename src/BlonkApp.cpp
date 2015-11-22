@@ -21,15 +21,18 @@ static GLuint uViewProjection;
 struct GameData
 {
 	REFLECT_BEGIN(GameData)
-	REFLECT_AUTO(cameraVerticalAngle)
 	REFLECT_AUTO(cameraDistance)
 	REFLECT_AUTO(fov)
+	REFLECT_ARRAY_AUTO(test, 4);
 	REFLECT_ARRAY_AUTO(text, 5);
+	REFLECT_AUTO(cameraVerticalAngle)
 	REFLECT_END()
 
 	float cameraVerticalAngle;
 	float cameraDistance;
 	float fov;
+
+	int8 test[4];
 
 	char text[5];
 };

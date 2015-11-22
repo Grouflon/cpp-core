@@ -1,8 +1,6 @@
 ﻿#include "stdafx.h"
 #include "core/JsonSerializer.h"
 
-#include <json.h>
-
 #include "core/File.h"
 #include "core/ClassDesc.h"
 #include "core/Factory.h"
@@ -19,13 +17,13 @@ JsonSerializer::~JsonSerializer()
 
 
 // TODO: refactor duplicated code
-bool JsonSerializer::beginRead(const File* file)
+bool JsonSerializer::beginRead(const File* _file)
 {
-	if (!Serializer::beginRead(file)) return false;
+	if (!Serializer::beginRead(_file)) return false;
 
-	size_t bufferSize = file->getSize() - file->getOffset();
+	size_t bufferSize = _file->getSize() - _file->getOffset();
 	char* buffer = new char[bufferSize];
-	size_t sizeRead = file->read(buffer, bufferSize);
+	size_t sizeRead = _file->read(buffer, bufferSize);
 	ASSERT(sizeRead == bufferSize);
 
 	m_root = json_parse(buffer, bufferSize);
@@ -36,9 +34,9 @@ bool JsonSerializer::beginRead(const File* file)
 	return m_root != nullptr;
 }
 
-bool JsonSerializer::beginWrite(File* file)
+bool JsonSerializer::beginWrite(File* _file)
 {
-	Serializer::beginWrite(file);
+	Serializer::beginWrite(_file);
 
 	m_root = new json_value_s;
 	m_root->type = json_type_object;
@@ -67,908 +65,552 @@ bool JsonSerializer::end()
 		free(out);
 
 		// json value hand built
-		_deleteJsonValue(m_root);
+		deleteJsonValue(m_root);
 	}
 
 	return Serializer::end();
 }
 
-bool JsonSerializer::serialize(const char* name, bool& value)
+bool JsonSerializer::serialize(const char* _name, bool& _value)
 {
-	if (m_currentValue->type == json_type_object)
+	if (m_currentValue->type != json_type_object)
+		return false;
+
+	json_object_s* currentObject = static_cast<json_object_s*>(m_currentValue->payload);
+
+	if (isReading())
 	{
-		json_object_s* currentObject = static_cast<json_object_s*>(m_currentValue->payload);
+		json_value_s* match = findObjectValue(currentObject, _name);
+		if (!match || (match->type != json_type_true && match->type != json_type_false))
+			return false;
 
-		if (isReading())
-		{
-			json_value_s* match = _findObjectValue(currentObject, name);
-			if (match && (match->type == json_type_true || match->type == json_type_false))
-			{
-				value = match->type == json_type_true ? true : false;
-				return true;
-			}
-		}
-		else
-		{
-			json_value_s* jsonValue = new json_value_s;
-			jsonValue->payload = nullptr;
-			jsonValue->type = value ? json_type_true : json_type_false;
-
-			_addValueToObject(currentObject, name, jsonValue);
-			return true;
-		}
+		_value = match->type == json_type_true ? true : false;
 	}
-	return false;
+	else
+	{
+		addValueToObject(currentObject, _name, createBoolValue(_value));
+	}
+	return true;
 }
 
-bool JsonSerializer::serialize(const char* name, uint8& value)
+bool JsonSerializer::serialize(const char* _name, uint8& _value)
 {
-	if (m_currentValue->type == json_type_object)
-	{
-		json_object_s* currentObject = static_cast<json_object_s*>(m_currentValue->payload);
+	if (m_currentValue->type != json_type_object)
+		return false;
 
-		if (isReading())
-		{
-			json_value_s* match = _findObjectValue(currentObject, name);
-			if (match && match->type == json_type_number)
-			{
-				value = atoi(static_cast<json_number_s*>(match->payload)->number);
-				return true;
-			}
-		}
-		else
-		{
-			json_value_s* jsonValue = new json_value_s;
-			jsonValue->type = json_type_number;
-			jsonValue->payload = _createNumber(value);
-			_addValueToObject(currentObject, name, jsonValue);
-			return true;
-		}
+	json_object_s* currentObject = static_cast<json_object_s*>(m_currentValue->payload);
+
+	if (isReading())
+	{
+		json_value_s* match = findObjectValue(currentObject, _name, json_type_number);
+		if (!match)
+			return false;
+
+		_value = atoi(static_cast<json_number_s*>(match->payload)->number);
 	}
-	return false;
+	else
+	{
+		addValueToObject(currentObject, _name, createNumberValue(_value));
+	}
+	return true;
 }
 
-bool JsonSerializer::serialize(const char* name, uint16& value)
+bool JsonSerializer::serialize(const char* _name, uint16& _value)
 {
-	if (m_currentValue->type == json_type_object)
-	{
-		json_object_s* currentObject = static_cast<json_object_s*>(m_currentValue->payload);
+	if (m_currentValue->type != json_type_object)
+		return false;
 
-		if (isReading())
-		{
-			json_value_s* match = _findObjectValue(currentObject, name);
-			if (match && match->type == json_type_number)
-			{
-				value = atoi(static_cast<json_number_s*>(match->payload)->number);
-				return true;
-			}
-		}
-		else
-		{
-			json_value_s* jsonValue = new json_value_s;
-			jsonValue->type = json_type_number;
-			jsonValue->payload = _createNumber(value);
-			_addValueToObject(currentObject, name, jsonValue);
-			return true;
-		}
+	json_object_s* currentObject = static_cast<json_object_s*>(m_currentValue->payload);
+
+	if (isReading())
+	{
+		json_value_s* match = findObjectValue(currentObject, _name, json_type_number);
+		if (!match)
+			return false;
+
+		_value = atoi(static_cast<json_number_s*>(match->payload)->number);
 	}
-	return false;
+	else
+	{
+		addValueToObject(currentObject, _name, createNumberValue(_value));
+	}
+	return true;
 }
 
-bool JsonSerializer::serialize(const char* name, uint32& value)
+bool JsonSerializer::serialize(const char* _name, uint32& _value)
 {
-	if (m_currentValue->type == json_type_object)
-	{
-		json_object_s* currentObject = static_cast<json_object_s*>(m_currentValue->payload);
+	if (m_currentValue->type != json_type_object)
+		return false;
 
-		if (isReading())
-		{
-			json_value_s* match = _findObjectValue(currentObject, name);
-			if (match && match->type == json_type_number)
-			{
-				value = atoi(static_cast<json_number_s*>(match->payload)->number);
-				return true;
-			}
-		}
-		else
-		{
-			json_value_s* jsonValue = new json_value_s;
-			jsonValue->type = json_type_number;
-			jsonValue->payload = _createNumber(value);
-			_addValueToObject(currentObject, name, jsonValue);
-			return true;
-		}
+	json_object_s* currentObject = static_cast<json_object_s*>(m_currentValue->payload);
+
+	if (isReading())
+	{
+		json_value_s* match = findObjectValue(currentObject, _name, json_type_number);
+		if (!match)
+			return false;
+
+		_value = atoi(static_cast<json_number_s*>(match->payload)->number);
 	}
-	return false;
+	else
+	{
+		addValueToObject(currentObject, _name, createNumberValue(_value));
+	}
+	return true;
 }
 
-bool JsonSerializer::serialize(const char* name, uint64& value)
+bool JsonSerializer::serialize(const char* _name, uint64& _value)
 {
-	if (m_currentValue->type == json_type_object)
-	{
-		json_object_s* currentObject = static_cast<json_object_s*>(m_currentValue->payload);
+	if (m_currentValue->type != json_type_object)
+		return false;
 
-		if (isReading())
-		{
-			json_value_s* match = _findObjectValue(currentObject, name);
-			if (match && match->type == json_type_number)
-			{
-				value = atol(static_cast<json_number_s*>(match->payload)->number);
-				return true;
-			}
-		}
-		else
-		{
-			json_value_s* jsonValue = new json_value_s;
-			jsonValue->type = json_type_number;
-			jsonValue->payload = _createNumber(value);
-			_addValueToObject(currentObject, name, jsonValue);
-			return true;
-		}
+	json_object_s* currentObject = static_cast<json_object_s*>(m_currentValue->payload);
+
+	if (isReading())
+	{
+		json_value_s* match = findObjectValue(currentObject, _name, json_type_number);
+		if (!match)
+			return false;
+
+		_value = atol(static_cast<json_number_s*>(match->payload)->number);
 	}
-	return false;
+	else
+	{
+		addValueToObject(currentObject, _name, createNumberValue(_value));
+	}
+	return true;
 }
 
-bool JsonSerializer::serialize(const char* name, int8& value)
+bool JsonSerializer::serialize(const char* _name, int8& _value)
 {
-	if (m_currentValue->type == json_type_object)
-	{
-		json_object_s* currentObject = static_cast<json_object_s*>(m_currentValue->payload);
+	if (m_currentValue->type != json_type_object)
+		return false;
 
-		if (isReading())
-		{
-			json_value_s* match = _findObjectValue(currentObject, name);
-			if (match && match->type == json_type_number)
-			{
-				value = atoi(static_cast<json_number_s*>(match->payload)->number);
-				return true;
-			}
-		}
-		else
-		{
-			json_value_s* jsonValue = new json_value_s;
-			jsonValue->type = json_type_number;
-			jsonValue->payload = _createNumber(value);
-			_addValueToObject(currentObject, name, jsonValue);
-			return true;
-		}
+	json_object_s* currentObject = static_cast<json_object_s*>(m_currentValue->payload);
+
+	if (isReading())
+	{
+		json_value_s* match = findObjectValue(currentObject, _name, json_type_number);
+		if (!match)
+			return false;
+
+		_value = atoi(static_cast<json_number_s*>(match->payload)->number);
 	}
-	return false;
+	else
+	{
+		addValueToObject(currentObject, _name, createNumberValue(_value));
+	}
+	return true;
 }
 
-bool JsonSerializer::serialize(const char* name, int16& value)
+bool JsonSerializer::serialize(const char* _name, int16& _value)
 {
-	if (m_currentValue->type == json_type_object)
-	{
-		json_object_s* currentObject = static_cast<json_object_s*>(m_currentValue->payload);
+	if (m_currentValue->type != json_type_object)
+		return false;
 
-		if (isReading())
-		{
-			json_value_s* match = _findObjectValue(currentObject, name);
-			if (match && match->type == json_type_number)
-			{
-				value = atoi(static_cast<json_number_s*>(match->payload)->number);
-				return true;
-			}
-		}
-		else
-		{
-			json_value_s* jsonValue = new json_value_s;
-			jsonValue->type = json_type_number;
-			jsonValue->payload = _createNumber(value);
-			_addValueToObject(currentObject, name, jsonValue);
-			return true;
-		}
+	json_object_s* currentObject = static_cast<json_object_s*>(m_currentValue->payload);
+
+	if (isReading())
+	{
+		json_value_s* match = findObjectValue(currentObject, _name, json_type_number);
+		if (!match)
+			return false;
+
+		_value = atoi(static_cast<json_number_s*>(match->payload)->number);
 	}
-	return false;
+	else
+	{
+		addValueToObject(currentObject, _name, createNumberValue(_value));
+	}
+	return true;
 }
 
-bool JsonSerializer::serialize(const char* name, int32& value)
+bool JsonSerializer::serialize(const char* _name, int32& _value)
 {
-	if (m_currentValue->type == json_type_object)
-	{
-		json_object_s* currentObject = static_cast<json_object_s*>(m_currentValue->payload);
+	if (m_currentValue->type != json_type_object)
+		return false;
 
-		if (isReading())
-		{
-			json_value_s* match = _findObjectValue(currentObject, name);
-			if (match && match->type == json_type_number)
-			{
-				value = atoi(static_cast<json_number_s*>(match->payload)->number);
-				return true;
-			}
-		}
-		else
-		{
-			json_value_s* jsonValue = new json_value_s;
-			jsonValue->type = json_type_number;
-			jsonValue->payload = _createNumber(value);
-			_addValueToObject(currentObject, name, jsonValue);
-			return true;
-		}
+	json_object_s* currentObject = static_cast<json_object_s*>(m_currentValue->payload);
+
+	if (isReading())
+	{
+		json_value_s* match = findObjectValue(currentObject, _name, json_type_number);
+		if (!match)
+			return false;
+
+		_value = atoi(static_cast<json_number_s*>(match->payload)->number);
 	}
-	return false;
+	else
+	{
+		addValueToObject(currentObject, _name, createNumberValue(_value));
+	}
+	return true;
 }
 
-bool JsonSerializer::serialize(const char* name, int64& value)
+bool JsonSerializer::serialize(const char* _name, int64& _value)
 {
-	if (m_currentValue->type == json_type_object)
-	{
-		json_object_s* currentObject = static_cast<json_object_s*>(m_currentValue->payload);
+	if (m_currentValue->type != json_type_object)
+		return false;
 
-		if (isReading())
-		{
-			json_value_s* match = _findObjectValue(currentObject, name);
-			if (match && match->type == json_type_number)
-			{
-				value = atol(static_cast<json_number_s*>(match->payload)->number);
-				return true;
-			}
-		}
-		else
-		{
-			json_value_s* jsonValue = new json_value_s;
-			jsonValue->type = json_type_number;
-			jsonValue->payload = _createNumber(value);
-			_addValueToObject(currentObject, name, jsonValue);
-			return true;
-		}
+	json_object_s* currentObject = static_cast<json_object_s*>(m_currentValue->payload);
+
+	if (isReading())
+	{
+		json_value_s* match = findObjectValue(currentObject, _name, json_type_number);
+		if (!match)
+			return false;
+
+		_value = atoi(static_cast<json_number_s*>(match->payload)->number);
 	}
-	return false;
+	else
+	{
+		addValueToObject(currentObject, _name, createNumberValue(_value));
+	}
+	return true;
 }
 
-bool JsonSerializer::serialize(const char* name, float& value)
+bool JsonSerializer::serialize(const char* _name, float& _value)
 {
-	if (m_currentValue->type == json_type_object)
-	{
-		json_object_s* currentObject = static_cast<json_object_s*>(m_currentValue->payload);
+	if (m_currentValue->type != json_type_object)
+		return false;
 
-		if (isReading())
-		{
-			json_value_s* match = _findObjectValue(currentObject, name);
-			if (match && match->type == json_type_number)
-			{
-				value = static_cast<float>(atof(static_cast<json_number_s*>(match->payload)->number));
-				return true;
-			}
-		}
-		else
-		{
-			json_value_s* jsonValue = new json_value_s;
-			jsonValue->type = json_type_number;
-			jsonValue->payload = _createNumber(value);
-			_addValueToObject(currentObject, name, jsonValue);
-			return true;
-		}
+	json_object_s* currentObject = static_cast<json_object_s*>(m_currentValue->payload);
+
+	if (isReading())
+	{
+		json_value_s* match = findObjectValue(currentObject, _name, json_type_number);
+		if (!match)
+			return false;
+
+		_value = static_cast<float>(atof(static_cast<json_number_s*>(match->payload)->number));
 	}
-	return false;
+	else
+	{
+		addValueToObject(currentObject, _name, createNumberValue(_value));
+	}
+	return true;
 }
 
-bool JsonSerializer::serialize(const char* name, double& value)
+bool JsonSerializer::serialize(const char* _name, double& _value)
 {
-	if (m_currentValue->type == json_type_object)
-	{
-		json_object_s* currentObject = static_cast<json_object_s*>(m_currentValue->payload);
+	if (m_currentValue->type != json_type_object)
+		return false;
 
-		if (isReading())
-		{
-			json_value_s* match = _findObjectValue(currentObject, name);
-			if (match && match->type == json_type_number)
-			{
-				value = atof(static_cast<json_number_s*>(match->payload)->number);
-				return true;
-			}
-		}
-		else
-		{
-			json_value_s* jsonValue = new json_value_s;
-			jsonValue->type = json_type_number;
-			jsonValue->payload = _createNumber(value);
-			_addValueToObject(currentObject, name, jsonValue);
-			return true;
-		}
+	json_object_s* currentObject = static_cast<json_object_s*>(m_currentValue->payload);
+
+	if (isReading())
+	{
+		json_value_s* match = findObjectValue(currentObject, _name, json_type_number);
+		if (!match)
+			return false;
+
+		_value = atof(static_cast<json_number_s*>(match->payload)->number);
 	}
-	return false;
+	else
+	{
+		addValueToObject(currentObject, _name, createNumberValue(_value));
+	}
+	return true;
 }
 
-bool JsonSerializer::serialize(const char* name, char& value)
+bool JsonSerializer::serialize(const char* _name, char& _value)
 {
-	if (m_currentValue->type == json_type_object)
-	{
-		json_object_s* currentObject = static_cast<json_object_s*>(m_currentValue->payload);
+	if (m_currentValue->type != json_type_object)
+		return false;
 
-		if (isReading())
-		{
-			json_value_s* match = _findObjectValue(currentObject, name);
-			if (match && match->type == json_type_string)
-			{
-				value = *static_cast<char*>((static_cast<json_string_s*>(match->payload)->string));
-				return true;
-			}
-		}
-		else
-		{
-			json_value_s* jsonValue = new json_value_s;
-			jsonValue->type = json_type_string;
-			jsonValue->payload = _createString(&value, 1);
-			_addValueToObject(currentObject, name, jsonValue);
-			return true;
-		}
+	json_object_s* currentObject = static_cast<json_object_s*>(m_currentValue->payload);
+
+	if (isReading())
+	{
+		json_value_s* match = findObjectValue(currentObject, _name, json_type_number);
+		if (!match)
+			return false;
+
+		_value = *static_cast<char*>((static_cast<json_string_s*>(match->payload)->string));
 	}
-	return false;
+	else
+	{
+		addValueToObject(currentObject, _name, createStringValue(&_value, 1));
+	}
+	return true;
 }
 
-bool JsonSerializer::serialize(const char* name, uint8* value, size_t size)
+bool JsonSerializer::serialize(const char* _name, bool* _value, size_t _size)
 {
-	if (m_currentValue->type == json_type_object)
+	return serializeArray(
+		_name,
+		_size,
+
+		// READ
+		[_value](const json_array_element_s* _element, int _index) -> bool
 	{
-		json_object_s* currentObject = static_cast<json_object_s*>(m_currentValue->payload);
+		if (_element->value->type != json_type_true && _element->value->type != json_type_false)
+			return false;
 
-		if (isReading())
-		{
-			json_value_s* match = _findObjectValue(currentObject, name);
-			if (match && match->type == json_type_array)
-			{
-				json_array_s* array = static_cast<json_array_s*>(match->payload);
-				if (size <= array->length)
-				{
-					json_array_element_s* currentElement = array->start;
-					int i = 0;
-					while (currentElement)
-					{
-						if (currentElement->value->type != json_type_number)
-							return false;
+		_value[_index] = _element->value->type == json_type_true ? true : false;
+		return true;
+	},
 
-						value[i] = atoi(static_cast<json_number_s*>(currentElement->value->payload)->number);
-						++i;
-						currentElement = currentElement->next;
-					}
-					return true;
-				}
-			}
-		}
-		else
-		{
-			json_value_s* jsonValue = new json_value_s;
-			jsonValue->type = json_type_array;
-			json_array_s* array = new json_array_s;
-			jsonValue->payload = array;
-
-			array->length = size;
-
-			json_array_element_s** elementPtr = &array->start;
-			for (size_t i = 0; i < size; i++)
-			{
-				json_array_element_s* element = new json_array_element_s;
-				element->value = new json_value_s;
-				element->value->type = json_type_number;
-				element->value->payload = _createNumber(value[i]);
-				
-				*elementPtr = element;
-				elementPtr = &element->next;
-			}
-
-			_addValueToObject(currentObject, name, jsonValue);
-			return true;
-		}
+		// WRITE
+		[_value](json_array_element_s* _element, int _index) -> bool
+	{
+		_element->value = createBoolValue(_value[_index]);
+		return true;
 	}
-	return false;
+	);
 }
 
-bool JsonSerializer::serialize(const char* name, uint16* value, size_t size)
+bool JsonSerializer::serialize(const char* _name, uint8* _value, size_t _size)
 {
-	if (m_currentValue->type == json_type_object)
-	{
-		json_object_s* currentObject = static_cast<json_object_s*>(m_currentValue->payload);
+	return serializeArray(
+		_name,
+		_size,
 
-		if (isReading())
+		// READ
+		[_value](const json_array_element_s* _element, int _index) -> bool
 		{
-			json_value_s* match = _findObjectValue(currentObject, name);
-			if (match && match->type == json_type_array)
-			{
-				json_array_s* array = static_cast<json_array_s*>(match->payload);
-				if (size <= array->length)
-				{
-					json_array_element_s* currentElement = array->start;
-					int i = 0;
-					while (currentElement)
-					{
-						if (currentElement->value->type != json_type_number)
-							return false;
+			if (_element->value->type != json_type_number)
+				return false;
 
-						value[i] = atoi(static_cast<json_number_s*>(currentElement->value->payload)->number);
-						++i;
-						currentElement = currentElement->next;
-					}
-					return true;
-				}
-			}
-		}
-		else
+			_value[_index] = atoi(static_cast<json_number_s*>(_element->value->payload)->number);
+			return true;
+		},
+
+		// WRITE
+		[_value](json_array_element_s* _element, int _index) -> bool
 		{
-			json_value_s* jsonValue = new json_value_s;
-			jsonValue->type = json_type_array;
-			json_array_s* array = new json_array_s;
-			jsonValue->payload = array;
-
-			array->length = size;
-
-			json_array_element_s** elementPtr = &array->start;
-			for (size_t i = 0; i < size; i++)
-			{
-				json_array_element_s* element = new json_array_element_s;
-				element->value = new json_value_s;
-				element->value->type = json_type_number;
-				element->value->payload = _createNumber(value[i]);
-
-				*elementPtr = element;
-				elementPtr = &element->next;
-			}
-
-			_addValueToObject(currentObject, name, jsonValue);
+			_element->value = createNumberValue(_value[_index]);
 			return true;
 		}
-	}
-	return false;
+	);
 }
 
-bool JsonSerializer::serialize(const char* name, uint32* value, size_t size)
+bool JsonSerializer::serialize(const char* _name, uint16* _value, size_t _size)
 {
-	if (m_currentValue->type == json_type_object)
-	{
-		json_object_s* currentObject = static_cast<json_object_s*>(m_currentValue->payload);
+	return serializeArray(
+		_name,
+		_size,
 
-		if (isReading())
+		// READ
+		[_value](const json_array_element_s* _element, int _index) -> bool
 		{
-			json_value_s* match = _findObjectValue(currentObject, name);
-			if (match && match->type == json_type_array)
-			{
-				json_array_s* array = static_cast<json_array_s*>(match->payload);
-				if (size <= array->length)
-				{
-					json_array_element_s* currentElement = array->start;
-					int i = 0;
-					while (currentElement)
-					{
-						if (currentElement->value->type != json_type_number)
-							return false;
+			if (_element->value->type != json_type_number)
+				return false;
 
-						value[i] = atoi(static_cast<json_number_s*>(currentElement->value->payload)->number);
-						++i;
-						currentElement = currentElement->next;
-					}
-					return true;
-				}
-			}
-		}
-		else
-		{
-			json_value_s* jsonValue = new json_value_s;
-			jsonValue->type = json_type_array;
-			json_array_s* array = new json_array_s;
-			jsonValue->payload = array;
-
-			array->length = size;
-
-			json_array_element_s** elementPtr = &array->start;
-			for (size_t i = 0; i < size; i++)
-			{
-				json_array_element_s* element = new json_array_element_s;
-				element->value = new json_value_s;
-				element->value->type = json_type_number;
-				element->value->payload = _createNumber(value[i]);
-
-				*elementPtr = element;
-				elementPtr = &element->next;
-			}
-
-			_addValueToObject(currentObject, name, jsonValue);
+			_value[_index] = atoi(static_cast<json_number_s*>(_element->value->payload)->number);
 			return true;
-		}
+		},
+
+		// WRITE
+		[_value](json_array_element_s* _element, int _index) -> bool
+	{
+		_element->value = createNumberValue(_value[_index]);
+		return true;
 	}
-	return false;
+	);
 }
 
-bool JsonSerializer::serialize(const char* name, uint64* value, size_t size)
+bool JsonSerializer::serialize(const char* _name, uint32* _value, size_t _size)
 {
-	if (m_currentValue->type == json_type_object)
-	{
-		json_object_s* currentObject = static_cast<json_object_s*>(m_currentValue->payload);
+	return serializeArray(
+		_name,
+		_size,
 
-		if (isReading())
+		// READ
+		[_value](const json_array_element_s* _element, int _index) -> bool
 		{
-			json_value_s* match = _findObjectValue(currentObject, name);
-			if (match && match->type == json_type_array)
-			{
-				json_array_s* array = static_cast<json_array_s*>(match->payload);
-				if (size <= array->length)
-				{
-					json_array_element_s* currentElement = array->start;
-					int i = 0;
-					while (currentElement)
-					{
-						if (currentElement->value->type != json_type_number)
-							return false;
+			if (_element->value->type != json_type_number)
+				return false;
 
-						value[i] = atol(static_cast<json_number_s*>(currentElement->value->payload)->number);
-						++i;
-						currentElement = currentElement->next;
-					}
-					return true;
-				}
-			}
-		}
-		else
-		{
-			json_value_s* jsonValue = new json_value_s;
-			jsonValue->type = json_type_array;
-			json_array_s* array = new json_array_s;
-			jsonValue->payload = array;
-
-			array->length = size;
-
-			json_array_element_s** elementPtr = &array->start;
-			for (size_t i = 0; i < size; i++)
-			{
-				json_array_element_s* element = new json_array_element_s;
-				element->value = new json_value_s;
-				element->value->type = json_type_number;
-				element->value->payload = _createNumber(value[i]);
-
-				*elementPtr = element;
-				elementPtr = &element->next;
-			}
-
-			_addValueToObject(currentObject, name, jsonValue);
+			_value[_index] = atoi(static_cast<json_number_s*>(_element->value->payload)->number);
 			return true;
-		}
+		},
+
+		// WRITE
+		[_value](json_array_element_s* _element, int _index) -> bool
+	{
+		_element->value = createNumberValue(_value[_index]);
+		return true;
 	}
-	return false;
+	);
 }
 
-bool JsonSerializer::serialize(const char* name, int8* value, size_t size)
+bool JsonSerializer::serialize(const char* _name, uint64* _value, size_t _size)
 {
-	if (m_currentValue->type == json_type_object)
-	{
-		json_object_s* currentObject = static_cast<json_object_s*>(m_currentValue->payload);
+	return serializeArray(
+		_name,
+		_size,
 
-		if (isReading())
+		// READ
+		[_value](const json_array_element_s* _element, int _index) -> bool
 		{
-			json_value_s* match = _findObjectValue(currentObject, name);
-			if (match && match->type == json_type_array)
-			{
-				json_array_s* array = static_cast<json_array_s*>(match->payload);
-				if (size <= array->length)
-				{
-					json_array_element_s* currentElement = array->start;
-					int i = 0;
-					while (currentElement)
-					{
-						if (currentElement->value->type != json_type_number)
-							return false;
+			if (_element->value->type != json_type_number)
+				return false;
 
-						value[i] = atoi(static_cast<json_number_s*>(currentElement->value->payload)->number);
-						++i;
-						currentElement = currentElement->next;
-					}
-					return true;
-				}
-			}
-		}
-		else
-		{
-			json_value_s* jsonValue = new json_value_s;
-			jsonValue->type = json_type_array;
-			json_array_s* array = new json_array_s;
-			jsonValue->payload = array;
-
-			array->length = size;
-
-			json_array_element_s** elementPtr = &array->start;
-			for (size_t i = 0; i < size; i++)
-			{
-				json_array_element_s* element = new json_array_element_s;
-				element->value = new json_value_s;
-				element->value->type = json_type_number;
-				element->value->payload = _createNumber(value[i]);
-
-				*elementPtr = element;
-				elementPtr = &element->next;
-			}
-
-			_addValueToObject(currentObject, name, jsonValue);
+			_value[_index] = atol(static_cast<json_number_s*>(_element->value->payload)->number);
 			return true;
-		}
+		},
+
+		// WRITE
+		[_value](json_array_element_s* _element, int _index) -> bool
+	{
+		_element->value = createNumberValue(_value[_index]);
+		return true;
 	}
-	return false;
+	);
 }
 
-bool JsonSerializer::serialize(const char* name, int16* value, size_t size)
+bool JsonSerializer::serialize(const char* _name, int8* _value, size_t _size)
 {
-	if (m_currentValue->type == json_type_object)
-	{
-		json_object_s* currentObject = static_cast<json_object_s*>(m_currentValue->payload);
+	return serializeArray(
+		_name,
+		_size,
 
-		if (isReading())
+		// READ
+		[_value](const json_array_element_s* _element, int _index) -> bool
 		{
-			json_value_s* match = _findObjectValue(currentObject, name);
-			if (match && match->type == json_type_array)
-			{
-				json_array_s* array = static_cast<json_array_s*>(match->payload);
-				if (size <= array->length)
-				{
-					json_array_element_s* currentElement = array->start;
-					int i = 0;
-					while (currentElement)
-					{
-						if (currentElement->value->type != json_type_number)
-							return false;
+			if (_element->value->type != json_type_number)
+				return false;
 
-						value[i] = atoi(static_cast<json_number_s*>(currentElement->value->payload)->number);
-						++i;
-						currentElement = currentElement->next;
-					}
-					return true;
-				}
-			}
-		}
-		else
-		{
-			json_value_s* jsonValue = new json_value_s;
-			jsonValue->type = json_type_array;
-			json_array_s* array = new json_array_s;
-			jsonValue->payload = array;
-
-			array->length = size;
-
-			json_array_element_s** elementPtr = &array->start;
-			for (size_t i = 0; i < size; i++)
-			{
-				json_array_element_s* element = new json_array_element_s;
-				element->value = new json_value_s;
-				element->value->type = json_type_number;
-				element->value->payload = _createNumber(value[i]);
-
-				*elementPtr = element;
-				elementPtr = &element->next;
-			}
-
-			_addValueToObject(currentObject, name, jsonValue);
+			_value[_index] = atoi(static_cast<json_number_s*>(_element->value->payload)->number);
 			return true;
-		}
+		},
+
+		// WRITE
+		[_value](json_array_element_s* _element, int _index) -> bool
+	{
+		_element->value = createNumberValue(_value[_index]);
+		return true;
 	}
-	return false;
+	);
 }
 
-bool JsonSerializer::serialize(const char* name, int32* value, size_t size)
+bool JsonSerializer::serialize(const char* _name, int16* _value, size_t _size)
 {
-	if (m_currentValue->type == json_type_object)
-	{
-		json_object_s* currentObject = static_cast<json_object_s*>(m_currentValue->payload);
+	return serializeArray(
+		_name,
+		_size,
 
-		if (isReading())
+		// READ
+		[_value](const json_array_element_s* _element, int _index) -> bool
 		{
-			json_value_s* match = _findObjectValue(currentObject, name);
-			if (match && match->type == json_type_array)
-			{
-				json_array_s* array = static_cast<json_array_s*>(match->payload);
-				if (size <= array->length)
-				{
-					json_array_element_s* currentElement = array->start;
-					int i = 0;
-					while (currentElement)
-					{
-						if (currentElement->value->type != json_type_number)
-							return false;
+			if (_element->value->type != json_type_number)
+				return false;
 
-						value[i] = atoi(static_cast<json_number_s*>(currentElement->value->payload)->number);
-						++i;
-						currentElement = currentElement->next;
-					}
-					return true;
-				}
-			}
-		}
-		else
-		{
-			json_value_s* jsonValue = new json_value_s;
-			jsonValue->type = json_type_array;
-			json_array_s* array = new json_array_s;
-			jsonValue->payload = array;
-
-			array->length = size;
-
-			json_array_element_s** elementPtr = &array->start;
-			for (size_t i = 0; i < size; i++)
-			{
-				json_array_element_s* element = new json_array_element_s;
-				element->value = new json_value_s;
-				element->value->type = json_type_number;
-				element->value->payload = _createNumber(value[i]);
-
-				*elementPtr = element;
-				elementPtr = &element->next;
-			}
-
-			_addValueToObject(currentObject, name, jsonValue);
+			_value[_index] = atoi(static_cast<json_number_s*>(_element->value->payload)->number);
 			return true;
-		}
+		},
+
+		// WRITE
+		[_value](json_array_element_s* _element, int _index) -> bool
+	{
+		_element->value = createNumberValue(_value[_index]);
+		return true;
 	}
-	return false;
+	);
 }
 
-bool JsonSerializer::serialize(const char* name, int64* value, size_t size)
+bool JsonSerializer::serialize(const char* _name, int32* _value, size_t _size)
 {
-	if (m_currentValue->type == json_type_object)
-	{
-		json_object_s* currentObject = static_cast<json_object_s*>(m_currentValue->payload);
+	return serializeArray(
+		_name,
+		_size,
 
-		if (isReading())
+		// READ
+		[_value](const json_array_element_s* _element, int _index) -> bool
 		{
-			json_value_s* match = _findObjectValue(currentObject, name);
-			if (match && match->type == json_type_array)
-			{
-				json_array_s* array = static_cast<json_array_s*>(match->payload);
-				if (size <= array->length)
-				{
-					json_array_element_s* currentElement = array->start;
-					int i = 0;
-					while (currentElement)
-					{
-						if (currentElement->value->type != json_type_number)
-							return false;
+			if (_element->value->type != json_type_number)
+				return false;
 
-						value[i] = atol(static_cast<json_number_s*>(currentElement->value->payload)->number);
-						++i;
-						currentElement = currentElement->next;
-					}
-					return true;
-				}
-			}
-		}
-		else
-		{
-			json_value_s* jsonValue = new json_value_s;
-			jsonValue->type = json_type_array;
-			json_array_s* array = new json_array_s;
-			jsonValue->payload = array;
-
-			array->length = size;
-
-			json_array_element_s** elementPtr = &array->start;
-			for (size_t i = 0; i < size; i++)
-			{
-				json_array_element_s* element = new json_array_element_s;
-				element->value = new json_value_s;
-				element->value->type = json_type_number;
-				element->value->payload = _createNumber(value[i]);
-
-				*elementPtr = element;
-				elementPtr = &element->next;
-			}
-
-			_addValueToObject(currentObject, name, jsonValue);
+			_value[_index] = atoi(static_cast<json_number_s*>(_element->value->payload)->number);
 			return true;
-		}
+		},
+
+		// WRITE
+		[_value](json_array_element_s* _element, int _index) -> bool
+	{
+		_element->value = createNumberValue(_value[_index]);
+		return true;
 	}
-	return false;
+	);
 }
 
-bool JsonSerializer::serialize(const char* name, float* value, size_t size)
+bool JsonSerializer::serialize(const char* _name, int64* _value, size_t _size)
 {
-	if (m_currentValue->type == json_type_object)
-	{
-		json_object_s* currentObject = static_cast<json_object_s*>(m_currentValue->payload);
+	return serializeArray(
+		_name,
+		_size,
 
-		if (isReading())
+		// READ
+		[_value](const json_array_element_s* _element, int _index) -> bool
 		{
-			json_value_s* match = _findObjectValue(currentObject, name);
-			if (match && match->type == json_type_array)
-			{
-				json_array_s* array = static_cast<json_array_s*>(match->payload);
-				if (size <= array->length)
-				{
-					json_array_element_s* currentElement = array->start;
-					int i = 0;
-					while (currentElement)
-					{
-						if (currentElement->value->type != json_type_number)
-							return false;
+			if (_element->value->type != json_type_number)
+				return false;
 
-						value[i] = static_cast<float>(atof(static_cast<json_number_s*>(currentElement->value->payload)->number));
-						++i;
-						currentElement = currentElement->next;
-					}
-					return true;
-				}
-			}
-		}
-		else
-		{
-			json_value_s* jsonValue = new json_value_s;
-			jsonValue->type = json_type_array;
-			json_array_s* array = new json_array_s;
-			jsonValue->payload = array;
-
-			array->length = size;
-
-			json_array_element_s** elementPtr = &array->start;
-			for (size_t i = 0; i < size; i++)
-			{
-				json_array_element_s* element = new json_array_element_s;
-				element->value = new json_value_s;
-				element->value->type = json_type_number;
-				element->value->payload = _createNumber(value[i]);
-
-				*elementPtr = element;
-				elementPtr = &element->next;
-			}
-
-			_addValueToObject(currentObject, name, jsonValue);
+			_value[_index] = atol(static_cast<json_number_s*>(_element->value->payload)->number);
 			return true;
-		}
+		},
+
+		// WRITE
+		[_value](json_array_element_s* _element, int _index) -> bool
+	{
+		_element->value = createNumberValue(_value[_index]);
+		return true;
 	}
-	return false;
+	);
 }
 
-bool JsonSerializer::serialize(const char* name, double* value, size_t size)
+bool JsonSerializer::serialize(const char* _name, float* _value, size_t _size)
 {
-	if (m_currentValue->type == json_type_object)
-	{
-		json_object_s* currentObject = static_cast<json_object_s*>(m_currentValue->payload);
+	return serializeArray(
+		_name,
+		_size,
 
-		if (isReading())
+		// READ
+		[_value](const json_array_element_s* _element, int _index) -> bool
 		{
-			json_value_s* match = _findObjectValue(currentObject, name);
-			if (match && match->type == json_type_array)
-			{
-				json_array_s* array = static_cast<json_array_s*>(match->payload);
-				if (size <= array->length)
-				{
-					json_array_element_s* currentElement = array->start;
-					int i = 0;
-					while (currentElement)
-					{
-						if (currentElement->value->type != json_type_number)
-							return false;
+			if (_element->value->type != json_type_number)
+				return false;
 
-						value[i] = atof(static_cast<json_number_s*>(currentElement->value->payload)->number);
-						++i;
-						currentElement = currentElement->next;
-					}
-					return true;
-				}
-			}
-		}
-		else
-		{
-			json_value_s* jsonValue = new json_value_s;
-			jsonValue->type = json_type_array;
-			json_array_s* array = new json_array_s;
-			jsonValue->payload = array;
-
-			array->length = size;
-
-			json_array_element_s** elementPtr = &array->start;
-			for (size_t i = 0; i < size; i++)
-			{
-				json_array_element_s* element = new json_array_element_s;
-				element->value = new json_value_s;
-				element->value->type = json_type_number;
-				element->value->payload = _createNumber(value[i]);
-
-				*elementPtr = element;
-				elementPtr = &element->next;
-			}
-
-			_addValueToObject(currentObject, name, jsonValue);
+			_value[_index] = static_cast<float>(atof(static_cast<json_number_s*>(_element->value->payload)->number));
 			return true;
-		}
+		},
+
+		// WRITE
+		[_value](json_array_element_s* _element, int _index) -> bool
+	{
+		_element->value = createNumberValue(_value[_index]);
+		return true;
 	}
-	return false;
+	);
 }
 
-bool JsonSerializer::serialize(const char* name, char* value, size_t size)
+bool JsonSerializer::serialize(const char* _name, double* _value, size_t _size)
+{
+	return serializeArray(
+		_name,
+		_size,
+
+		// READ
+		[_value](const json_array_element_s* _element, int _index) -> bool
+		{
+			if (_element->value->type != json_type_number)
+				return false;
+
+			_value[_index] = atof(static_cast<json_number_s*>(_element->value->payload)->number);
+			return true;
+		},
+
+		// WRITE
+		[_value](json_array_element_s* _element, int _index) -> bool
+	{
+		_element->value = createNumberValue(_value[_index]);
+		return true;
+	}
+	);
+}
+
+bool JsonSerializer::serialize(const char* _name, char* _value, size_t _size)
 {
 	if (m_currentValue->type != json_type_object && m_currentValue->type != json_type_array)
 		return false;
@@ -977,28 +619,28 @@ bool JsonSerializer::serialize(const char* name, char* value, size_t size)
 
 	if (isReading())
 	{
-		json_value_s* match = _findObjectValue(currentObject, name);
+		json_value_s* match = findObjectValue(currentObject, _name);
 		if (!match || match->type != json_type_string)
 			return false;
 
 		json_string_s* string = static_cast<json_string_s*>(match->payload);
 
-		if ((size) != string->string_size)
+		if ((_size) != string->string_size)
 			return false;
 
-		strncpy(value, static_cast<char*>(string->string), size);
+		strncpy(_value, static_cast<char*>(string->string), _size);
 	}
 	else
 	{
 		json_value_s* jsonValue = new json_value_s;
 		jsonValue->type = json_type_string;
-		jsonValue->payload = _createString(value, size);
-		_addValueToObject(currentObject, name, jsonValue);
+		jsonValue->payload = createString(_value, _size);
+		addValueToObject(currentObject, _name, jsonValue);
 	}
 	return true;
 }
 
-bool JsonSerializer::serialize(const char* name, std::string& value)
+bool JsonSerializer::serialize(const char* _name, std::string& _value)
 {
 	if (m_currentValue->type == json_type_object)
 	{
@@ -1006,10 +648,10 @@ bool JsonSerializer::serialize(const char* name, std::string& value)
 
 		if (isReading())
 		{
-			json_value_s* match = _findObjectValue(currentObject, name);
+			json_value_s* match = findObjectValue(currentObject, _name);
 			if (match && match->type == json_type_string)
 			{
-				value = static_cast<char*>(static_cast<json_string_s*>(match->payload)->string);
+				_value = static_cast<char*>(static_cast<json_string_s*>(match->payload)->string);
 				return true;
 			}
 		}
@@ -1017,69 +659,37 @@ bool JsonSerializer::serialize(const char* name, std::string& value)
 		{
 			json_value_s* jsonValue = new json_value_s;
 			jsonValue->type = json_type_string;
-			jsonValue->payload = _createString(value.c_str());
-			_addValueToObject(currentObject, name, jsonValue);
+			jsonValue->payload = createString(_value.c_str());
+			addValueToObject(currentObject, _name, jsonValue);
 			return true;
 		}
 	}
 	return false;
 }
 
-bool JsonSerializer::serialize(const char* name, std::string* value, size_t size)
+bool JsonSerializer::serialize(const char* _name, std::string* _value, size_t _size)
 {
-	if (m_currentValue->type == json_type_object)
-	{
-		json_object_s* currentObject = static_cast<json_object_s*>(m_currentValue->payload);
+	return serializeArray(
+		_name,
+		_size,
 
-		if (isReading())
+		// READ
+		[_value](const json_array_element_s* _element, int _index) -> bool
 		{
-			json_value_s* match = _findObjectValue(currentObject, name);
-			if (match && match->type == json_type_array)
-			{
-				json_array_s* array = static_cast<json_array_s*>(match->payload);
-				if (size <= array->length)
-				{
-					json_array_element_s* currentElement = array->start;
-					int i = 0;
-					while (currentElement)
-					{
-						if (currentElement->value->type != json_type_string)
-							return false;
+			if (_element->value->type != json_type_string)
+				return false;
 
-						value[i] = static_cast<char*>(static_cast<json_string_s*>(currentElement->value->payload)->string);
-						++i;
-						currentElement = currentElement->next;
-					}
-					return true;
-				}
-			}
-		}
-		else
-		{
-			json_value_s* jsonValue = new json_value_s;
-			jsonValue->type = json_type_array;
-			json_array_s* array = new json_array_s;
-			jsonValue->payload = array;
-
-			array->length = size;
-
-			json_array_element_s** elementPtr = &array->start;
-			for (size_t i = 0; i < size; i++)
-			{
-				json_array_element_s* element = new json_array_element_s;
-				element->value = new json_value_s;
-				element->value->type = json_type_string;
-				element->value->payload = _createString(value[i].c_str());
-
-				*elementPtr = element;
-				elementPtr = &element->next;
-			}
-
-			_addValueToObject(currentObject, name, jsonValue);
+			_value[_index] = static_cast<char*>(static_cast<json_string_s*>(_element->value->payload)->string);
 			return true;
-		}
+		},
+
+		// WRITE
+		[_value](json_array_element_s* _element, int _index) -> bool
+	{
+		_element->value = createStringValue(_value[_index].c_str());
+		return true;
 	}
-	return false;
+	);
 }
 
 bool JsonSerializer::beginVectorSerialization(const char* _name, size_t& size)
@@ -1094,7 +704,6 @@ bool JsonSerializer::endVectorSerialization()
 	return true;
 }
 
-// NOTE: so much duplicated code between void** & void* function
 bool JsonSerializer::serialize(const char* _name, void** _pointer, const ClassDesc* _classDesc)
 {
 	if (m_currentValue->type != json_type_object)
@@ -1102,106 +711,32 @@ bool JsonSerializer::serialize(const char* _name, void** _pointer, const ClassDe
 
 	json_object_s* currentObject = static_cast<json_object_s*>(m_currentValue->payload);
 
+	json_value_s* prevValue = m_currentValue;
 	if (isReading())
 	{
-		json_value_s* match = _findObjectValue(currentObject, _name);
-		if (!match || match->type != json_type_object)
+		json_value_s* match = findObjectValue(currentObject, _name, json_type_object);
+		if (!match)
 			return false;
 
-		json_value_s* current_value = m_currentValue;
 		m_currentValue = match;
-
-		currentObject = static_cast<json_object_s*>(m_currentValue->payload);
-
-		match = _findObjectValue(currentObject, "className");
-		if (!match || match->type != json_type_string)
-		{
-			m_currentValue = current_value;
-			return false;
-		}
-
-		json_string_s* className = static_cast<json_string_s*>(match->payload);
-		_classDesc = getClassDesc(static_cast<char*>(className->string));
-
-		if (!_classDesc)
-			return false;
-
-		*_pointer = Factory::create(_classDesc->getName());
-
-		bool result = true;
-
-		for (const auto& member : _classDesc->getMembers())
-		{
-			switch(member.type)
-			{
-			case ClassDesc::TYPE_INT:	{ result = result && serialize(member.name, *reinterpret_cast<int*>((*(uint8**)_pointer) + member.address)); } break;
-			case ClassDesc::TYPE_FLOAT:	{ result = result && serialize(member.name, *reinterpret_cast<float*>((*(uint8**)_pointer) + member.address)); } break;
-			case ClassDesc::TYPE_CHAR:	{ result = result && serialize(member.name, *reinterpret_cast<char*>((*(uint8**)_pointer) + member.address)); } break;
-
-			case ClassDesc::TYPE_ARRAY:
-				{
-					switch(member.elementType)
-					{
-					case ClassDesc::TYPE_INT:	{ result = result && serialize(member.name, reinterpret_cast<int*>((*(uint8**)_pointer) + member.address), member.elementCount); } break;
-					case ClassDesc::TYPE_FLOAT:	{ result = result && serialize(member.name, reinterpret_cast<float*>((*(uint8**)_pointer) + member.address), member.elementCount); } break;
-					case ClassDesc::TYPE_CHAR:	{ result = result && serialize(member.name, reinterpret_cast<char*>((*(uint8**)_pointer) + member.address), member.elementCount); } break;
-					default: break;
-					}
-				} break;
-
-			default: break;
-			}
-		}
-
-		return result;
 	}
 	else
 	{
-		json_value_s* jsonValue = new json_value_s;
-		jsonValue->type = json_type_object;
-		json_object_s* object = new json_object_s;
-		jsonValue->payload = object;
-		object->length = 0;
-		object->start = nullptr;
-
-		json_value_s* currentValue = m_currentValue;
-		m_currentValue = jsonValue;
-
-		// const_cast is ok since I know the char wont be stored nor modified.
-		bool result = serialize("className", const_cast<char*>(_classDesc->getName()), strlen(_classDesc->getName()));
-		
-		for (const auto& member : _classDesc->getMembers())
-		{
-			switch(member.type)
-			{
-			case ClassDesc::TYPE_INT:	{ result = result && serialize(member.name, *reinterpret_cast<int*>((*(uint8**)_pointer) + member.address)); } break;
-			case ClassDesc::TYPE_FLOAT:	{ result = result && serialize(member.name, *reinterpret_cast<float*>((*(uint8**)_pointer) + member.address)); } break;
-			case ClassDesc::TYPE_CHAR:	{ result = result && serialize(member.name, *reinterpret_cast<char*>((*(uint8**)_pointer) + member.address)); } break;
-
-			case ClassDesc::TYPE_ARRAY:
-				{
-					switch(member.elementType)
-					{
-					case ClassDesc::TYPE_INT:	{ result = result && serialize(member.name, reinterpret_cast<int*>((*(uint8**)_pointer) + member.address), member.elementCount); } break;
-					case ClassDesc::TYPE_FLOAT:	{ result = result && serialize(member.name, reinterpret_cast<float*>((*(uint8**)_pointer) + member.address), member.elementCount); } break;
-					case ClassDesc::TYPE_CHAR:	{ result = result && serialize(member.name, reinterpret_cast<char*>((*(uint8**)_pointer) + member.address), member.elementCount); } break;
-					default: break;
-					}
-				} break;
-
-			default: break;
-			}
-		}
-
-		m_currentValue = currentValue;
-
-		if (result)
-		{
-			_addValueToObject(currentObject, _name, jsonValue);
-		}
-
-		return result;
+		m_currentValue = createObjectValue();
+		addValueToObject(static_cast<json_object_s*>(prevValue->payload), _name, m_currentValue);
 	}
+
+	bool result = serializeClassDesc(&_classDesc);
+
+	if (result && isReading())
+	{
+		*_pointer = Factory::create(_classDesc->getName());
+	}
+
+	result = result && serializeMembers(*_pointer, _classDesc);
+
+	m_currentValue = prevValue;
+	return result;
 }
 
 bool JsonSerializer::serialize(const char* _name, void* _pointer, const ClassDesc* _classDesc)
@@ -1211,111 +746,163 @@ bool JsonSerializer::serialize(const char* _name, void* _pointer, const ClassDes
 
 	json_object_s* currentObject = static_cast<json_object_s*>(m_currentValue->payload);
 
+	json_value_s* prevValue = m_currentValue;
 	if (isReading())
 	{
-		json_value_s* match = _findObjectValue(currentObject, _name);
-		if (!match || match->type != json_type_object)
+		json_value_s* match = findObjectValue(currentObject, _name, json_type_object);
+		if (!match)
 			return false;
 
-		json_value_s* current_value = m_currentValue;
 		m_currentValue = match;
+	}
+	else
+	{
+		m_currentValue = createObjectValue();
+		addValueToObject(static_cast<json_object_s*>(prevValue->payload), _name, m_currentValue);
+	}
 
-		currentObject = static_cast<json_object_s*>(m_currentValue->payload);
+	bool result = serializeClassDesc(&_classDesc);
+	result = result && serializeMembers(_pointer, _classDesc);
 
-		match = _findObjectValue(currentObject, "className");
-		if (!match || match->type != json_type_string)
-		{
-			m_currentValue = current_value;
+	m_currentValue = prevValue;
+	return result;
+}
+
+bool JsonSerializer::serializeArray(const char* _name, size_t _size, std::function<bool(const json_array_element_s*, int)> _readCallback, std::function<bool(json_array_element_s*, int)> _writeCallback)
+{
+	if (m_currentValue->type != json_type_object)
+		return false;
+
+	json_object_s* currentObject = static_cast<json_object_s*>(m_currentValue->payload);
+
+	if (isReading())
+	{
+		json_value_s* match = findObjectValue(currentObject, _name, json_type_array);
+		if (!match)
 			return false;
-		}
 
-		json_string_s* className = static_cast<json_string_s*>(match->payload);
-		_classDesc = getClassDesc(static_cast<char*>(className->string));
-
-		if (!_classDesc)
-		{
-			m_currentValue = current_value;
+		json_array_s* array = static_cast<json_array_s*>(match->payload);
+		if (_size > array->length)
 			return false;
-		}
 
-		bool result = true;
-
-		for (const auto& member : _classDesc->getMembers())
+		json_array_element_s* currentElement = array->start;
+		int i = 0;
+		while (currentElement)
 		{
-			switch(member.type)
-			{
-			case ClassDesc::TYPE_INT:
-				{
-					result = result && serialize(member.name, *(reinterpret_cast<int*>((uint8*)_pointer + member.address)));
-				} break;
+			if (!_readCallback(currentElement, i))
+				return false;
 
-			case ClassDesc::TYPE_FLOAT:
-				{
-					result = result && serialize(member.name, *(reinterpret_cast<float*>((uint8*)_pointer + member.address)));
-				} break;
-
-			default: break;
-			}
+			++i;
+			currentElement = currentElement->next;
 		}
-
-		m_currentValue = current_value;
-		return result;
 	}
 	else
 	{
 		json_value_s* jsonValue = new json_value_s;
-		jsonValue->type = json_type_object;
-		json_object_s* object = new json_object_s;
-		jsonValue->payload = object;
-		object->start = nullptr;
-		object->length = 0;
+		jsonValue->type = json_type_array;
+		json_array_s* array = new json_array_s;
+		jsonValue->payload = array;
+		array->length = _size;
 
-		json_value_s* currentValue = m_currentValue;
-		m_currentValue = jsonValue;
-
-		// const_cast is ok since I know the char wont be stored nor modified.
-		bool result = serialize("className", const_cast<char*>(_classDesc->getName()), strlen(_classDesc->getName()));
-
-		for (const auto& member : _classDesc->getMembers())
+		json_array_element_s** elementPtr = &array->start;
+		for (size_t i = 0; i < _size; i++)
 		{
-			switch(member.type)
-			{
-			case ClassDesc::TYPE_INT:
-				{
-					result = result && serialize(member.name, *(reinterpret_cast<int*>((uint8*)_pointer + member.address)));
-				} break;
+			json_array_element_s* element = new json_array_element_s;
 
-			case ClassDesc::TYPE_FLOAT:
-				{
-					result = result && serialize(member.name, *(reinterpret_cast<float*>((uint8*)_pointer + member.address)));
-				} break;
+			if (!_writeCallback(element, i))
+				return false;
 
-			default: break;
-			}
+			*elementPtr = element;
+			elementPtr = &element->next;
 		}
+		*elementPtr = nullptr;
 
-		m_currentValue = currentValue;
-
-		if (result)
-		{
-			_addValueToObject(currentObject, _name, jsonValue);
-		}
-
-		return result;
+		addValueToObject(currentObject, _name, jsonValue);
 	}
+	return true;
 }
 
-void JsonSerializer::_addValueToObject(json_object_s* object, const char* name, json_value_s* value)
+bool JsonSerializer::serializeClassDesc(const ClassDesc** _classDesc)
+{
+	std::string className;
+	if (isWriting())
+	{
+		className = (*_classDesc)->getName();
+	}
+
+	bool result = serialize("className", className);
+
+	if (isReading())
+	{
+		*_classDesc = getClassDesc(className.c_str());
+
+		if (!*_classDesc)
+			result = false;
+	}
+	return result;
+}
+
+bool JsonSerializer::serializeMembers(void* _pointer, const ClassDesc* _classDesc)
+{
+	bool result = true;
+
+	for (const auto& member : _classDesc->getMembers())
+	{
+		switch (member.type)
+		{
+		case ClassDesc::TYPE_BOOL: { result = result && serialize(member.name, *reinterpret_cast<bool*>(static_cast<uint8*>(_pointer) + member.address)); } break;
+		case ClassDesc::TYPE_CHAR: { result = result && serialize(member.name, *reinterpret_cast<char*>(static_cast<uint8*>(_pointer) + member.address)); } break;
+		case ClassDesc::TYPE_INT8: { result = result && serialize(member.name, *reinterpret_cast<int8*>(static_cast<uint8*>(_pointer) + member.address)); } break;
+		case ClassDesc::TYPE_INT16: { result = result && serialize(member.name, *reinterpret_cast<int16*>(static_cast<uint8*>(_pointer) + member.address)); } break;
+		case ClassDesc::TYPE_INT32: { result = result && serialize(member.name, *reinterpret_cast<int32*>(static_cast<uint8*>(_pointer) + member.address)); } break;
+		case ClassDesc::TYPE_INT64: { result = result && serialize(member.name, *reinterpret_cast<int64*>(static_cast<uint8*>(_pointer) + member.address)); } break;
+		case ClassDesc::TYPE_UINT8: { result = result && serialize(member.name, *reinterpret_cast<uint8*>(static_cast<uint8*>(_pointer) + member.address)); } break;
+		case ClassDesc::TYPE_UINT16: { result = result && serialize(member.name, *reinterpret_cast<uint16*>(static_cast<uint8*>(_pointer) + member.address)); } break;
+		case ClassDesc::TYPE_UINT32: { result = result && serialize(member.name, *reinterpret_cast<uint32*>(static_cast<uint8*>(_pointer) + member.address)); } break;
+		case ClassDesc::TYPE_UINT64: { result = result && serialize(member.name, *reinterpret_cast<uint64*>(static_cast<uint8*>(_pointer) + member.address)); } break;
+		case ClassDesc::TYPE_FLOAT: { result = result && serialize(member.name, *reinterpret_cast<float*>(static_cast<uint8*>(_pointer) + member.address)); } break;
+		case ClassDesc::TYPE_DOUBLE: { result = result && serialize(member.name, *reinterpret_cast<double*>(static_cast<uint8*>(_pointer) + member.address)); } break;
+		case ClassDesc::TYPE_STRING: { result = result && serialize(member.name, *reinterpret_cast<std::string*>(static_cast<uint8*>(_pointer) + member.address)); } break;
+
+		case ClassDesc::TYPE_ARRAY:
+			{
+				switch(member.elementType)
+				{
+				case ClassDesc::TYPE_BOOL: { result = result && serialize(member.name, reinterpret_cast<bool*>(static_cast<uint8*>(_pointer) + member.address), member.elementCount); } break;
+				case ClassDesc::TYPE_CHAR: { result = result && serialize(member.name, reinterpret_cast<char*>(static_cast<uint8*>(_pointer) + member.address), member.elementCount); } break;
+				case ClassDesc::TYPE_INT8: { result = result && serialize(member.name, reinterpret_cast<int8*>(static_cast<uint8*>(_pointer) + member.address), member.elementCount); } break;
+				case ClassDesc::TYPE_INT16: { result = result && serialize(member.name, reinterpret_cast<int16*>(static_cast<uint8*>(_pointer) + member.address), member.elementCount); } break;
+				case ClassDesc::TYPE_INT32: { result = result && serialize(member.name, reinterpret_cast<int32*>(static_cast<uint8*>(_pointer) + member.address), member.elementCount); } break;
+				case ClassDesc::TYPE_INT64: { result = result && serialize(member.name, reinterpret_cast<int64*>(static_cast<uint8*>(_pointer) + member.address), member.elementCount); } break;
+				case ClassDesc::TYPE_UINT8: { result = result && serialize(member.name, reinterpret_cast<uint8*>(static_cast<uint8*>(_pointer) + member.address), member.elementCount); } break;
+				case ClassDesc::TYPE_UINT16: { result = result && serialize(member.name, reinterpret_cast<uint16*>(static_cast<uint8*>(_pointer) + member.address), member.elementCount); } break;
+				case ClassDesc::TYPE_UINT32: { result = result && serialize(member.name, reinterpret_cast<uint32*>(static_cast<uint8*>(_pointer) + member.address), member.elementCount); } break;
+				case ClassDesc::TYPE_UINT64: { result = result && serialize(member.name, reinterpret_cast<uint64*>(static_cast<uint8*>(_pointer) + member.address), member.elementCount); } break;
+				case ClassDesc::TYPE_FLOAT: { result = result && serialize(member.name, reinterpret_cast<float*>(static_cast<uint8*>(_pointer) + member.address), member.elementCount); } break;
+				case ClassDesc::TYPE_DOUBLE: { result = result && serialize(member.name, reinterpret_cast<double*>(static_cast<uint8*>(_pointer) + member.address), member.elementCount); } break;
+				case ClassDesc::TYPE_STRING: { result = result && serialize(member.name, reinterpret_cast<std::string*>(static_cast<uint8*>(_pointer) + member.address), member.elementCount); } break;
+				default: break;
+				}
+			} break;
+
+		default: break;
+		}
+	};
+
+	return result;
+}
+
+void JsonSerializer::addValueToObject(json_object_s* _object, const char* _name, json_value_s* _value)
 {
 	json_object_element_s* nextElement = new json_object_element_s;
-	nextElement->value = value;
-	nextElement->name = _createString(name);
+	nextElement->value = _value;
+	nextElement->name = createString(_name);
 	nextElement->next = nullptr;
 
-	json_object_element_s* currentElement = object->start;
+	json_object_element_s* currentElement = _object->start;
 	if (!currentElement)
 	{
-		object->start = nextElement;
+		_object->start = nextElement;
 	}
 	else
 	{
@@ -1325,15 +912,15 @@ void JsonSerializer::_addValueToObject(json_object_s* object, const char* name, 
 		}
 		currentElement->next = nextElement;
 	}
-	++object->length;
+	++_object->length;
 }
 
-json_value_s* JsonSerializer::_findObjectValue(json_object_s* object, const char* name)
+json_value_s* JsonSerializer::findObjectValue(json_object_s* _object, const char* _name)
 {
-	json_object_element_s* currentElement = object->start;
+	json_object_element_s* currentElement = _object->start;
 	while (currentElement)
 	{
-		if (strcmp(name, static_cast<char*>(currentElement->name->string)) == 0)
+		if (strcmp(_name, static_cast<char*>(currentElement->name->string)) == 0)
 		{
 			return currentElement->value;
 		}
@@ -1342,99 +929,184 @@ json_value_s* JsonSerializer::_findObjectValue(json_object_s* object, const char
 	return nullptr;
 }
 
-json_string_s* JsonSerializer::_createString(const char* str, int size)
+json_value_s* JsonSerializer::findObjectValue(json_object_s* _object, const char* _name, json_type_e _type)
+{
+	json_value_s* ret = findObjectValue(_object, _name);
+	if (!ret || ret->type != _type)
+	{
+		ret = nullptr;
+	}
+	return ret;
+}
+
+json_string_s* JsonSerializer::createString(const char* _str, int _size)
 {
 	json_string_s* result = new json_string_s;
-	result->string_size = size < 0 ? strlen(str) : size;
+	result->string_size = _size < 0 ? strlen(_str) : _size;
 	char* strBuffer = new char[result->string_size + 1];
-	memcpy(strBuffer, str, result->string_size);
+	memcpy(strBuffer, _str, result->string_size);
 	strBuffer[result->string_size] = '\0';
 	result->string = strBuffer;
 	return result;
 }
 
-json_number_s* JsonSerializer::_createNumber(double number)
+json_number_s* JsonSerializer::createNumber(double _number)
 {
 	json_number_s* result = new json_number_s;
 	result->number = new char[32]; 
-	sprintf(result->number, "%f\0", number);
+	sprintf(result->number, "%f\0", _number);
 	result->number_size = strlen(result->number);
 	return result;
 }
 
-json_number_s* JsonSerializer::_createNumber(float number)
+json_number_s* JsonSerializer::createNumber(float _number)
 {
 	json_number_s* result = new json_number_s;
 	result->number = new char[32]; 
-	sprintf(result->number, "%f\0", number);
+	sprintf(result->number, "%f\0", _number);
 	result->number_size = strlen(result->number);
 	return result;
 }
 
-json_number_s* JsonSerializer::_createNumber(int64 number)
+json_number_s* JsonSerializer::createNumber(int64 _number)
 {
 	json_number_s* result = new json_number_s;
 	result->number = new char[32]; 
-	sprintf(result->number, "%lld\0", number);
+	sprintf(result->number, "%lld\0", _number);
 	result->number_size = strlen(result->number);
 	return result;
 }
 
-json_number_s* JsonSerializer::_createNumber(int number)
+json_number_s* JsonSerializer::createNumber(int _number)
 {
 	json_number_s* result = new json_number_s;
 	result->number = new char[32]; 
-	sprintf(result->number, "%d\0", number);
+	sprintf(result->number, "%d\0", _number);
 	result->number_size = strlen(result->number);
 	return result;
 }
 
-json_number_s* JsonSerializer::_createNumber(uint64 number)
+json_number_s* JsonSerializer::createNumber(uint64 _number)
 {
 	json_number_s* result = new json_number_s;
 	result->number = new char[32]; 
-	sprintf(result->number, "%lld\0", number);
+	sprintf(result->number, "%lld\0", _number);
 	result->number_size = strlen(result->number);
 	return result;
 }
 
-json_number_s* JsonSerializer::_createNumber(unsigned int number)
+json_number_s* JsonSerializer::createNumber(unsigned int _number)
 {
 	json_number_s* result = new json_number_s;
 	result->number = new char[32]; 
-	sprintf(result->number, "%d\0", number);
+	sprintf(result->number, "%d\0", _number);
 	result->number_size = strlen(result->number);
 	return result;
 }
 
-void JsonSerializer::_deleteJsonValue(json_value_s* jsonValue)
+json_value_s* JsonSerializer::createStringValue(const char* _str, int _size)
 {
-	switch (jsonValue->type)
+	json_value_s* ret = new json_value_s;
+	ret->type = json_type_string;
+	ret->payload = createString(_str, _size);
+	return ret;
+}
+
+json_value_s* JsonSerializer::createNumberValue(double _number)
+{
+	json_value_s* ret = new json_value_s;
+	ret->type = json_type_number;
+	ret->payload = createNumber(_number);
+	return ret;
+}
+
+json_value_s* JsonSerializer::createNumberValue(float _number)
+{
+	json_value_s* ret = new json_value_s;
+	ret->type = json_type_number;
+	ret->payload = createNumber(_number);
+	return ret;
+}
+
+json_value_s* JsonSerializer::createNumberValue(int64 _number)
+{
+	json_value_s* ret = new json_value_s;
+	ret->type = json_type_number;
+	ret->payload = createNumber(_number);
+	return ret;
+}
+
+json_value_s* JsonSerializer::createNumberValue(int _number)
+{
+	json_value_s* ret = new json_value_s;
+	ret->type = json_type_number;
+	ret->payload = createNumber(_number);
+	return ret;
+}
+
+json_value_s* JsonSerializer::createNumberValue(uint64 _number)
+{
+	json_value_s* ret = new json_value_s;
+	ret->type = json_type_number;
+	ret->payload = createNumber(_number);
+	return ret;
+}
+
+json_value_s* JsonSerializer::createNumberValue(unsigned _number)
+{
+	json_value_s* ret = new json_value_s;
+	ret->type = json_type_number;
+	ret->payload = createNumber(_number);
+	return ret;
+}
+
+json_value_s* JsonSerializer::createBoolValue(bool _value)
+{
+	json_value_s* ret = new json_value_s;
+	ret->type = _value ? json_type_true : json_type_false;
+	ret->payload = nullptr;
+	return ret;
+}
+
+json_value_s* JsonSerializer::createObjectValue()
+{
+	json_value_s* ret = new json_value_s;
+	ret->type = json_type_object;
+	json_object_s* object = new json_object_s;
+	ret->payload = object;
+	object->length = 0;
+	object->start = nullptr;
+	return ret;
+}
+
+void JsonSerializer::deleteJsonValue(json_value_s* _jsonValue)
+{
+	switch (_jsonValue->type)
 	{
 	case json_type_number:
 		{
-			json_number_s* payload = static_cast<json_number_s*>(jsonValue->payload);
+			json_number_s* payload = static_cast<json_number_s*>(_jsonValue->payload);
 			delete payload->number;
 		}
 		break;
 
 	case json_type_string:
 		{
-			json_string_s* payload = static_cast<json_string_s*>(jsonValue->payload);
+			json_string_s* payload = static_cast<json_string_s*>(_jsonValue->payload);
 			delete payload->string;
 		}
 		break;
 
 	case json_type_array:
 		{
-			json_array_s* payload = static_cast<json_array_s*>(jsonValue->payload);
+			json_array_s* payload = static_cast<json_array_s*>(_jsonValue->payload);
 			json_array_element_s* nextElement = payload->start;
 			while (nextElement)
 			{
 				json_array_element_s* element = nextElement;
 				nextElement = element->next;
 
-				_deleteJsonValue(element->value);
+				deleteJsonValue(element->value);
 				delete element;
 			}
 		}
@@ -1442,7 +1114,7 @@ void JsonSerializer::_deleteJsonValue(json_value_s* jsonValue)
 
 	case json_type_object:
 		{
-			json_object_s* payload = static_cast<json_object_s*>(jsonValue->payload);
+			json_object_s* payload = static_cast<json_object_s*>(_jsonValue->payload);
 			json_object_element_s* nextElement = payload->start;
 			while (nextElement)
 			{
@@ -1451,7 +1123,7 @@ void JsonSerializer::_deleteJsonValue(json_value_s* jsonValue)
 
 				delete element->name->string;
 				delete element->name;
-				_deleteJsonValue(element->value);
+				deleteJsonValue(element->value);
 				delete element;
 			}
 		}
@@ -1461,6 +1133,6 @@ void JsonSerializer::_deleteJsonValue(json_value_s* jsonValue)
 		break;
 	}
 
-	delete jsonValue->payload;
-	delete jsonValue;
+	delete _jsonValue->payload;
+	delete _jsonValue;
 }

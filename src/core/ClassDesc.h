@@ -8,10 +8,23 @@ public:
 
 	enum MemberType
 	{
-		TYPE_INT,
+		TYPE_BOOL,
 		TYPE_CHAR,
+		TYPE_INT8,
+		TYPE_INT16,
+		TYPE_INT32,
+		TYPE_INT64,
+		TYPE_UINT8,
+		TYPE_UINT16,
+		TYPE_UINT32,
+		TYPE_UINT64,
 		TYPE_FLOAT,
+		TYPE_DOUBLE,
+
+		TYPE_STRING,
+
 		TYPE_ARRAY,
+
 		TYPE_UNKNOWN
 	};
 
@@ -48,9 +61,19 @@ private:
 	std::vector<ClassMember>	m_members;
 };
 
-template <> ClassDesc::MemberType  ClassDesc::getType(int*) const;
+template <> ClassDesc::MemberType  ClassDesc::getType(bool*) const;
 template <> ClassDesc::MemberType  ClassDesc::getType(char*) const;
+template <> ClassDesc::MemberType  ClassDesc::getType(int8*) const;
+template <> ClassDesc::MemberType  ClassDesc::getType(int16*) const;
+template <> ClassDesc::MemberType  ClassDesc::getType(int32*) const;
+template <> ClassDesc::MemberType  ClassDesc::getType(int64*) const;
+template <> ClassDesc::MemberType  ClassDesc::getType(uint8*) const;
+template <> ClassDesc::MemberType  ClassDesc::getType(uint16*) const;
+template <> ClassDesc::MemberType  ClassDesc::getType(uint32*) const;
+template <> ClassDesc::MemberType  ClassDesc::getType(uint64*) const;
 template <> ClassDesc::MemberType  ClassDesc::getType(float*) const;
+template <> ClassDesc::MemberType  ClassDesc::getType(double*) const;
+template <> ClassDesc::MemberType  ClassDesc::getType(std::string*) const;
 
 
 class ClassSet

@@ -47,9 +47,19 @@ ClassDesc::ClassMember::ClassMember(const char* _name, uint32 _address, MemberTy
 
 }
 
-template <> ClassDesc::MemberType ClassDesc::getType(int*) const	{ return TYPE_INT; }
-template <> ClassDesc::MemberType ClassDesc::getType(char*) const	{ return TYPE_CHAR; }
-template <> ClassDesc::MemberType ClassDesc::getType(float*) const	{ return TYPE_FLOAT; }
+template <> ClassDesc::MemberType ClassDesc::getType(bool*) const			{ return TYPE_BOOL; }
+template <> ClassDesc::MemberType ClassDesc::getType(char*) const			{ return TYPE_CHAR; }
+template <> ClassDesc::MemberType ClassDesc::getType(int8*) const			{ return TYPE_INT8; }
+template <> ClassDesc::MemberType ClassDesc::getType(int16*) const			{ return TYPE_INT16; }
+template <> ClassDesc::MemberType ClassDesc::getType(int32*) const			{ return TYPE_INT32; }
+template <> ClassDesc::MemberType ClassDesc::getType(int64*) const			{ return TYPE_INT64; }
+template <> ClassDesc::MemberType ClassDesc::getType(uint8*) const			{ return TYPE_UINT8; }
+template <> ClassDesc::MemberType ClassDesc::getType(uint16*) const			{ return TYPE_UINT16; }
+template <> ClassDesc::MemberType ClassDesc::getType(uint32*) const			{ return TYPE_UINT32; }
+template <> ClassDesc::MemberType ClassDesc::getType(uint64*) const			{ return TYPE_UINT64; }
+template <> ClassDesc::MemberType ClassDesc::getType(float*) const			{ return TYPE_FLOAT; }
+template <> ClassDesc::MemberType ClassDesc::getType(double*) const			{ return TYPE_DOUBLE; }
+template <> ClassDesc::MemberType ClassDesc::getType(std::string*) const	{ return TYPE_STRING; }
 
 ClassSet::~ClassSet()
 {
