@@ -1,8 +1,0 @@
-obj/**
-bin/**
-project/vs2012/**
-!project/vs2012/*.sln
-!project/vs2012/*.vcxproj
-!project/vs2012/*.vcxproj.filters
-
-**.ini
