@@ -1,34 +1,21 @@
-﻿#pragma once
+#pragma once
 
 #include <string>
+#include "core/Resource.h"
 
-class File
+class File : public Resource
 {
 public:
-	enum OpenMode
-	{
-		MODE_READ,
-		MODE_WRITE,
-		MODE_APPEND
-	};
-
 	File(const char* path);
-	~File();
+	virtual ~File();
 
-	bool open(OpenMode mode);
-	void close();
+	virtual void onLoad() override;
+	virtual void onRelease() override;
 
-	bool write(const void* buffer, size_t size);
-	size_t read(void* buffer, size_t size) const;
-
-	bool isOpen() const;
-	long getSize() const;
-	long getOffset() const;
-	void setOffset(long offset);
 	const char* getPath() const;
+	const char* getContent() const;
 
 private:
-	std::string	m_path;
-	OpenMode	m_openMode;
-	std::FILE*	m_file;
+	std::string m_path;
+	char*		m_buffer;
 };

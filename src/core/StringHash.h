@@ -31,6 +31,7 @@ private:
 #endif
 };
 
+// TODO: automatic debug strings destroyer
 extern std::unordered_map<uint32, char*> g_stringHashes;
 
 template <typename T>

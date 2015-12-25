@@ -1,6 +1,6 @@
 ﻿#include "core/BinarySerializer.h"
 
-#include "core/File.h"
+#include "core/FileHandle.h"
 #include "core/Serializer.h"
 #include "core/ClassDesc.h"
 #include "core/Factory.h"
@@ -138,7 +138,7 @@ bool BinarySerializer::serialize(const char*, std::string& _value)
 	if (isReading())
 	{
 		_value.clear();
-		const File* file = getReadFile();
+		const FileHandle* file = getReadFile();
 		char buf;
 		while (true)
 		{

@@ -1,7 +1,7 @@
 ﻿#include "core/Serializer.h"
 
 #include "core/Assert.h"
-#include "core/File.h"
+#include "core/FileHandle.h"
 
 Serializer::Serializer()
 	: m_readFile(nullptr)
@@ -13,7 +13,7 @@ Serializer::~Serializer()
 {
 }
 
-bool Serializer::beginRead(const File* _file)
+bool Serializer::beginRead(const FileHandle* _file)
 {
 	if (m_readFile || m_writeFile)
 	{
@@ -30,7 +30,7 @@ bool Serializer::beginRead(const File* _file)
 	return true;
 }
 
-bool Serializer::beginWrite(File* _file)
+bool Serializer::beginWrite(FileHandle* _file)
 {
 	if (m_readFile || m_writeFile)
 	{
@@ -73,12 +73,12 @@ const char* Serializer::getErrorDesc()
 	return errorDesc;
 }
 
-const File* Serializer::getReadFile() const
+const FileHandle* Serializer::getReadFile() const
 {
 	return m_readFile;
 }
 
-File* Serializer::getWriteFile() const
+FileHandle* Serializer::getWriteFile() const
 {
 	return m_writeFile;
 }

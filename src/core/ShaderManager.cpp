@@ -1,7 +1,7 @@
 ﻿#include "core/ShaderManager.h"
 
 #include "core/Log.h"
-#include "core/File.h"
+#include "core/FileHandle.h"
 
 std::unordered_map<StringHash, GLuint> ShaderManager::s_shaderPrograms;
 
@@ -18,8 +18,8 @@ GLuint ShaderManager::loadShaderProgram(const char* name, const char* vertexShad
 	GLuint vs = 0;
 	{
 		char* shaderSource;
-		File file(vertexShaderPath);
-		if (file.open(File::MODE_READ))
+		FileHandle file(vertexShaderPath);
+		if (file.open(FileHandle::MODE_READ))
 		{
 			size_t size = file.getSize();
 			shaderSource = new char[size + 1];
@@ -55,8 +55,8 @@ GLuint ShaderManager::loadShaderProgram(const char* name, const char* vertexShad
 	GLuint fs = 0;
 	{
 		char* shaderSource;
-		File file(fragmentShaderPath);
-		if (file.open(File::MODE_READ))
+		FileHandle file(fragmentShaderPath);
+		if (file.open(FileHandle::MODE_READ))
 		{
 			size_t size = file.getSize();
 			shaderSource = new char[size + 1];

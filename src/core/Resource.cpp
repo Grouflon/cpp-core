@@ -7,6 +7,7 @@ Resource::Resource()
 	: m_uses(0u)
 	, m_loads(0u)
 {
+	m_error = RESOURCE_NOERROR;
 	g_resourceManager.registerResource(this);
 }
 
@@ -73,4 +74,25 @@ uint32 Resource::getUseCount() const
 uint32 Resource::getLoadCount() const
 {
 	return m_loads;
+}
+
+bool Resource::isLoaded() const
+{
+	return m_loads > 0;
+}
+
+Resource::Error Resource::getError() const
+{
+	return m_error;
+}
+
+const char* Resource::getErrorDescription() const
+{
+	return m_errorDescription.c_str();
+}
+
+void Resource::setError(Error _error, const char* _description)
+{
+	m_error = _error;
+	m_errorDescription = _description;
 }

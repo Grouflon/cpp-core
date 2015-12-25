@@ -20,8 +20,8 @@ public:
 	JsonSerializer();
 	virtual ~JsonSerializer();
 
-	virtual bool beginRead(const File* file) override;
-	virtual bool beginWrite(File* file) override;
+	virtual bool beginRead(const FileHandle* file) override;
+	virtual bool beginWrite(FileHandle* file) override;
 	virtual bool end() override;
 
 	// TODO : handle value write / read into array currentValue (will be used for vectors)

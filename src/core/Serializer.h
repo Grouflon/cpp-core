@@ -4,7 +4,7 @@
 
 #include "core/Types.h"
 
-class File;
+class FileHandle;
 class Serializable;
 class ClassDesc;
 
@@ -16,8 +16,8 @@ public:
 
 	// TODO: string error descriptions
 
-	virtual bool beginRead(const File* _file);
-	virtual bool beginWrite(File* _file);
+	virtual bool beginRead(const FileHandle* _file);
+	virtual bool beginWrite(FileHandle* _file);
 	virtual bool end();
 
 	template <typename T>
@@ -70,13 +70,13 @@ public:
 	const char* getErrorDesc();
 
 protected:
-	const File*	getReadFile() const;
-	File*		getWriteFile() const;
+	const FileHandle*	getReadFile() const;
+	FileHandle*		getWriteFile() const;
 	void		setErrorDesc(const char* _errorDesc);
 
 private:
-	const File*	m_readFile;
-	File*		m_writeFile;
+	const FileHandle*	m_readFile;
+	FileHandle*		m_writeFile;
 
 	std::string m_errorDesc;
 };

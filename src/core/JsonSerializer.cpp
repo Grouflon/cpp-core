@@ -1,7 +1,7 @@
 ﻿#include "core/JsonSerializer.h"
 
 #include "core/Assert.h"
-#include "core/File.h"
+#include "core/FileHandle.h"
 #include "core/ClassDesc.h"
 #include "core/Factory.h"
 
@@ -17,7 +17,7 @@ JsonSerializer::~JsonSerializer()
 
 
 // TODO: refactor duplicated code
-bool JsonSerializer::beginRead(const File* _file)
+bool JsonSerializer::beginRead(const FileHandle* _file)
 {
 	if (!Serializer::beginRead(_file)) return false;
 
@@ -34,7 +34,7 @@ bool JsonSerializer::beginRead(const File* _file)
 	return m_root != nullptr;
 }
 
-bool JsonSerializer::beginWrite(File* _file)
+bool JsonSerializer::beginWrite(FileHandle* _file)
 {
 	Serializer::beginWrite(_file);
 
@@ -60,7 +60,7 @@ bool JsonSerializer::end()
 	{
 		size_t outSize;
 		void* out = json_write_pretty(m_root, "\t", "\n", &outSize);
-		File* file = getWriteFile();
+		FileHandle* file = getWriteFile();
 		file->write(out, outSize - 1); // size counts \0
 		free(out);
 
