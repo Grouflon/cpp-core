@@ -31,8 +31,8 @@ public:
 
 private:
 	// TODO-THINK: Should translate & scale be vec4 ?
-	glm::quat	m_rotation;
 	glm::vec3	m_translation;
+	glm::quat	m_rotation;
 	glm::vec3	m_scale;
 
 	Transform*	m_parent;
