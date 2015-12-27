@@ -7,6 +7,7 @@ File::File(const char* path)
 {
 	m_path = path;
 	m_buffer = nullptr;
+	m_size = 0;
 }
 
 File::~File() {}
@@ -20,9 +21,9 @@ void File::onLoad()
 		return;
 	}
 
-	size_t size = file.getSize();
-	m_buffer = new char[size];
-	file.read(m_buffer, size);
+	m_size = file.getSize();
+	m_buffer = new char[m_size];
+	file.read(m_buffer, m_size);
 }
 
 void File::onRelease()
@@ -39,4 +40,9 @@ const char* File::getContent() const
 {
 	ASSERT(isLoaded());
 	return m_buffer;
+}
+
+size_t File::getSize() const
+{
+	return m_size;
 }
