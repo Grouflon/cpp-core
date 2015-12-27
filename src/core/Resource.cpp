@@ -8,7 +8,6 @@ Resource::Resource()
 	, m_loads(0u)
 {
 	m_error = RESOURCE_NOERROR;
-	g_resourceManager.registerResource(this);
 }
 
 Resource::~Resource()

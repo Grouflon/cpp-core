@@ -4,12 +4,6 @@
 
 class Resource;
 
-#ifdef _DEBUG
-#define DEBUG_CHECK_DOUBLE_REGISTRATION 1
-#else
-#define DEBUG_CHECK_DOUBLE_REGISTRATION 0
-#endif
-
 class ResourceManager
 {
 public:
@@ -17,11 +11,16 @@ public:
 	ResourceManager();
 	~ResourceManager();
 
-	void registerResource(Resource* resource);
+	template <class T, typename... Args>
+	T* createResource(Args... _args);
 	void flushResources();
 
 private:
+	void registerResource(Resource* resource);
+
 	std::vector<Resource*> m_resources;
 };
 
 static ResourceManager g_resourceManager;
+
+#include "core/ResourceManager.inl"

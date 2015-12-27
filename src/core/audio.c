@@ -11,16 +11,16 @@
 #define GRU_LOG_ERROR(...)
 #endif
 
-static int16_t read2(const char** _cursor)
+static uint16_t read2(const char** _cursor)
 {
-	int16_t ret = **(const uint16_t**)_cursor;
+	uint16_t ret = **(const uint16_t**)_cursor;
 	*_cursor += 2;
 	return ret;
 }
 
-static int32_t read4(const char** _cursor)
+static uint32_t read4(const char** _cursor)
 {
-	int32_t ret = **(const uint32_t**)_cursor;
+	uint32_t ret = **(const uint32_t**)_cursor;
 	*_cursor += 4;
 	return ret;
 }
@@ -61,7 +61,7 @@ static struct audio_sample_s* audio_read_wav(const void* _data)
 
 	sample = (struct audio_sample_s*) malloc(sizeof(*sample) + data_size);
 	sample->frequency = frequency;
-	sample->bytes_per_chunk = bytes_per_chunk;
+	sample->chunk_size = bytes_per_chunk;
 	sample->channel_count = channel_count;
 	sample->chunk_count = data_size / bytes_per_chunk;
 	memcpy(sample->data, cursor, data_size);
