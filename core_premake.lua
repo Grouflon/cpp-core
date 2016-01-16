@@ -41,5 +41,5 @@ links {
 }
 		
 defines {
-	"_CRT_SECURE_NO_WARNINGS",
+	"_CRT_SECURE_NO_WARNINGS", "IMGUI_INCLUDE_IMGUI_USER_H=1"
 }
