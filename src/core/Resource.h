@@ -8,8 +8,8 @@ class Resource
 public:
 	enum Error
 	{
-		RESOURCE_NOERROR,
-		RESOURCE_LOADERROR
+		ERROR_NONE,
+		ERROR_LOAD
 	};
 
 	Resource();

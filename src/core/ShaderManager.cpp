@@ -19,7 +19,7 @@ GLuint ShaderManager::loadShaderProgram(const char* name, const char* vertexShad
 	{
 		char* shaderSource;
 		FileHandle file(vertexShaderPath);
-		if (file.open(FileHandle::MODE_READ))
+		if (file.open(FileHandle::OPENMODE_READ))
 		{
 			size_t size = file.getSize();
 			shaderSource = new char[size + 1];
@@ -56,7 +56,7 @@ GLuint ShaderManager::loadShaderProgram(const char* name, const char* vertexShad
 	{
 		char* shaderSource;
 		FileHandle file(fragmentShaderPath);
-		if (file.open(FileHandle::MODE_READ))
+		if (file.open(FileHandle::OPENMODE_READ))
 		{
 			size_t size = file.getSize();
 			shaderSource = new char[size + 1];

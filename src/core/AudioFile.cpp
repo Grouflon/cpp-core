@@ -17,7 +17,7 @@ void AudioFile::onLoad()
 	File file(m_path.c_str());
 	file.load();
 
-	if (file.getError() != RESOURCE_NOERROR)
+	if (file.getError() != ERROR_NONE)
 	{
 		setError(file.getError(), file.getErrorDescription());
 		return;
@@ -28,7 +28,7 @@ void AudioFile::onLoad()
 
 	if (!sample)
 	{
-		setError(RESOURCE_LOADERROR, "Unable to read audio format.");
+		setError(ERROR_LOAD, "Unable to read audio format.");
 		return;
 	}
 
@@ -49,7 +49,7 @@ void AudioFile::onLoad()
 
 	if (error)
 	{
-		setError(RESOURCE_LOADERROR, "Unable to read audio format.");
+		setError(ERROR_LOAD, "Unable to read audio format.");
 		return;
 	}
 

@@ -7,7 +7,7 @@ Resource::Resource()
 	: m_uses(0u)
 	, m_loads(0u)
 {
-	m_error = RESOURCE_NOERROR;
+	m_error = ERROR_NONE;
 }
 
 Resource::~Resource()

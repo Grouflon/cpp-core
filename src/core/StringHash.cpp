@@ -3,27 +3,12 @@
 #include "core/Assert.h"
 #include "core/HashTools.h"
 
-std::unordered_map<uint32, char*> g_stringHashes;
-
 StringHash::StringHash(const char* str)
 {
 	m_hash = hashString(str);
 
 #ifdef DEBUG_STRINGHASH
-	auto it = g_stringHashes.find(m_hash);
-	if (it == g_stringHashes.end())
-	{
-		size_t stringLength = strlen(str);
-		char* string = new char[stringLength + 1];
-		memcpy(string, str, stringLength + 1);
-		g_stringHashes.insert(std::pair<uint32, char*>(m_hash, string));
-		m_string = string;
-	}
-	else
-	{
-		m_string = it->second;
-		ASSERT(strcmp(str, m_string) == 0); // Hash collision !
-	}
+	m_string = g_stringHashRepository.registerStringHash(m_hash, str);
 #endif
 }
 
@@ -77,3 +62,36 @@ size_t std::hash<StringHash>::operator()(const StringHash& value) const
 	return value.getHash();
 }
 
+#ifdef DEBUG_STRINGHASH
+StringHashRepository g_stringHashRepository;
+
+StringHashRepository::StringHashRepository()
+{
+}
+
+StringHashRepository::~StringHashRepository()
+{
+	for (auto pair : m_stringMap)
+	{
+		delete pair.second;
+	}
+}
+
+const char* StringHashRepository::registerStringHash(uint32 _hash, const char* _string)
+{
+	auto it = m_stringMap.find(_hash);
+	if (it == m_stringMap.end())
+	{
+		size_t stringLength = strlen(_string);
+		char* string = new char[stringLength + 1];
+		memcpy(string, _string, stringLength + 1);
+		m_stringMap.insert(std::pair<uint32, char*>(_hash, string));
+		return string;
+	}
+	else
+	{
+		ASSERT(strcmp(_string, it->second) == 0); // Hash collision !
+		return it->second;
+	}
+}
+#endif

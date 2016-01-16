@@ -24,17 +24,17 @@ bool FileHandle::open(OpenMode mode)
 	char modeStr[8] = "";
 	switch (m_openMode)
 	{
-	case MODE_READ:
+	case OPENMODE_READ:
 		{
 			sprintf(modeStr, "rb");
 		} break;
 
-	case MODE_WRITE:
+	case OPENMODE_WRITE:
 		{
 			sprintf(modeStr, "wb");
 		} break;
 
-	case MODE_APPEND:
+	case OPENMODE_APPEND:
 		{
 			sprintf(modeStr, "ab");
 		} break;

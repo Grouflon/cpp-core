@@ -24,9 +24,9 @@ void Mesh::onLoad()
 	File fbxFile(m_path.c_str());
 	fbxFile.load();
 
-	if (fbxFile.getError() != Resource::RESOURCE_NOERROR)
+	if (fbxFile.getError() != Resource::ERROR_NONE)
 	{
-		setError(Resource::RESOURCE_LOADERROR, fbxFile.getErrorDescription());
+		setError(Resource::ERROR_LOAD, fbxFile.getErrorDescription());
 		fbxFile.release();
 		return;
 	}
@@ -107,7 +107,7 @@ void Mesh::onLoad()
 			else
 			{
 				ASSERT(false);
-				setError(RESOURCE_LOADERROR, "Don't know how to handle multiple meshes yet.");
+				setError(ERROR_LOAD, "Don't know how to handle multiple meshes yet.");
 				delete fbx;
 				fbxFile.release();
 				return;

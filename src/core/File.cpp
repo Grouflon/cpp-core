@@ -15,9 +15,9 @@ File::~File() {}
 void File::onLoad()
 {
 	FileHandle file(m_path.c_str());
-	if (!file.open(FileHandle::MODE_READ))
+	if (!file.open(FileHandle::OPENMODE_READ))
 	{
-		setError(RESOURCE_LOADERROR, "Could not open file.");
+		setError(ERROR_LOAD, "Could not open file.");
 		return;
 	}
 

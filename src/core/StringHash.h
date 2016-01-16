@@ -31,8 +31,22 @@ private:
 #endif
 };
 
+#ifdef DEBUG_STRINGHASH
+class StringHashRepository
+{
+public:
+	StringHashRepository();
+	~StringHashRepository();
+	const char* registerStringHash(uint32 _hash, const char* _string);
+
+private:
+	std::unordered_map<uint32, char*> m_stringMap;
+};
+
+extern StringHashRepository g_stringHashRepository;
+#endif
+
 // TODO: automatic debug strings destroyer
-extern std::unordered_map<uint32, char*> g_stringHashes;
 
 template <typename T>
 class HashMap : public std::unordered_map<StringHash, T> {};

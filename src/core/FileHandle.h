@@ -7,9 +7,9 @@ class FileHandle
 public:
 	enum OpenMode
 	{
-		MODE_READ,
-		MODE_WRITE,
-		MODE_APPEND
+		OPENMODE_READ,
+		OPENMODE_WRITE,
+		OPENMODE_APPEND
 	};
 
 	FileHandle(const char* path);
