@@ -6,6 +6,7 @@ enum AudioFormat
 {
 	AUDIOFORMAT_MONO8,
 	AUDIOFORMAT_MONO16,
+	AUDIOFORMAT_MONO24,
 	AUDIOFORMAT_STEREO8,
 	AUDIOFORMAT_STEREO16,
 };
@@ -20,8 +21,8 @@ public:
 	virtual void onLoad() override;
 	virtual void onRelease() override;
 
-	void setSamplesCount(uint32 _value);
-	uint32 getSamplesCount() const;
+	void setSampleCount(uint32 _value);
+	uint32 getSampleCount() const;
 	void setFormat(AudioFormat _value);
 	AudioFormat getFormat() const;
 	void setFrequency(uint32 _value);
@@ -31,6 +32,7 @@ public:
 	const void* getBuffer() const;
 
 	static uint32 getFormatSampleSize(AudioFormat _format);
+	static uint8 getFormatChannelCount(AudioFormat _format);
 
 private:
 	uint32	m_frequency;

@@ -30,6 +30,8 @@ static struct audio_sample_s* audio_read_wav(const void* _data)
 	struct audio_sample_s* sample = NULL;
 	const char* cursor = (const char*)_data;
 	uint32_t file_size = 0;
+	uint32_t description_header_size = 0;
+	uint16_t compression = 0;
 	uint16_t channel_count = 0;
 	uint32_t frequency = 0;
 	uint32_t bytes_per_second = 0;
@@ -44,9 +46,16 @@ static struct audio_sample_s* audio_read_wav(const void* _data)
 	if (memcmp(cursor, "fmt ", 4) != 0) return NULL;	cursor += 4;
 	
 	// DESCRIPTION
-	if ((read4(&cursor) != 16) || (read2(&cursor) != 1)) // description_header_size && format (compression)
+	description_header_size = read4(&cursor);
+	if (description_header_size != 16)
 	{
 		GRU_LOG_ERROR("audio_read_wav: Unsupported format.");
+		return NULL;
+	}
+	compression = read2(&cursor);
+	if (compression != 1)
+	{
+		GRU_LOG_ERROR("audio_read_wav: Unsupported compression type.");
 		return NULL;
 	}
 	channel_count = read2(&cursor);
@@ -56,7 +65,21 @@ static struct audio_sample_s* audio_read_wav(const void* _data)
 	bits_per_sample = read2(&cursor);
 
 	// DATA
-	if (memcmp(cursor, "data", 4) != 0) return NULL;	cursor += 4;
+	while (memcmp(cursor, "data", 4) != 0 && (cursor != (const char*)_data + file_size))
+	{
+		++cursor;
+	}
+
+	if (*cursor == '\0')
+	{
+		GRU_LOG_ERROR("audio_read_wav: Malformed wav file.");
+		return NULL;
+	}
+	else
+	{
+		cursor += 4;
+	}
+
 	data_size = read4(&cursor);
 
 	sample = (struct audio_sample_s*) malloc(sizeof(*sample) + data_size);

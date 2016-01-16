@@ -12,6 +12,11 @@ ResourceManager::~ResourceManager()
 	flushResources();
 }
 
+void ResourceManager::FlushResources()
+{
+	g_resourceManager.flushResources();
+}
+
 void ResourceManager::registerResource(Resource* resource)
 {
 	m_resources.push_back(resource);

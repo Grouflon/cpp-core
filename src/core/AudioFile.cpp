@@ -37,6 +37,7 @@ void AudioFile::onLoad()
 	{
 		if (sample->chunk_size == 1) setFormat(AUDIOFORMAT_MONO8);
 		else if (sample->chunk_size == 2) setFormat(AUDIOFORMAT_MONO16);
+		else if (sample->chunk_size == 3) setFormat(AUDIOFORMAT_MONO24);
 		else error = true;
 	}
 	else if (sample->channel_count == 2)
@@ -54,7 +55,7 @@ void AudioFile::onLoad()
 	}
 
 	setFrequency(sample->frequency);
-	setSamplesCount(sample->chunk_count);
+	setSampleCount(sample->chunk_count);
 	AudioSample::onLoad();
 	memcpy(getBuffer(), sample->data, sample->chunk_count * sample->chunk_size);
 	free(sample);

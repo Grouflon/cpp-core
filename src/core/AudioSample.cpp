@@ -34,7 +34,7 @@ void AudioSample::onRelease()
 	delete[] m_buffer;
 }
 
-void AudioSample::setSamplesCount(uint32 _value)
+void AudioSample::setSampleCount(uint32 _value)
 {
 	ASSERT(!isLoaded());
 	m_samplesCount = _value;
@@ -50,7 +50,7 @@ const void* AudioSample::getBuffer() const
 	return m_buffer;
 }
 
-uint32 AudioSample::getSamplesCount() const
+uint32 AudioSample::getSampleCount() const
 {
 	return m_samplesCount;
 }
@@ -83,8 +83,22 @@ uint32 AudioSample::getFormatSampleSize(AudioFormat format)
 	{
 	case AUDIOFORMAT_MONO8: return 1;
 	case AUDIOFORMAT_MONO16: return 2;
+	case AUDIOFORMAT_MONO24: return 3;
 	case AUDIOFORMAT_STEREO8: return 2;
 	case AUDIOFORMAT_STEREO16: return 4;
+	default: return 0;
+	}
+}
+
+uint8 AudioSample::getFormatChannelCount(AudioFormat _format)
+{
+	switch(_format)
+	{
+	case AUDIOFORMAT_MONO8: return 1;
+	case AUDIOFORMAT_MONO16: return 1;
+	case AUDIOFORMAT_MONO24: return 1;
+	case AUDIOFORMAT_STEREO8: return 2;
+	case AUDIOFORMAT_STEREO16: return 2;
 	default: return 0;
 	}
 }

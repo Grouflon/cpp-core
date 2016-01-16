@@ -12,6 +12,11 @@ public:
 	~ResourceManager();
 
 	template <class T, typename... Args>
+	static T* CreateResource(Args... _args);
+
+	static void FlushResources();
+
+	template <class T, typename... Args>
 	T* createResource(Args... _args);
 	void flushResources();
 

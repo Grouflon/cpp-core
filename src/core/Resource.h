@@ -17,8 +17,10 @@ public:
 
 	void use();
 	void load();
+	void loadUse();
 	void release();
 	void unuse();
+	void releaseUnuse();
 
 	virtual void onLoad();
 	virtual void onRelease();

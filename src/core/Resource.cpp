@@ -30,6 +30,12 @@ void Resource::load()
 	++m_loads;
 }
 
+void Resource::loadUse()
+{
+	load();
+	use();
+}
+
 void Resource::release()
 {
 	if (m_loads == 0)
@@ -55,6 +61,12 @@ void Resource::unuse()
 	}
 
 	--m_uses;
+}
+
+void Resource::releaseUnuse()
+{
+	release();
+	unuse();
 }
 
 void Resource::onLoad()
