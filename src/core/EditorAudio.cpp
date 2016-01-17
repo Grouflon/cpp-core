@@ -12,6 +12,7 @@ EditorAudio::EditorAudio()
 	, m_currentAudioFile(nullptr)
 {
 	strcpy(m_pathBuffer, "./data/audio/");
+	openSample("./data/audio/Alarm01.wav");
 }
 
 EditorAudio::~EditorAudio()
@@ -68,7 +69,7 @@ void EditorAudio::openSample(const char* _path)
 
 void EditorAudio::displaySampleGraph(AudioSample* _sample)
 {
-	ImGui::BeginChildFrame((ImGuiID)this, ImVec2());
+	ImGui::BeginChildFrame(reinterpret_cast<ImGuiID>(this), ImVec2());
 
 	ImVec2 windowStartPos = ImGui::GetWindowPos();
 	ImVec2 windowSize = ImGui::GetWindowSize();
@@ -81,7 +82,7 @@ void EditorAudio::displaySampleGraph(AudioSample* _sample)
 	int32 maxValue = ~0;
 	if (dataSize == 1) maxValue = INT8_MAX;
 	else if (dataSize == 2) maxValue = INT16_MAX;
-	else if (dataSize == 3) maxValue = 0x0FFFFF;
+	else if (dataSize == 3) maxValue = static_cast<int32>(pow(2, 8 * dataSize)) / 2 - 1;
 	else if (dataSize == 4) maxValue = INT32_MAX;
 	float invMaxValue = 1.f / static_cast<float>(maxValue);
 
@@ -94,120 +95,84 @@ void EditorAudio::displaySampleGraph(AudioSample* _sample)
 	{
 		graphSize.y *= 0.5f;
 		
-		int32 prevLeftSample = 0;
-		int32 prevRightSample = 0;
+		float displayMinLeftValue = 0.f;
+		float displayMinRightValue = 0.f;
+		float displayMaxLeftValue = 0.f;
+		float displayMaxRightValue = 0.f;
 
-		memcpy(&prevLeftSample, buffer, dataSize);
-		memcpy(&prevRightSample, buffer + dataSize, dataSize);
-
-		if (dataSize == 1)
+		uint32 sampleIndex = 0u;
+		for (uint32 i = 0; i < sampleCount; ++i)
 		{
-			prevLeftSample = *reinterpret_cast<int8*>(&prevLeftSample);
-			prevRightSample = *reinterpret_cast<int8*>(&prevRightSample);
-		}
-		else if (dataSize == 2)
-		{
-			prevLeftSample = *reinterpret_cast<int16*>(&prevLeftSample);
-			prevRightSample = *reinterpret_cast<int16*>(&prevRightSample);
-		}
-		else if (dataSize == 3)
-		{
-			// ??
-		}
-
-
-		float prevLeftValue = static_cast<float>(prevLeftSample) * invMaxValue;
-		float prevRightValue = static_cast<float>(prevRightSample) * invMaxValue;
-
-		for (uint32 i = 1; i < static_cast<uint32>(graphSize.x); ++i)
-		{
-			int32 leftSample = 0;
-			int32 rightSample = 0;
-			memcpy(&leftSample, buffer + i * sampleStep * sampleSize, dataSize);
-			memcpy(&rightSample, buffer + i * sampleStep * sampleSize + dataSize, dataSize);
-
-			if (dataSize == 1)
-			{
-				leftSample = *reinterpret_cast<int8*>(&leftSample);
-				rightSample = *reinterpret_cast<int8*>(&rightSample);
-			}
-			else if (dataSize == 2)
-			{
-				leftSample = *reinterpret_cast<int16*>(&leftSample);
-				rightSample = *reinterpret_cast<int16*>(&rightSample);
-			}
-			else if (dataSize == 3)
-			{
-				// ??
-			}
+			uint32 leftSample = 0;
+			uint32 rightSample = 0;
+			memcpy(&leftSample, buffer + i * sampleSize, dataSize);
+			memcpy(&rightSample, buffer + i * sampleSize + dataSize, dataSize);
 
 			float leftValue = static_cast<float>(leftSample) * invMaxValue;
 			float rightValue = static_cast<float>(rightSample) * invMaxValue;
+			if (leftValue > 1.f) leftValue -= 2.f;
+			if (rightValue > 1.f) rightValue -= 2.f;
 
-			drawList->AddLine(
-				ImVec2(graphStartPos.x + static_cast<float>(i - 1), graphStartPos.y + graphSize.y * .5f - graphSize.y * prevLeftValue),
-				ImVec2(graphStartPos.x + static_cast<float>(i), graphStartPos.y + graphSize.y * .5f - graphSize.y * leftValue),
-				0xFFFFFFFF
-			);
+			// We only display one sample per pixel.
+			// Therefore, we chose to represent the most extreme values of all the intermediate samples
+			displayMinLeftValue = std::min(displayMinLeftValue, leftValue);
+			displayMinRightValue = std::min(displayMinRightValue, leftValue);
+			displayMaxLeftValue = std::max(displayMaxLeftValue, leftValue);
+			displayMaxRightValue = std::max(displayMaxRightValue, leftValue);
 
-			drawList->AddLine(
-				ImVec2(graphStartPos.x + static_cast<float>(i - 1), graphStartPos.y + graphSize.y * 1.5f - graphSize.y * prevRightValue),
-				ImVec2(graphStartPos.x + static_cast<float>(i), graphStartPos.y + graphSize.y * 1.5f - graphSize.y * rightValue),
-				0xFFFFFFFF
-				);
+			if (i % sampleStep == 0 || i == sampleCount - 1)
+			{
+				drawList->AddLine(
+					ImVec2(graphStartPos.x + static_cast<float>(sampleIndex), graphStartPos.y + graphSize.y * .5f - graphSize.y * displayMinLeftValue),
+					ImVec2(graphStartPos.x + static_cast<float>(sampleIndex), graphStartPos.y + graphSize.y * .5f - graphSize.y * displayMaxLeftValue),
+					0xFFFFFFFF
+					);
 
-			prevLeftValue = leftValue;
-			prevRightValue = rightValue;
+				drawList->AddLine(
+					ImVec2(graphStartPos.x + static_cast<float>(sampleIndex), graphStartPos.y + graphSize.y * 1.5f - graphSize.y * displayMinRightValue),
+					ImVec2(graphStartPos.x + static_cast<float>(sampleIndex), graphStartPos.y + graphSize.y * 1.5f - graphSize.y * displayMaxRightValue),
+					0xFFFFFFFF
+					);
+
+				displayMinLeftValue = 0.f;
+				displayMinRightValue = 0.f;
+				displayMaxLeftValue = 0.f;
+				displayMaxRightValue = 0.f;
+				++sampleIndex;
+			}
 		}
-		
 	}
 	else if (channelCount == 1)
 	{
-		int32 prevSample = 0;
-		memcpy(&prevSample, buffer, dataSize);
+		float displayMinValue = 0.f;
+		float displayMaxValue = 0.f;
 
-		if (dataSize == 1)
+		uint32 sampleIndex = 1u;
+		for (uint32 i = 1; i < sampleCount; ++i)
 		{
-			prevSample = *reinterpret_cast<int8*>(&prevSample);
-		}
-		else if (dataSize == 2)
-		{
-			prevSample = *reinterpret_cast<int16*>(&prevSample);
-		}
-		else if (dataSize == 3)
-		{
-			// ??
-		}
-
-		float prevValue = static_cast<float>(prevSample) * invMaxValue;
-
-		for (uint32 i = 1; i < static_cast<uint32>(graphSize.x); ++i)
-		{
-			int32 sample = 0;
-			memcpy(&sample, buffer + i * sampleStep * sampleSize, dataSize);
-
-			if (dataSize == 1)
-			{
-				sample = *reinterpret_cast<int8*>(&sample);
-			}
-			else if (dataSize == 2)
-			{
-				sample = *reinterpret_cast<int16*>(&sample);
-			}
-			else if (dataSize == 3)
-			{
-				// ??
-			}
+			uint32 sample = 0;
+			memcpy(&sample, buffer + i * sampleSize, dataSize);
 
 			float value = static_cast<float>(sample) * invMaxValue;
+			if (value > 1.f) value -= 2.f;
 
-			drawList->AddLine(
-				ImVec2(graphStartPos.x + static_cast<float>(i - 1), graphStartPos.y + graphSize.y * .5f - graphSize.y * prevValue),
-				ImVec2(graphStartPos.x + static_cast<float>(i), graphStartPos.y + graphSize.y * .5f - graphSize.y * value),
-				0xFFFFFFFF
-				);
+			// We only display one sample per pixel.
+			// Therefore, we chose to represent the most extreme values of all the intermediate samples
+			displayMinValue = std::min(displayMinValue, value);
+			displayMaxValue = std::max(displayMaxValue, value);
 
-			prevValue = value;
+			if (i % sampleStep == 0 || i == sampleCount - 1)
+			{
+				drawList->AddLine(
+					ImVec2(graphStartPos.x + static_cast<float>(sampleIndex), graphStartPos.y + graphSize.y * .5f - graphSize.y * displayMinValue),
+					ImVec2(graphStartPos.x + static_cast<float>(sampleIndex), graphStartPos.y + graphSize.y * .5f - graphSize.y * displayMaxValue),
+					0xFFFFFFFF
+					);
+
+				displayMinValue = 0.f;
+				displayMaxValue = 0.f;
+				++sampleIndex;
+			}
 		}
 	}
 
