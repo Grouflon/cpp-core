@@ -12,7 +12,6 @@ EditorAudio::EditorAudio()
 	, m_currentAudioFile(nullptr)
 {
 	strcpy(m_pathBuffer, "./data/audio/");
-	openSample("./data/audio/Alarm01.wav");
 }
 
 EditorAudio::~EditorAudio()
@@ -45,6 +44,22 @@ void EditorAudio::update(float _dt)
 
 	if (m_currentAudioFile)
 	{
+		ImGui::SameLine();
+		if (m_player.isPlaying())
+		{
+			if (ImGui::Button("STOP"))
+			{
+				m_player.stop();
+			}
+		}
+		else
+		{
+			if (ImGui::Button("PLAY"))
+			{
+				m_player.play();
+			}
+		}
+
 		displaySampleGraph(m_currentAudioFile);
 	}
 }
@@ -64,7 +79,10 @@ void EditorAudio::openSample(const char* _path)
 		LOG_ERROR("Failed to open sample \"%s\": %s", _path, m_currentAudioFile->getErrorDescription());
 		m_currentAudioFile->releaseUnuse();
 		m_currentAudioFile = nullptr;
+		return;
 	}
+
+	m_player.setSample(m_currentAudioFile);
 }
 
 void EditorAudio::displaySampleGraph(AudioSample* _sample)
