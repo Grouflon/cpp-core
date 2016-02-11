@@ -1,45 +1,65 @@
-files {
-	"src/**.cpp",
-	"src/**.inl",
-	"src/**.c",
-	"src/**.h",
-	"extern/imgui/**.cpp",
-	"extern/imgui/**.c",
-	"extern/imgui/**.h",
-	"extern/glfw/**.h",
-	"extern/gl3w/**.c",
-	"extern/gl3w/**.h",
-	"extern/glm/**.hpp",
-	"extern/json/**.c",
-	"extern/json/**.h",
-	"extern/openAL/**.h",
-}
-		
-removefiles {
-	"extern/imgui/imgui_impl_sfml**",
-}
-		
-includedirs {
-	"src/",
-	"extern/glfw/include",
-	"extern/gl3w/",
-	"extern/glm/",
-	"extern/imgui/",
-	"extern/json/",
-	"extern/openAL/include",
-}
-		
-libdirs {
-	"extern/glfw/libs/%{cfg.buildcfg}/",
-	"extern/openAL/libs/%{cfg.platform}/",
-}
-		
-links {
-	"glfw3",
-	"opengl32",
-	"OpenAL32",
-}
-		
-defines {
-	"_CRT_SECURE_NO_WARNINGS", "IMGUI_INCLUDE_IMGUI_USER_H=1"
-}
+project "core"
+
+	kind "StaticLib"
+	language "C++"
+	architecture "x86"
+	flags { "Symbols", "MultiProcessorCompile" }
+	
+	targetdir "libs/%{cfg.platform}/%{cfg.buildcfg}/"
+	objdir "obj/%{cfg.platform}/%{cfg.buildcfg}/"
+	
+	pchheader "stdafx.h"
+	pchsource "src/stdafx.cpp"
+
+	files {
+		"src/**.cpp",
+		"src/**.c",
+		"src/stdafx.h",
+		"include/**.inl",
+		"include/**.h",
+		"extern/imgui/**.cpp",
+		"extern/imgui/**.c",
+		"extern/imgui/**.h",
+		"extern/glfw/**.h",
+		"extern/gl3w/**.c",
+		"extern/gl3w/**.h",
+		"extern/glm/**.hpp",
+		"extern/json/**.c",
+		"extern/json/**.h",
+		"extern/openAL/**.h",
+		"extern/audio/**.c",
+		"extern/audio/**.h",
+	}
+			
+	removefiles {
+		"extern/imgui/imgui_impl_sfml**",
+		"extern/imgui/imgui_impl_sdl_gl3**",
+	}
+			
+	includedirs {
+		"src/",
+		"include/",
+		"extern/glfw/include",
+		"extern/gl3w/",
+		"extern/glm/",
+		"extern/imgui/",
+		"extern/json/",
+		"extern/openAL/include",
+		"extern/audio/",
+	}
+			
+	defines {
+		"_CRT_SECURE_NO_WARNINGS", "IMGUI_INCLUDE_IMGUI_USER_H=1"
+	}
+	
+	filter "files:extern/**"
+		flags "noPCH"
+	
+	filter "configurations:debug"
+			optimize "Off"
+			defines "_DEBUG"
+			
+	filter "configurations:release"
+		optimize "Full"
+
+	filter {}

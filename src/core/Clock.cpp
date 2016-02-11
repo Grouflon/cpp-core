@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "core/Clock.h"
 
 #include <GLFW/glfw3.h>

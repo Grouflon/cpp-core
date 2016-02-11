@@ -1,4 +1,5 @@
-﻿#include "core/BinarySerializer.h"
+﻿#include "stdafx.h"
+#include "core/BinarySerializer.h"
 
 #include "core/FileHandle.h"
 #include "core/Serializer.h"

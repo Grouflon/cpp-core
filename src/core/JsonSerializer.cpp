@@ -1,4 +1,7 @@
-﻿#include "core/JsonSerializer.h"
+﻿#include "stdafx.h"
+#include "core/JsonSerializer.h"
+
+#include <json.h>
 
 #include "core/Assert.h"
 #include "core/FileHandle.h"

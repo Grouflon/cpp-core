@@ -1,7 +1,5 @@
 #pragma once
 
-#include <al.h>
-
 class AudioSample;
 
 class AudioPlayer
@@ -26,6 +24,6 @@ private:
 	bool m_playing;
 
 	AudioSample* m_sample;
-	ALuint m_alBufferId;
-	ALuint m_alSourceId;
+	uint32 m_alBufferId;
+	uint32 m_alSourceId;
 };

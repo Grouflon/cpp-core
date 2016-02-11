@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "core/ClassDesc.h"
 
 ClassSet	g_classSet;

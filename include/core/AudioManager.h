@@ -1,6 +1,9 @@
 #pragma once
 
-#include <alc.h>
+struct ALCdevice_struct;
+struct ALCcontext_struct;
+typedef ALCdevice_struct ALCdevice;
+typedef ALCcontext_struct ALCcontext;
 
 class AudioManager
 {
@@ -12,7 +15,6 @@ public:
 	void shutdown();
 
 private:
-
 	ALCdevice* m_alDevice;
 	ALCcontext* m_alContext;
 };

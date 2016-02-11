@@ -1,7 +1,10 @@
+#include "stdafx.h"
 #include "core/AudioFile.h"
 
+#include <audio.h>
+
 #include "core/File.h"
-#include "core/audio.h"
+
 
 AudioFile::AudioFile(const char* _path)
 {

@@ -1,4 +1,5 @@
-﻿#include "core/HashTools.h"
+﻿#include "stdafx.h"
+#include "core/HashTools.h"
 
 #include <cstring>
 

@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "core/File.h"
 
 #include "core/Assert.h"

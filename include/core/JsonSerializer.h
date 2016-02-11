@@ -1,16 +1,13 @@
 ﻿#pragma once
 
-#include <json.h>
-#include <string>
-#include <functional>
-
-#include "core/Types.h"
 #include "core/Serializer.h"
 
+enum json_type_e;
 struct json_value_s;
 struct json_object_s;
 struct json_string_s;
 struct json_number_s;
+struct json_array_element_s;
 
 class JsonSerializer
 	: public Serializer

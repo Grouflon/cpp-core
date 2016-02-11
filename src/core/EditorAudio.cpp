@@ -1,6 +1,7 @@
+#include "stdafx.h"
 #include "core/EditorAudio.h"
 
-#include <cmath>
+#include <algorithm>
 
 #include "imgui.h"
 #include "core/ResourceManager.h"

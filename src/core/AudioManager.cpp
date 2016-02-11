@@ -1,4 +1,7 @@
+#include "stdafx.h"
 #include "core/AudioManager.h"
+
+#include <alc.h>
 
 #include "core/OpenALTools.h"
 #include "core/Log.h"

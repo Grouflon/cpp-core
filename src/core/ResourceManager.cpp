@@ -1,4 +1,5 @@
-﻿#include "core/ResourceManager.h"
+﻿#include "stdafx.h"
+#include "core/ResourceManager.h"
 
 #include "core/Assert.h"
 #include "core/Resource.h"

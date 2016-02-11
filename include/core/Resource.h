@@ -1,8 +1,5 @@
 ﻿#pragma once
 
-#include <string>
-#include "core/Types.h"
-
 class Resource
 {
 public:

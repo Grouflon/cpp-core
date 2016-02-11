@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "core/Mesh.h"
 
 #include "core/Fbx.h"

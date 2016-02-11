@@ -1,7 +1,5 @@
+#include "stdafx.h"
 #include "core/Fbx.h"
-
-#include <string>
-#include <stdarg.h>
 
 #include "core/Assert.h"
 

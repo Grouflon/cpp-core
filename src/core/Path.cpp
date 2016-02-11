@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "core/Path.h"
 
 size_t Path::GetDirectoriesLength(const char* _path)

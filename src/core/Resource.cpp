@@ -1,7 +1,7 @@
-﻿#include "core/Resource.h"
+﻿#include "stdafx.h"
+#include "core/Resource.h"
 
 #include "core/Assert.h"
-#include "core/ResourceManager.h"
 
 Resource::Resource()
 	: m_uses(0u)

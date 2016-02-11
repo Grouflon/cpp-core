@@ -1,9 +1,5 @@
 #pragma once
 
-#include <vector>
-#include <unordered_map>
-
-#include "core/Types.h"
 #include "core/StringHash.h"
 
 class ClassDesc

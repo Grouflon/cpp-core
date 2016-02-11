@@ -1,7 +1,6 @@
 #include "audio.h"
 
 #include <string.h>
-#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 

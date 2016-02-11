@@ -1,12 +1,8 @@
+#include "stdafx.h"
 #include "imgui_user.h"
 
-#include <vector>
-#include <algorithm>
 #include <dirent.h>		// Lists files in directory
 
-#include "imgui.h"
-#include "core/Log.h"
-#include "core/Types.h"
 #include "core/Path.h"
 #include "core/FileHandle.h"
 

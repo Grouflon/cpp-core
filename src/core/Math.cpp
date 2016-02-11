@@ -1,1 +1,2 @@
-﻿#include "core/Math.h"
+﻿#include "stdafx.h"
+#include "core/Math.h"

@@ -1,9 +1,5 @@
 ﻿#pragma once
 
-#include <unordered_map>
-
-#include "core/Types.h"
-
 #ifdef _DEBUG
 #define DEBUG_STRINGHASH
 #endif

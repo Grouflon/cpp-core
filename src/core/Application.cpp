@@ -1,4 +1,5 @@
-﻿#include "core/Application.h"
+﻿#include "stdafx.h"
+#include "core/Application.h"
 
 #include <cstdio>
 #include <GL/gl3w.h>

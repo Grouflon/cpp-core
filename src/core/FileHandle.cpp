@@ -1,4 +1,5 @@
-﻿#include "core/FileHandle.h"
+﻿#include "stdafx.h"
+#include "core/FileHandle.h"
 
 #include "core/Log.h"
 

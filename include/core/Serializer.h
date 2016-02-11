@@ -1,9 +1,5 @@
 ﻿#pragma once
 
-#include <vector>
-
-#include "core/Types.h"
-
 class FileHandle;
 class Serializable;
 class ClassDesc;
