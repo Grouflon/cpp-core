@@ -20,7 +20,6 @@ project "core"
 		"extern/imgui/**.cpp",
 		"extern/imgui/**.c",
 		"extern/imgui/**.h",
-		"extern/glfw/**.h",
 		"extern/gl3w/**.c",
 		"extern/gl3w/**.h",
 		"extern/glm/**.hpp",
@@ -29,23 +28,24 @@ project "core"
 		"extern/openAL/**.h",
 		"extern/audio/**.c",
 		"extern/audio/**.h",
+		"extern/SDL2-2.0.4/**.h",
 	}
 			
 	removefiles {
 		"extern/imgui/imgui_impl_sfml**",
-		"extern/imgui/imgui_impl_sdl_gl3**",
+		"extern/imgui/imgui_impl_glfw_gl3**",
 	}
 			
 	includedirs {
 		"src/",
 		"include/",
-		"extern/glfw/include",
 		"extern/gl3w/",
 		"extern/glm/",
 		"extern/imgui/",
 		"extern/json/",
 		"extern/openAL/include",
 		"extern/audio/",
+		"extern/SDL2-2.0.4/include",
 	}
 			
 	defines {

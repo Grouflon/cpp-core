@@ -1,11 +1,9 @@
 #include "stdafx.h"
 #include "core/Clock.h"
 
-#include <GLFW/glfw3.h>
-
 Clock::Clock()
-	: m_startTime(0.0)
-	, m_stopTime(0.0)
+	: m_startTime(0u)
+	, m_stopTime(0u)
 	, m_running(false)
 	, m_reset(true)
 {
@@ -22,12 +20,12 @@ void Clock::start()
 	{
 		if (m_reset)
 		{
-			m_startTime = glfwGetTime();
+			m_startTime = SDL_GetTicks();
 			m_reset = false;
 		}
 		else
 		{
-			m_startTime += glfwGetTime() - m_stopTime;
+			m_startTime += SDL_GetTicks() - m_stopTime;
 		}
 
 		m_running = true;
@@ -38,7 +36,7 @@ void Clock::stop()
 {
 	if (m_running)
 	{
-		m_stopTime = glfwGetTime();
+		m_stopTime = SDL_GetTicks();
 		m_running = false;
 	}
 }
@@ -46,7 +44,7 @@ void Clock::stop()
 Time Clock::reset()
 {
 	m_reset = true;
-	double time = glfwGetTime();
+	uint32 time = SDL_GetTicks();
 	Time result = time - m_startTime;
 	if (m_running)
 	{
@@ -63,7 +61,7 @@ Time Clock::getTime() const
 {
 	if (m_running)
 	{
-		return glfwGetTime() - m_startTime;
+		return SDL_GetTicks() - m_startTime;
 	}
 	else
 	{
@@ -72,5 +70,5 @@ Time Clock::getTime() const
 			return m_stopTime - m_startTime;
 		}
 	}
-	return 0.0;
+	return 0u;
 }

@@ -4,7 +4,8 @@
 
 #include "core/Clock.h"
 
-struct GLFWwindow;
+struct SDL_Window;
+typedef void* SDL_GLContext;
 
 class Application
 {
@@ -23,10 +24,6 @@ public:
 	virtual void render();
 	virtual void stopped();
 
-	// TODO: proper input helpers
-	virtual void onKeyEvent(int key, int scancode, int action, int mods);
-	virtual void onCharEvent(char c);
-
 	glm::ivec2	getWindowSize() const;
 	float		getWindowRatio() const;
 
@@ -38,7 +35,9 @@ private:
 	void _render();
 
 	bool		m_initialized;
-	GLFWwindow* m_window;
+	bool		m_running;
+	SDL_Window* m_window;
+	SDL_GLContext m_glContext;
 	double		m_previousTime;
 	Clock		m_clock;
 };

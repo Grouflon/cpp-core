@@ -9,7 +9,7 @@
 #include <functional>
 #include <algorithm>
 
-//#include <SDL.h>
+#include <SDL.h>
 #include <GL/gl3w.h>
 #include <imgui.h>
 #include <glm/glm.hpp>

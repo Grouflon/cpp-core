@@ -2,8 +2,8 @@
 #include "core/Time.h"
 
 
-Time::Time(double seconds)
-	: m_time(seconds)
+Time::Time(uint32 _milliseconds)
+	: m_time(_milliseconds)
 {
 }
 
@@ -16,19 +16,19 @@ Time::~Time(void)
 {
 }
 
-float Time::asSeconds() const
+double Time::asSeconds() const
 {
-	return static_cast<float>(m_time);
+	return static_cast<double>(m_time) / 1000.0;
 }
 
-float Time::asMilliseconds() const
+uint32 Time::asMilliseconds() const
 {
-	return static_cast<float>(m_time * 1000.0);
+	return m_time;
 }
 
 std::string Time::asString() const
 {
-	unsigned int time = static_cast<unsigned int>(m_time);
+	unsigned int time = static_cast<unsigned int>(m_time / 1000);
 	unsigned int seconds = time % 60u;
 	unsigned int minutes = ((time - seconds) % 3600u) / 60u;
 	unsigned int hours = (time - minutes - seconds) / 3600u;
