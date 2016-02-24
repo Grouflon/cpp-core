@@ -2,6 +2,7 @@
 #include "core/EditorAudio.h"
 
 #include <algorithm>
+#include <portaudio.h>
 
 #include "imgui.h"
 #include "core/ResourceManager.h"
@@ -63,6 +64,11 @@ void EditorAudio::update(float _dt)
 
 		displaySampleGraph(m_currentAudioFile);
 	}
+
+	ImGui::Begin("lala");
+	ImGui::Text(Pa_GetDeviceInfo(Pa_GetDefaultInputDevice())->name);
+	ImGui::Text(Pa_GetDeviceInfo(Pa_GetDefaultOutputDevice())->name);
+	ImGui::End();
 }
 
 void EditorAudio::openSample(const char* _path)

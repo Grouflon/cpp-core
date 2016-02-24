@@ -46,6 +46,7 @@ project "core"
 		"extern/openAL/include",
 		"extern/audio/",
 		"extern/SDL2-2.0.4/include",
+		"extern/portaudio/include",
 	}
 			
 	defines {

@@ -2,6 +2,7 @@
 #include "core/AudioManager.h"
 
 #include <alc.h>
+#include <portaudio.h>
 
 #include "core/OpenALTools.h"
 #include "core/Log.h"
@@ -20,6 +21,13 @@ AudioManager::~AudioManager()
 
 bool AudioManager::init()
 {
+	// PORTAUDIO
+	if (PaError error = Pa_Initialize() != paNoError)
+	{
+		LOG_ERROR("Failed to initialize portaudio: %s", Pa_GetErrorText(error));
+		return false;
+	}
+
 	// OPEN DEVICE
 	m_alDevice = alcOpenDevice(nullptr);
 	if (!m_alDevice)
@@ -52,4 +60,10 @@ void AudioManager::shutdown()
 {
 	alcDestroyContext(m_alContext); 
 	alcCloseDevice(m_alDevice);
+
+	// PORTAUDIO
+	if (PaError error = Pa_Terminate() != paNoError)
+	{
+		LOG_ERROR("Failed to terminate portaudio: %s", Pa_GetErrorText(error));
+	}
 }

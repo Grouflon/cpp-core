@@ -1,2 +1,7 @@
 obj/**
 libs/**
+extern/portaudio/**
+!extern/portaudio/lib/
+!extern/portaudio/lib/**
+!extern/portaudio/include/
+!extern/portaudio/include/**
