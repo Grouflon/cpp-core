@@ -2,26 +2,29 @@
 #include "core/EditorAudio.h"
 
 #include <algorithm>
-#include <portaudio.h>
 
 #include "imgui.h"
 #include "core/ResourceManager.h"
 #include "core/AudioFile.h"
 #include "core/Log.h"
 
+#define PA_ASSERT(f) if (PaError error = f != paNoError) { LOG_ERROR("Portaudio error: %s", Pa_GetErrorText(error)); ASSERT(false); }
+
+
 EditorAudio::EditorAudio()
 	: m_openingFile(false)
-	, m_currentAudioFile(nullptr)
+	, m_currentAudioSample(nullptr)
+	, m_recording(nullptr)
 {
 	strcpy(m_pathBuffer, "./data/audio/");
 }
 
 EditorAudio::~EditorAudio()
 {
-	if (m_currentAudioFile)
+	if (m_currentAudioSample)
 	{
-		m_currentAudioFile->releaseUnuse();
-		m_currentAudioFile = nullptr;
+		m_currentAudioSample->releaseUnuse();
+		m_currentAudioSample = nullptr;
 	}
 }
 
@@ -39,12 +42,12 @@ void EditorAudio::update(float _dt)
 		if (ImGui::Button("Open"))
 		{
 			m_openingFile = false;
-			openSample(m_pathBuffer);
+			openFile(m_pathBuffer);
 		}
 		ImGui::End();
 	}
 
-	if (m_currentAudioFile)
+	if (m_currentAudioSample)
 	{
 		ImGui::SameLine();
 		if (m_player.isPlaying())
@@ -61,35 +64,110 @@ void EditorAudio::update(float _dt)
 				m_player.play();
 			}
 		}
-
-		displaySampleGraph(m_currentAudioFile);
 	}
 
-	ImGui::Begin("lala");
-	ImGui::Text(Pa_GetDeviceInfo(Pa_GetDefaultInputDevice())->name);
-	ImGui::Text(Pa_GetDeviceInfo(Pa_GetDefaultOutputDevice())->name);
-	ImGui::End();
+	ImGui::SameLine();
+	
+	if (m_recording && Pa_IsStreamActive(m_recording))
+	{
+		if (ImGui::Button("STOPREC"))
+		{
+			stopRecord();
+		}
+	}
+	else
+	{
+		stopRecord();
+
+		if (ImGui::Button("REC"))
+		{
+			record();
+		}
+	}
+
+	if (m_currentAudioSample)
+	{
+		displaySampleGraph(m_currentAudioSample);
+	}
 }
 
-void EditorAudio::openSample(const char* _path)
+static int recordCallback(const void* _inputBuffer, void* _outputBuffer, unsigned long _framesPerBuffer, const PaStreamCallbackTimeInfo* _timeInfo, PaStreamCallbackFlags _statusFlags, void* _userData)
 {
-	if (m_currentAudioFile)
-	{
-		m_currentAudioFile->releaseUnuse();
-		m_currentAudioFile = nullptr;
-	}
+	EditorAudio::RecordData* data = reinterpret_cast<EditorAudio::RecordData*>(_userData);
+	const int16* readData = reinterpret_cast<const int16*>(_inputBuffer);
+	int16* writeData = data->data + (data->currentFrame * 2);
+	unsigned long framesLeft = data->maxFrame - data->currentFrame;
+	uint32 copyedFrames = std::min(framesLeft, _framesPerBuffer);
 
-	m_currentAudioFile = ResourceManager::CreateResource<AudioFile, const char*>(_path);
-	m_currentAudioFile->loadUse();
-	if (m_currentAudioFile->getError() != Resource::ERROR_NONE)
+	memcpy(writeData, readData, copyedFrames * 2 * sizeof(uint16));
+
+	data->currentFrame += copyedFrames;
+	return data->currentFrame == data->maxFrame ? paComplete : paContinue;
+}
+
+void EditorAudio::record()
+{
+	PaStreamParameters inputParameters = {};
+	inputParameters.device = Pa_GetDefaultInputDevice();
+	if (inputParameters.device == paNoDevice)
 	{
-		LOG_ERROR("Failed to open sample \"%s\": %s", _path, m_currentAudioFile->getErrorDescription());
-		m_currentAudioFile->releaseUnuse();
-		m_currentAudioFile = nullptr;
+		LOG_ERROR("Can't record: No input device.");
 		return;
 	}
+	inputParameters.channelCount = 2;
+	inputParameters.sampleFormat = paInt16;
+	inputParameters.suggestedLatency = Pa_GetDeviceInfo(inputParameters.device)->defaultLowInputLatency;
 
-	m_player.setSample(m_currentAudioFile);
+	m_recordingData.currentFrame = 0;
+	m_recordingData.maxFrame = 44100 * 5;
+	m_recordingData.data = new int16[m_recordingData.maxFrame * 2];
+
+	PA_ASSERT(Pa_OpenStream(&m_recording, &inputParameters, nullptr, 44100, paFramesPerBufferUnspecified, paClipOff, &recordCallback, &m_recordingData));
+	PA_ASSERT(Pa_StartStream(m_recording));
+}
+
+void EditorAudio::stopRecord()
+{
+	if (!m_recording)
+		return;
+
+	PA_ASSERT(Pa_CloseStream(m_recording));
+	m_recording = nullptr;
+
+	AudioSample* sample = ResourceManager::CreateResource<AudioSample, uint32, uint32, AudioFormat>(44100, m_recordingData.currentFrame, AUDIOFORMAT_STEREO16);
+	sample->loadUse();
+	memcpy(sample->getBuffer(), m_recordingData.data, m_recordingData.currentFrame * AudioSample::getFormatSampleSize(sample->getFormat()));
+	setSample(sample);
+	sample->releaseUnuse();
+
+	m_recordingData.currentFrame = 0;
+	m_recordingData.maxFrame = 0;
+	delete[] m_recordingData.data;
+	m_recordingData.data = nullptr;
+}
+
+void EditorAudio::setSample(AudioSample* _sample)
+{
+	if (m_currentAudioSample)
+	{
+		m_currentAudioSample->releaseUnuse();
+		m_currentAudioSample = nullptr;
+	}
+
+	m_currentAudioSample = _sample;
+	m_currentAudioSample->loadUse();
+	m_player.setSample(m_currentAudioSample);
+}
+
+void EditorAudio::openFile(const char* _path)
+{
+	AudioFile* file = ResourceManager::CreateResource<AudioFile, const char*>(_path);
+	if (file->getError() != Resource::ERROR_NONE)
+	{
+		LOG_ERROR("Failed to open sample \"%s\": %s", _path, file->getErrorDescription());
+		return;
+	}
+	setSample(file);
 }
 
 void EditorAudio::displaySampleGraph(AudioSample* _sample)
