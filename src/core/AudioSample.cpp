@@ -27,7 +27,7 @@ AudioSample::~AudioSample()
 
 void AudioSample::onLoad()
 {
-	m_buffer = new char[m_samplesCount* getFormatSampleSize(m_format)];
+	m_buffer = new char[m_samplesCount* GetFormatSampleSize(m_format)];
 }
 
 void AudioSample::onRelease()
@@ -78,7 +78,7 @@ uint32 AudioSample::getFrequency() const
 	return m_frequency;
 }
 
-uint32 AudioSample::getFormatSampleSize(AudioFormat format)
+uint32 AudioSample::GetFormatSampleSize(AudioFormat format)
 {
 	switch(format)
 	{
@@ -91,7 +91,7 @@ uint32 AudioSample::getFormatSampleSize(AudioFormat format)
 	}
 }
 
-uint8 AudioSample::getFormatChannelCount(AudioFormat _format)
+uint8 AudioSample::GetFormatChannelCount(AudioFormat _format)
 {
 	switch(_format)
 	{

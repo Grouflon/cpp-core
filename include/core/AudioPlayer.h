@@ -1,6 +1,9 @@
 #pragma once
 
+#include <portaudio.h>
+
 class AudioSample;
+typedef void PaStream;
 
 class AudioPlayer
 {
@@ -21,9 +24,12 @@ public:
 
 private:
 
-	bool m_playing;
+	static int PaReadCallback(const void* _input, void* _output, unsigned long _frameCount, const PaStreamCallbackTimeInfo* _timeInfo, PaStreamCallbackFlags _statusFlags, void* _userData);
+
+	bool m_looping;
 
 	AudioSample* m_sample;
-	uint32 m_alBufferId;
-	uint32 m_alSourceId;
+	PaStream* m_stream;
+
+	uint32 m_playedSamples;
 };

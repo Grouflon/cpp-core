@@ -85,6 +85,11 @@ void EditorAudio::update(float _dt)
 		}
 	}
 
+	ImGui::SameLine();
+	bool looping = m_player.isLooping();
+	ImGui::Checkbox("loop", &looping);
+	m_player.setLooping(looping);
+
 	if (m_currentAudioSample)
 	{
 		displaySampleGraph(m_currentAudioSample);
@@ -136,7 +141,7 @@ void EditorAudio::stopRecord()
 
 	AudioSample* sample = ResourceManager::CreateResource<AudioSample, uint32, uint32, AudioFormat>(44100, m_recordingData.currentFrame, AUDIOFORMAT_STEREO16);
 	sample->loadUse();
-	memcpy(sample->getBuffer(), m_recordingData.data, m_recordingData.currentFrame * AudioSample::getFormatSampleSize(sample->getFormat()));
+	memcpy(sample->getBuffer(), m_recordingData.data, m_recordingData.currentFrame * AudioSample::GetFormatSampleSize(sample->getFormat()));
 	setSample(sample);
 	sample->releaseUnuse();
 
@@ -177,10 +182,10 @@ void EditorAudio::displaySampleGraph(AudioSample* _sample)
 	ImVec2 windowStartPos = ImGui::GetWindowPos();
 	ImVec2 windowSize = ImGui::GetWindowSize();
 
-	uint8 channelCount = AudioSample::getFormatChannelCount(_sample->getFormat());
+	uint8 channelCount = AudioSample::GetFormatChannelCount(_sample->getFormat());
 	uint8* buffer = static_cast<uint8*>(_sample->getBuffer());
 	uint32 sampleCount = _sample->getSampleCount();
-	uint8 sampleSize = AudioSample::getFormatSampleSize(_sample->getFormat());
+	uint8 sampleSize = AudioSample::GetFormatSampleSize(_sample->getFormat());
 	uint8 dataSize =  sampleSize / channelCount;
 	int32 maxValue = ~0;
 	if (dataSize == 1) maxValue = INT8_MAX;

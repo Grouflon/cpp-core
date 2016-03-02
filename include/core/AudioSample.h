@@ -31,8 +31,8 @@ public:
 	void* getBuffer();
 	const void* getBuffer() const;
 
-	static uint32 getFormatSampleSize(AudioFormat _format);
-	static uint8 getFormatChannelCount(AudioFormat _format);
+	static uint32 GetFormatSampleSize(AudioFormat _format);
+	static uint8 GetFormatChannelCount(AudioFormat _format);
 
 private:
 	uint32	m_frequency;

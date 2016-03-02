@@ -25,10 +25,10 @@ project "core"
 		"extern/glm/**.hpp",
 		"extern/json/**.c",
 		"extern/json/**.h",
-		"extern/openAL/**.h",
 		"extern/audio/**.c",
 		"extern/audio/**.h",
 		"extern/SDL2-2.0.4/**.h",
+		"extern/portaudio/include/**.h",
 	}
 			
 	removefiles {
@@ -43,7 +43,6 @@ project "core"
 		"extern/glm/",
 		"extern/imgui/",
 		"extern/json/",
-		"extern/openAL/include",
 		"extern/audio/",
 		"extern/SDL2-2.0.4/include",
 		"extern/portaudio/include",
