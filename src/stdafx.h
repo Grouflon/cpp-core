@@ -22,3 +22,4 @@
 #include "core/HashTools.h"
 #include "core/StringHash.h"
 #include "core/Math.h"
+#include "core/Locator.h"
