@@ -5,7 +5,7 @@
 class Time
 {
 public:
-	Time(uint32 _milliseconds);
+	Time(uint32 _milliseconds = 0u);
 	Time(const Time& rhs);
 	~Time();
 

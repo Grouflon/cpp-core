@@ -1,23 +1,36 @@
 #pragma once
 
+#include "core/Resource.h"
 #include "core/Time.h"
 
 class Clock
+	: public Resource
 {
 public:
 	Clock();
-	~Clock();
+	virtual ~Clock();
 
-	void start();
-	void stop();
-	Time reset();
+	void update(Time _dt);
+	void reset();
 
 	Time getTime() const;
+	Time getRealTime() const;
+	Time getElapsedTime() const;
+	Time getRealElapsedTime() const;
+
+	void setTimeRatio(float _value);
+	float getTimeRatio() const;
+
+	void addChild(Clock* _clock);
+	void removeChild(Clock* _clock);
 
 private:
-	uint32	m_startTime;
-	uint32  m_stopTime;
-	bool	m_running;
-	bool	m_reset;
+	float m_timeRatio;
+	Time m_time;
+	Time m_realTime;
+	Time m_elapsedTime;
+	Time m_realElapsedTime;
+
+	std::vector<Clock*> m_children;
 };
 

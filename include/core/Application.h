@@ -2,6 +2,7 @@
 
 #include <glm/glm.hpp>
 
+#include "core/SystemClock.h"
 #include "core/Clock.h"
 
 struct SDL_Window;
@@ -27,10 +28,11 @@ public:
 	glm::ivec2	getWindowSize() const;
 	float		getWindowRatio() const;
 
-	const Clock&	getClock() const;
+	Clock&		getMainClock();
 
 private:
 	void _processEvents();
+	void _updateTime();
 	void _update();
 	void _render();
 
@@ -38,6 +40,8 @@ private:
 	bool		m_running;
 	SDL_Window* m_window;
 	SDL_GLContext m_glContext;
-	double		m_previousTime;
-	Clock		m_clock;
+	Time		m_previousTime;
+
+	SystemClock		m_systemClock;
+	Clock			m_clock;
 };

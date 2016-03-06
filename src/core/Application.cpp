@@ -10,44 +10,13 @@
 #include "core/Assert.h"
 #include "core/ResourceManager.h"
 
-/*
-static void glfw_errorCallback(int error, const char* description)
-{
-	LOG_ERROR("ERROR: GLFW ERROR: code %d msg: %s", error, description);
-	ASSERT(false);
-}
-
-static void glfw_keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
-{
-	ImGui_ImplGlfwGL3_KeyCallback(window, key, scancode, action, mods);
-	Application* app = static_cast<Application*>(glfwGetWindowUserPointer(window));
-	app->onKeyEvent(key, scancode, action, mods);
-}
-
-static void glfw_mouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
-{
-	ImGui_ImplGlfwGL3_MouseButtonCallback(window, button, action, mods);
-}
-
-static void glfw_scrollCallback(GLFWwindow* window, double xoffset, double yoffset)
-{
-	ImGui_ImplGlfwGL3_ScrollCallback(window, xoffset, yoffset);
-}
-
-static void glfw_charCallback(GLFWwindow* window, unsigned int c)
-{
-	ImGui_ImplGlfwGL3_CharCallback(window, c);
-	Application* app = static_cast<Application*>(glfwGetWindowUserPointer(window));
-	app->onCharEvent(c);
-}*/
-
 
 Application::Application()
 	: m_initialized(false)
 	, m_running(false)
 	, m_window(nullptr)
 	, m_glContext(nullptr)
-	, m_previousTime(0.0)
+	, m_previousTime(0u)
 {
 }
 
@@ -59,37 +28,6 @@ bool Application::init(int width, int height, const char* name)
 {
 	if (!m_initialized)
 	{
-		/*if (!glfwInit())
-		{
-			LOG_ERROR("ERROR: Application::init -> glfw initialization failed.");
-			return false;
-		}
-		glfwSetErrorCallback(glfw_errorCallback);
-
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-		glfwWindowHint(GLFW_SAMPLES, 4);
-
-		// NOTE: Maybe window should be opened only when start is called
-		m_window = glfwCreateWindow(width, height, name, nullptr, nullptr);
-		if (!m_window)
-		{
-			glfwTerminate();
-			LOG_ERROR("ERROR: Application::init -> glfw window creation failed.");
-			return false;
-		}
-
-		glfwSetWindowUserPointer(m_window, this);
-		glfwSetKeyCallback(m_window, glfw_keyCallback);
-		glfwSetCharCallback(m_window, glfw_charCallback);
-		glfwSetMouseButtonCallback(m_window, glfw_mouseButtonCallback);
-		glfwSetScrollCallback(m_window, glfw_scrollCallback);
-
-		glfwMakeContextCurrent(m_window);
-		glfwSwapInterval(1); // VSYNC*/
-
 		if (SDL_Init(SDL_INIT_VIDEO) < 0)
 		{
 			LOG_ERROR("Failed to initialize SDL: %s.", SDL_GetError());
@@ -130,6 +68,10 @@ bool Application::init(int width, int height, const char* name)
 			return false;
 		}
 
+		// REGISTER TO SERVICE LOCATOR
+		ASSERT(Locator::Get<Application>() == nullptr);
+		Locator::Register(this);
+
 		m_initialized = true;
 	}
 	else
@@ -162,8 +104,8 @@ void Application::start()
 {
 	ASSERT(m_initialized); // Should not call start before init
 
-	m_clock.start();
-	m_previousTime = m_clock.getTime().asSeconds();
+	m_systemClock.start();
+	m_previousTime = m_systemClock.getTime();
 
 	started();
 
@@ -171,6 +113,7 @@ void Application::start()
 	while(m_running)
 	{
 		// GAME LOOP
+		_updateTime();
 		_processEvents();
 		_update();
 		_render();
@@ -178,6 +121,7 @@ void Application::start()
 		g_resourceManager.flushResources();
 	}
 
+	m_systemClock.stop();
 	stopped();
 }
 
@@ -215,7 +159,7 @@ float Application::getWindowRatio() const
 	return static_cast<float>(size.x) / static_cast<float>(size.y);
 }
 
-const Clock& Application::getClock() const
+Clock& Application::getMainClock()
 {
 	return m_clock;
 }
@@ -233,13 +177,18 @@ void Application::_processEvents()
 	}
 }
 
+void Application::_updateTime()
+{
+	Time time = m_clock.getTime();
+	Time deltaTime = time - m_previousTime;
+	m_clock.update(deltaTime);
+	m_previousTime = time;
+}
+
 void Application::_update()
 {
 	ImGui_ImplSdlGL3_NewFrame();
-	double time = m_previousTime = m_clock.getTime().asSeconds();
-	float dt = static_cast<float>(time - m_previousTime);
-	m_previousTime = time;
-	update(dt);
+	update(static_cast<float>(m_clock.getElapsedTime().asSeconds()));
 }
 
 void Application::_render()
