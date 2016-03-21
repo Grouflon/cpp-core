@@ -18,6 +18,15 @@ JsonSerializer::~JsonSerializer()
 {
 }
 
+void JsonSerializer::beginRead(const json_value_s* _root)
+{
+	assert(!m_reading && !m_writing); // end() must be called before calling begin() again.
+
+	m_root = const_cast<json_value_s*>(_root); // Seems ok but not sure
+	m_currentValue = m_root;
+
+	m_reading = true;
+}
 
 // TODO: refactor duplicated code
 bool JsonSerializer::beginRead(const FileHandle* _file)
@@ -56,8 +65,11 @@ bool JsonSerializer::end()
 {
 	if (isReading())
 	{
-		// json value built by json.h
-		free(m_root);
+		if (getReadFile()) // if we have a file, that meant we parsed our own json value
+		{
+			// json value built by json.h
+			free(m_root);
+		}
 	}
 	else
 	{
@@ -853,37 +865,37 @@ bool JsonSerializer::serializeMembers(void* _pointer, const ClassDesc* _classDes
 	{
 		switch (member.type)
 		{
-		case ClassDesc::TYPE_BOOL: { result = result && serialize(member.name, *reinterpret_cast<bool*>(static_cast<uint8*>(_pointer) + member.address)); } break;
-		case ClassDesc::TYPE_CHAR: { result = result && serialize(member.name, *reinterpret_cast<char*>(static_cast<uint8*>(_pointer) + member.address)); } break;
-		case ClassDesc::TYPE_INT8: { result = result && serialize(member.name, *reinterpret_cast<int8*>(static_cast<uint8*>(_pointer) + member.address)); } break;
-		case ClassDesc::TYPE_INT16: { result = result && serialize(member.name, *reinterpret_cast<int16*>(static_cast<uint8*>(_pointer) + member.address)); } break;
-		case ClassDesc::TYPE_INT32: { result = result && serialize(member.name, *reinterpret_cast<int32*>(static_cast<uint8*>(_pointer) + member.address)); } break;
-		case ClassDesc::TYPE_INT64: { result = result && serialize(member.name, *reinterpret_cast<int64*>(static_cast<uint8*>(_pointer) + member.address)); } break;
-		case ClassDesc::TYPE_UINT8: { result = result && serialize(member.name, *reinterpret_cast<uint8*>(static_cast<uint8*>(_pointer) + member.address)); } break;
-		case ClassDesc::TYPE_UINT16: { result = result && serialize(member.name, *reinterpret_cast<uint16*>(static_cast<uint8*>(_pointer) + member.address)); } break;
-		case ClassDesc::TYPE_UINT32: { result = result && serialize(member.name, *reinterpret_cast<uint32*>(static_cast<uint8*>(_pointer) + member.address)); } break;
-		case ClassDesc::TYPE_UINT64: { result = result && serialize(member.name, *reinterpret_cast<uint64*>(static_cast<uint8*>(_pointer) + member.address)); } break;
-		case ClassDesc::TYPE_FLOAT: { result = result && serialize(member.name, *reinterpret_cast<float*>(static_cast<uint8*>(_pointer) + member.address)); } break;
-		case ClassDesc::TYPE_DOUBLE: { result = result && serialize(member.name, *reinterpret_cast<double*>(static_cast<uint8*>(_pointer) + member.address)); } break;
-		case ClassDesc::TYPE_STRING: { result = result && serialize(member.name, *reinterpret_cast<std::string*>(static_cast<uint8*>(_pointer) + member.address)); } break;
+		case ClassDesc::TYPE_BOOL: { result = serialize(member.name, *reinterpret_cast<bool*>(static_cast<uint8*>(_pointer) + member.address)) && result; } break;
+		case ClassDesc::TYPE_CHAR: { result = serialize(member.name, *reinterpret_cast<char*>(static_cast<uint8*>(_pointer) + member.address)) && result; } break;
+		case ClassDesc::TYPE_INT8: { result = serialize(member.name, *reinterpret_cast<int8*>(static_cast<uint8*>(_pointer) + member.address)) && result; } break;
+		case ClassDesc::TYPE_INT16: { result = serialize(member.name, *reinterpret_cast<int16*>(static_cast<uint8*>(_pointer) + member.address)) && result; } break;
+		case ClassDesc::TYPE_INT32: { result = serialize(member.name, *reinterpret_cast<int32*>(static_cast<uint8*>(_pointer) + member.address)) && result; } break;
+		case ClassDesc::TYPE_INT64: { result = serialize(member.name, *reinterpret_cast<int64*>(static_cast<uint8*>(_pointer) + member.address)) && result; } break;
+		case ClassDesc::TYPE_UINT8: { result = serialize(member.name, *reinterpret_cast<uint8*>(static_cast<uint8*>(_pointer) + member.address)) && result; } break;
+		case ClassDesc::TYPE_UINT16: { result = serialize(member.name, *reinterpret_cast<uint16*>(static_cast<uint8*>(_pointer) + member.address)) && result; } break;
+		case ClassDesc::TYPE_UINT32: { result = serialize(member.name, *reinterpret_cast<uint32*>(static_cast<uint8*>(_pointer) + member.address)) && result; } break;
+		case ClassDesc::TYPE_UINT64: { result = serialize(member.name, *reinterpret_cast<uint64*>(static_cast<uint8*>(_pointer) + member.address)) && result; } break;
+		case ClassDesc::TYPE_FLOAT: { result = serialize(member.name, *reinterpret_cast<float*>(static_cast<uint8*>(_pointer) + member.address)) && result; } break;
+		case ClassDesc::TYPE_DOUBLE: { result = serialize(member.name, *reinterpret_cast<double*>(static_cast<uint8*>(_pointer) + member.address)) && result; } break;
+		case ClassDesc::TYPE_STRING: { result = serialize(member.name, *reinterpret_cast<std::string*>(static_cast<uint8*>(_pointer) + member.address)) && result; } break;
 
 		case ClassDesc::TYPE_ARRAY:
 			{
 				switch(member.elementType)
 				{
-				case ClassDesc::TYPE_BOOL: { result = result && serialize(member.name, reinterpret_cast<bool*>(static_cast<uint8*>(_pointer) + member.address), member.elementCount); } break;
-				case ClassDesc::TYPE_CHAR: { result = result && serialize(member.name, reinterpret_cast<char*>(static_cast<uint8*>(_pointer) + member.address), member.elementCount); } break;
-				case ClassDesc::TYPE_INT8: { result = result && serialize(member.name, reinterpret_cast<int8*>(static_cast<uint8*>(_pointer) + member.address), member.elementCount); } break;
-				case ClassDesc::TYPE_INT16: { result = result && serialize(member.name, reinterpret_cast<int16*>(static_cast<uint8*>(_pointer) + member.address), member.elementCount); } break;
-				case ClassDesc::TYPE_INT32: { result = result && serialize(member.name, reinterpret_cast<int32*>(static_cast<uint8*>(_pointer) + member.address), member.elementCount); } break;
-				case ClassDesc::TYPE_INT64: { result = result && serialize(member.name, reinterpret_cast<int64*>(static_cast<uint8*>(_pointer) + member.address), member.elementCount); } break;
-				case ClassDesc::TYPE_UINT8: { result = result && serialize(member.name, reinterpret_cast<uint8*>(static_cast<uint8*>(_pointer) + member.address), member.elementCount); } break;
-				case ClassDesc::TYPE_UINT16: { result = result && serialize(member.name, reinterpret_cast<uint16*>(static_cast<uint8*>(_pointer) + member.address), member.elementCount); } break;
-				case ClassDesc::TYPE_UINT32: { result = result && serialize(member.name, reinterpret_cast<uint32*>(static_cast<uint8*>(_pointer) + member.address), member.elementCount); } break;
-				case ClassDesc::TYPE_UINT64: { result = result && serialize(member.name, reinterpret_cast<uint64*>(static_cast<uint8*>(_pointer) + member.address), member.elementCount); } break;
-				case ClassDesc::TYPE_FLOAT: { result = result && serialize(member.name, reinterpret_cast<float*>(static_cast<uint8*>(_pointer) + member.address), member.elementCount); } break;
-				case ClassDesc::TYPE_DOUBLE: { result = result && serialize(member.name, reinterpret_cast<double*>(static_cast<uint8*>(_pointer) + member.address), member.elementCount); } break;
-				case ClassDesc::TYPE_STRING: { result = result && serialize(member.name, reinterpret_cast<std::string*>(static_cast<uint8*>(_pointer) + member.address), member.elementCount); } break;
+				case ClassDesc::TYPE_BOOL: { result = serialize(member.name, reinterpret_cast<bool*>(static_cast<uint8*>(_pointer) + member.address), member.elementCount) && result; } break;
+				case ClassDesc::TYPE_CHAR: { result = serialize(member.name, reinterpret_cast<char*>(static_cast<uint8*>(_pointer) + member.address), member.elementCount) && result; } break;
+				case ClassDesc::TYPE_INT8: { result = serialize(member.name, reinterpret_cast<int8*>(static_cast<uint8*>(_pointer) + member.address), member.elementCount) && result; } break;
+				case ClassDesc::TYPE_INT16: { result = serialize(member.name, reinterpret_cast<int16*>(static_cast<uint8*>(_pointer) + member.address), member.elementCount) && result; } break;
+				case ClassDesc::TYPE_INT32: { result = serialize(member.name, reinterpret_cast<int32*>(static_cast<uint8*>(_pointer) + member.address), member.elementCount) && result; } break;
+				case ClassDesc::TYPE_INT64: { result = serialize(member.name, reinterpret_cast<int64*>(static_cast<uint8*>(_pointer) + member.address), member.elementCount) && result; } break;
+				case ClassDesc::TYPE_UINT8: { result = serialize(member.name, reinterpret_cast<uint8*>(static_cast<uint8*>(_pointer) + member.address), member.elementCount) && result; } break;
+				case ClassDesc::TYPE_UINT16: { result = serialize(member.name, reinterpret_cast<uint16*>(static_cast<uint8*>(_pointer) + member.address), member.elementCount) && result; } break;
+				case ClassDesc::TYPE_UINT32: { result = serialize(member.name, reinterpret_cast<uint32*>(static_cast<uint8*>(_pointer) + member.address), member.elementCount) && result; } break;
+				case ClassDesc::TYPE_UINT64: { result = serialize(member.name, reinterpret_cast<uint64*>(static_cast<uint8*>(_pointer) + member.address), member.elementCount) && result; } break;
+				case ClassDesc::TYPE_FLOAT: { result = serialize(member.name, reinterpret_cast<float*>(static_cast<uint8*>(_pointer) + member.address), member.elementCount) && result; } break;
+				case ClassDesc::TYPE_DOUBLE: { result = serialize(member.name, reinterpret_cast<double*>(static_cast<uint8*>(_pointer) + member.address), member.elementCount) && result; } break;
+				case ClassDesc::TYPE_STRING: { result = serialize(member.name, reinterpret_cast<std::string*>(static_cast<uint8*>(_pointer) + member.address), member.elementCount) && result; } break;
 				default: break;
 				}
 			} break;

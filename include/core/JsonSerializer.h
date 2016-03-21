@@ -17,6 +17,8 @@ public:
 	JsonSerializer();
 	virtual ~JsonSerializer();
 
+	void beginRead(const json_value_s* _root);
+
 	virtual bool beginRead(const FileHandle* file) override;
 	virtual bool beginWrite(FileHandle* file) override;
 	virtual bool end() override;

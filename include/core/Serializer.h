@@ -70,9 +70,12 @@ protected:
 	FileHandle*		getWriteFile() const;
 	void		setErrorDesc(const char* _errorDesc);
 
+	bool		m_reading;
+	bool		m_writing;
+
 private:
 	const FileHandle*	m_readFile;
-	FileHandle*		m_writeFile;
+	FileHandle*			m_writeFile;
 
 	std::string m_errorDesc;
 };

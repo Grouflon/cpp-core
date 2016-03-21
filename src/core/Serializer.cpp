@@ -5,8 +5,11 @@
 #include "core/FileHandle.h"
 
 Serializer::Serializer()
-	: m_readFile(nullptr)
+	: m_reading(false)
+	, m_writing(false)
+	, m_readFile(nullptr)
 	, m_writeFile(nullptr)
+	
 {
 }
 
@@ -16,7 +19,7 @@ Serializer::~Serializer()
 
 bool Serializer::beginRead(const FileHandle* _file)
 {
-	if (m_readFile || m_writeFile)
+	if (m_reading || m_writing)
 	{
 		setErrorDesc("end() must be called before calling begin() again.");
 		return false; // end() not called
@@ -28,12 +31,13 @@ bool Serializer::beginRead(const FileHandle* _file)
 	}
 
 	m_readFile = _file;
+	m_reading = true;
 	return true;
 }
 
 bool Serializer::beginWrite(FileHandle* _file)
 {
-	if (m_readFile || m_writeFile)
+	if (m_reading || m_writing)
 	{
 		setErrorDesc("end() must be called before calling begin() again.");
 		return false;
@@ -45,6 +49,7 @@ bool Serializer::beginWrite(FileHandle* _file)
 	}
 
 	m_writeFile = _file;
+	m_writing = true;
 	return true;
 }
 
@@ -52,19 +57,19 @@ bool Serializer::end()
 {
 	m_readFile = nullptr;
 	m_writeFile = nullptr;
+	m_reading = false;
+	m_writing = false;
 	return true;
 }
 
 bool Serializer::isReading() const
 {
-	ASSERT(m_readFile || m_writeFile); // This result has no sense if not between startRead/Write() and end().
-	return m_readFile != nullptr;
+	return m_reading;
 }
 
 bool Serializer::isWriting() const
 {
-	ASSERT(m_readFile || m_writeFile); // This result has no sense if not between startRead/Write() and end().
-	return m_writeFile != nullptr;
+	return m_writing;
 }
 
 const char* Serializer::getErrorDesc()
