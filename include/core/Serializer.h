@@ -78,4 +78,7 @@ private:
 	std::string m_errorDesc;
 };
 
+template <>
+bool Serializer::serialize(const char* _name, std::vector<bool>& _value); // special case for vectors of bool
+
 #include "core/Serializer.inl"

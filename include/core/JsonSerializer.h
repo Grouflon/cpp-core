@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include <stack>
 #include "core/Serializer.h"
 
 enum json_type_e;
@@ -51,7 +52,6 @@ public:
 	virtual bool serialize(const char* name, std::string& value) override;
 	virtual bool serialize(const char* name, std::string* value, size_t size) override;
 
-	// TODO
 	virtual bool serializeVectorStart(const char* _name, size_t& size) override;
 	virtual bool serializeVectorStop() override;
 
@@ -61,6 +61,9 @@ public:
 	template <typename T>
 	bool serialize(const char* _name, T* _value)  { return Serializer::serialize(_name, _value); }
 
+	template <typename T>
+	bool serialize(const char* _name, std::vector<T>& _value) { return Serializer::serialize(_name, _value); }
+
 	virtual bool serialize(const char* _name, void** _pointer, const ClassDesc* _classDesc) override;
 	virtual bool serialize(const char* _name, void* _pointer, const ClassDesc* _classDesc) override;
 
@@ -68,8 +71,11 @@ private:
 	bool	serializeArray(const char* _name, size_t _size, std::function<bool(const json_array_element_s*, int)> _readCallback, std::function<bool(json_array_element_s*, int)> _writeCallback);
 	bool	serializeClassDesc(const ClassDesc** _classDesc);
 	bool	serializeMembers(void* _pointer, const ClassDesc* _classDesc);
+	bool	serializeValue(const char* _name, json_type_e _type, void* _value, void(*_readFunc)(json_value_s*, void*), json_value_s*(*_writeFunc)(void*));
 
-	json_value_s*			m_root;
-	json_value_s*			m_currentValue;
-	json_array_element_s*	m_currentArrayElement;
+	json_value_s*						m_root;
+	json_value_s*						m_currentValue;
+	
+	std::stack<json_value_s*>			m_currentArrayParent;
+	std::stack<json_array_element_s*>	m_currentArrayElement;
 };

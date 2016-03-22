@@ -4,29 +4,6 @@
 namespace JsonTools {
 	
 
-void AddValueToObject(json_object_s* _object, const char* _name, json_value_s* _value)
-{
-	json_object_element_s* nextElement = new json_object_element_s;
-	nextElement->value = _value;
-	nextElement->name = CreateString(_name);
-	nextElement->next = nullptr;
-
-	json_object_element_s* currentElement = _object->start;
-	if (!currentElement)
-	{
-		_object->start = nextElement;
-	}
-	else
-	{
-		while (currentElement->next)
-		{
-			currentElement = currentElement->next;
-		}
-		currentElement->next = nextElement;
-	}
-	++_object->length;
-}
-
 json_value_s* FindObjectValue(json_object_s* _object, const char* _name)
 {
 	json_object_element_s* currentElement = _object->start;
@@ -189,6 +166,62 @@ json_value_s* CreateObjectValue()
 	object->length = 0;
 	object->start = nullptr;
 	return ret;
+}
+
+void AddValueToObject(json_object_s* _object, const char* _name, json_value_s* _value)
+{
+	json_object_element_s* nextElement = new json_object_element_s;
+	nextElement->value = _value;
+	nextElement->name = CreateString(_name);
+	nextElement->next = nullptr;
+
+	json_object_element_s* currentElement = _object->start;
+	if (!currentElement)
+	{
+		_object->start = nextElement;
+	}
+	else
+	{
+		while (currentElement->next)
+		{
+			currentElement = currentElement->next;
+		}
+		currentElement->next = nextElement;
+	}
+	++_object->length;
+}
+
+json_value_s* CreateArrayValue()
+{
+	json_value_s* ret = new json_value_s;
+	ret->type = json_type_array;
+	json_array_s* array = new json_array_s;
+	ret->payload = array;
+	array->length = 0;
+	array->start = nullptr;
+	return ret;
+}
+
+void PushBackValueToArray(json_array_s* _array, json_value_s* _value)
+{
+	json_array_element_s* nextElement = new json_array_element_s;
+	nextElement->value = _value;
+	nextElement->next = nullptr;
+
+	json_array_element_s* currentElement = _array->start;
+	if (!currentElement)
+	{
+		_array->start = nextElement;
+	}
+	else
+	{
+		while (currentElement->next)
+		{
+			currentElement = currentElement->next;
+		}
+		currentElement->next = nextElement;
+	}
+	++_array->length;
 }
 
 void DeleteJsonValue(json_value_s* _jsonValue)

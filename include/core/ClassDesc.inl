@@ -14,7 +14,7 @@ void ClassDesc::addArrayMember(const char* _name, uint32 _address, T* _value, si
 template <typename T>
 void ClassDesc::addVectorMember(const char* _name, uint32 _address, std::vector<T>* _value)
 {
-	addArrayMember(_name, _address, getType(_value->data()));
+	addVectorMember(_name, _address, getType(_value->data()));
 }
 
 template <typename T>

@@ -33,6 +33,7 @@ public:
 
 	struct ClassMember
 	{
+		//TODO: infinite recursion model (std::vector<std::vector<...>>)
 		ClassMember(const char* _name, uint32 _address, MemberType _type, MemberType _elementType = TYPE_UNKNOWN, size_t _elementCount = 0);
 		const char* name;
 		uint32		address;

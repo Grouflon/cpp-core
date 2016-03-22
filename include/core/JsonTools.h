@@ -25,6 +25,8 @@ json_value_s*	CreateNumberValue(unsigned int _number);
 json_value_s*	CreateBoolValue(bool _value);
 json_value_s*	CreateObjectValue();
 void			AddValueToObject(json_object_s* _object, const char* _name, json_value_s* _value);
+json_value_s*	CreateArrayValue();
+void			PushBackValueToArray(json_array_s* _array, json_value_s* _value);
 void			DeleteJsonValue(json_value_s* _jsonValue);
 
 // These functions does not perform any type check. Use with caution

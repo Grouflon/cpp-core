@@ -27,5 +27,8 @@ public: \
 #define REFLECT_ARRAY_AUTO(_memberName, _size) \
 	classDesc->addArrayMember(#_memberName, reinterpret_cast<uint32>(&prototype._memberName) - reinterpret_cast<uint32>(&prototype), prototype._memberName, _size);
 
+#define REFLECT_VECTOR_AUTO(_memberName) \
+	classDesc->addVectorMember(#_memberName, reinterpret_cast<uint32>(&prototype._memberName) - reinterpret_cast<uint32>(&prototype), &prototype._memberName);
+
 // TODO-MAYBE: typed reflect macros (ex: REFLECT_INT8)
 // not sure this is useful, AUTO seems to work all the time

@@ -93,3 +93,28 @@ void Serializer::setErrorDesc(const char* _errorDesc)
 {
 	m_errorDesc = _errorDesc;
 }
+
+template <>
+bool Serializer::serialize<bool>(const char* _name, std::vector<bool>& _value)
+{
+	size_t size = _value.size();
+	bool result = serializeVectorStart(_name, size);
+
+	if (!result)
+		return false;
+
+	_value.resize(size);
+
+	for (auto i = 0u; i < size; ++i)
+	{
+		bool value = _value[i];
+		result = result && serialize(nullptr, value);
+
+		if (isReading() && result)
+		{
+			_value[i] = value;
+		}
+	}
+	result = serializeVectorStop() && result;
+	return result;
+}
