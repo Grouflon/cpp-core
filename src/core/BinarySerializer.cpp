@@ -167,12 +167,12 @@ bool BinarySerializer::serialize(const char* _name, std::string* _value, size_t 
 	return true;
 }
 
-bool BinarySerializer::beginVectorSerialization(const char*, size_t& _size)
+bool BinarySerializer::serializeVectorStart(const char*, size_t& _size)
 {
 	return serialize(nullptr, _size);
 }
 
-bool BinarySerializer::endVectorSerialization()
+bool BinarySerializer::serializeVectorStop()
 {
 	return true;
 }
@@ -209,7 +209,7 @@ bool BinarySerializer::serializeClassDesc(const ClassDesc** _classDesc)
 
 	if (isReading())
 	{
-		*_classDesc = getClassDesc(className.c_str());
+		*_classDesc = GetClassDesc(className.c_str());
 
 		if (!*_classDesc)
 			result = false;

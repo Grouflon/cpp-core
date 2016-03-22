@@ -26,13 +26,14 @@ public:
 
 		TYPE_ARRAY,
 
+		TYPE_VECTOR,
+
 		TYPE_UNKNOWN
 	};
 
 	struct ClassMember
 	{
-		ClassMember(const char* _name, uint32 _address, MemberType _type);
-		ClassMember(const char* _name, uint32 _address, MemberType _elementType, size_t _elementCount); // C Array element
+		ClassMember(const char* _name, uint32 _address, MemberType _type, MemberType _elementType = TYPE_UNKNOWN, size_t _elementCount = 0);
 		const char* name;
 		uint32		address;
 		MemberType	type;
@@ -45,6 +46,7 @@ public:
 
 	void addMember(const char* _name, uint32 _address, MemberType _type);
 	void addArrayMember(const char* _name, uint32 _address, MemberType _elementType, size_t _elementCount);
+	void addVectorMember(const char* _name, uint32 _address, MemberType _elementType);
 
 	template <typename T>
 	void addMember(const char* _name, uint32 _address, T* _value);
@@ -52,7 +54,8 @@ public:
 	template <typename T>
 	void addArrayMember(const char* _name, uint32 _address, T*, size_t _elementCount);
 
-	
+	template <typename T>
+	void addVectorMember(const char* _name, uint32 _address, std::vector<T>*);
 
 private:
 	template <typename T>
@@ -90,6 +93,6 @@ private:
 };
 extern ClassSet	g_classSet;
 
-ClassDesc* getClassDesc(const char* _className);
+ClassDesc* GetClassDesc(const char* _className);
 
 #include "core/ClassDesc.inl"

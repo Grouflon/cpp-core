@@ -7,10 +7,12 @@
 #include "core/FileHandle.h"
 #include "core/ClassDesc.h"
 #include "core/Factory.h"
+#include "core/JsonTools.h"
 
 JsonSerializer::JsonSerializer()
 	: m_root(nullptr)
 	, m_currentValue(nullptr)
+	, m_currentArrayElement(nullptr)
 {
 }
 
@@ -80,7 +82,7 @@ bool JsonSerializer::end()
 		free(out);
 
 		// json value hand built
-		deleteJsonValue(m_root);
+		JsonTools::DeleteJsonValue(m_root);
 	}
 
 	return Serializer::end();
@@ -95,7 +97,7 @@ bool JsonSerializer::serialize(const char* _name, bool& _value)
 
 	if (isReading())
 	{
-		json_value_s* match = findObjectValue(currentObject, _name);
+		json_value_s* match = JsonTools::FindObjectValue(currentObject, _name);
 		if (!match || (match->type != json_type_true && match->type != json_type_false))
 			return false;
 
@@ -103,7 +105,7 @@ bool JsonSerializer::serialize(const char* _name, bool& _value)
 	}
 	else
 	{
-		addValueToObject(currentObject, _name, createBoolValue(_value));
+		JsonTools::AddValueToObject(currentObject, _name, JsonTools::CreateBoolValue(_value));
 	}
 	return true;
 }
@@ -117,7 +119,7 @@ bool JsonSerializer::serialize(const char* _name, uint8& _value)
 
 	if (isReading())
 	{
-		json_value_s* match = findObjectValue(currentObject, _name, json_type_number);
+		json_value_s* match = JsonTools::FindObjectValue(currentObject, _name, json_type_number);
 		if (!match)
 			return false;
 
@@ -125,7 +127,7 @@ bool JsonSerializer::serialize(const char* _name, uint8& _value)
 	}
 	else
 	{
-		addValueToObject(currentObject, _name, createNumberValue(_value));
+		JsonTools::AddValueToObject(currentObject, _name, JsonTools::CreateNumberValue(_value));
 	}
 	return true;
 }
@@ -139,7 +141,7 @@ bool JsonSerializer::serialize(const char* _name, uint16& _value)
 
 	if (isReading())
 	{
-		json_value_s* match = findObjectValue(currentObject, _name, json_type_number);
+		json_value_s* match = JsonTools::FindObjectValue(currentObject, _name, json_type_number);
 		if (!match)
 			return false;
 
@@ -147,7 +149,7 @@ bool JsonSerializer::serialize(const char* _name, uint16& _value)
 	}
 	else
 	{
-		addValueToObject(currentObject, _name, createNumberValue(_value));
+		JsonTools::AddValueToObject(currentObject, _name, JsonTools::CreateNumberValue(_value));
 	}
 	return true;
 }
@@ -161,7 +163,7 @@ bool JsonSerializer::serialize(const char* _name, uint32& _value)
 
 	if (isReading())
 	{
-		json_value_s* match = findObjectValue(currentObject, _name, json_type_number);
+		json_value_s* match = JsonTools::FindObjectValue(currentObject, _name, json_type_number);
 		if (!match)
 			return false;
 
@@ -169,7 +171,7 @@ bool JsonSerializer::serialize(const char* _name, uint32& _value)
 	}
 	else
 	{
-		addValueToObject(currentObject, _name, createNumberValue(_value));
+		JsonTools::AddValueToObject(currentObject, _name, JsonTools::CreateNumberValue(_value));
 	}
 	return true;
 }
@@ -183,7 +185,7 @@ bool JsonSerializer::serialize(const char* _name, uint64& _value)
 
 	if (isReading())
 	{
-		json_value_s* match = findObjectValue(currentObject, _name, json_type_number);
+		json_value_s* match = JsonTools::FindObjectValue(currentObject, _name, json_type_number);
 		if (!match)
 			return false;
 
@@ -191,7 +193,7 @@ bool JsonSerializer::serialize(const char* _name, uint64& _value)
 	}
 	else
 	{
-		addValueToObject(currentObject, _name, createNumberValue(_value));
+		JsonTools::AddValueToObject(currentObject, _name, JsonTools::CreateNumberValue(_value));
 	}
 	return true;
 }
@@ -205,7 +207,7 @@ bool JsonSerializer::serialize(const char* _name, int8& _value)
 
 	if (isReading())
 	{
-		json_value_s* match = findObjectValue(currentObject, _name, json_type_number);
+		json_value_s* match = JsonTools::FindObjectValue(currentObject, _name, json_type_number);
 		if (!match)
 			return false;
 
@@ -213,7 +215,7 @@ bool JsonSerializer::serialize(const char* _name, int8& _value)
 	}
 	else
 	{
-		addValueToObject(currentObject, _name, createNumberValue(_value));
+		JsonTools::AddValueToObject(currentObject, _name, JsonTools::CreateNumberValue(_value));
 	}
 	return true;
 }
@@ -227,7 +229,7 @@ bool JsonSerializer::serialize(const char* _name, int16& _value)
 
 	if (isReading())
 	{
-		json_value_s* match = findObjectValue(currentObject, _name, json_type_number);
+		json_value_s* match = JsonTools::FindObjectValue(currentObject, _name, json_type_number);
 		if (!match)
 			return false;
 
@@ -235,7 +237,7 @@ bool JsonSerializer::serialize(const char* _name, int16& _value)
 	}
 	else
 	{
-		addValueToObject(currentObject, _name, createNumberValue(_value));
+		JsonTools::AddValueToObject(currentObject, _name, JsonTools::CreateNumberValue(_value));
 	}
 	return true;
 }
@@ -249,7 +251,7 @@ bool JsonSerializer::serialize(const char* _name, int32& _value)
 
 	if (isReading())
 	{
-		json_value_s* match = findObjectValue(currentObject, _name, json_type_number);
+		json_value_s* match = JsonTools::FindObjectValue(currentObject, _name, json_type_number);
 		if (!match)
 			return false;
 
@@ -257,7 +259,7 @@ bool JsonSerializer::serialize(const char* _name, int32& _value)
 	}
 	else
 	{
-		addValueToObject(currentObject, _name, createNumberValue(_value));
+		JsonTools::AddValueToObject(currentObject, _name, JsonTools::CreateNumberValue(_value));
 	}
 	return true;
 }
@@ -271,7 +273,7 @@ bool JsonSerializer::serialize(const char* _name, int64& _value)
 
 	if (isReading())
 	{
-		json_value_s* match = findObjectValue(currentObject, _name, json_type_number);
+		json_value_s* match = JsonTools::FindObjectValue(currentObject, _name, json_type_number);
 		if (!match)
 			return false;
 
@@ -279,7 +281,7 @@ bool JsonSerializer::serialize(const char* _name, int64& _value)
 	}
 	else
 	{
-		addValueToObject(currentObject, _name, createNumberValue(_value));
+		JsonTools::AddValueToObject(currentObject, _name, JsonTools::CreateNumberValue(_value));
 	}
 	return true;
 }
@@ -293,7 +295,7 @@ bool JsonSerializer::serialize(const char* _name, float& _value)
 
 	if (isReading())
 	{
-		json_value_s* match = findObjectValue(currentObject, _name, json_type_number);
+		json_value_s* match = JsonTools::FindObjectValue(currentObject, _name, json_type_number);
 		if (!match)
 			return false;
 
@@ -301,7 +303,7 @@ bool JsonSerializer::serialize(const char* _name, float& _value)
 	}
 	else
 	{
-		addValueToObject(currentObject, _name, createNumberValue(_value));
+		JsonTools::AddValueToObject(currentObject, _name, JsonTools::CreateNumberValue(_value));
 	}
 	return true;
 }
@@ -315,7 +317,7 @@ bool JsonSerializer::serialize(const char* _name, double& _value)
 
 	if (isReading())
 	{
-		json_value_s* match = findObjectValue(currentObject, _name, json_type_number);
+		json_value_s* match = JsonTools::FindObjectValue(currentObject, _name, json_type_number);
 		if (!match)
 			return false;
 
@@ -323,7 +325,7 @@ bool JsonSerializer::serialize(const char* _name, double& _value)
 	}
 	else
 	{
-		addValueToObject(currentObject, _name, createNumberValue(_value));
+		JsonTools::AddValueToObject(currentObject, _name, JsonTools::CreateNumberValue(_value));
 	}
 	return true;
 }
@@ -337,7 +339,7 @@ bool JsonSerializer::serialize(const char* _name, char& _value)
 
 	if (isReading())
 	{
-		json_value_s* match = findObjectValue(currentObject, _name, json_type_number);
+		json_value_s* match = JsonTools::FindObjectValue(currentObject, _name, json_type_number);
 		if (!match)
 			return false;
 
@@ -345,7 +347,7 @@ bool JsonSerializer::serialize(const char* _name, char& _value)
 	}
 	else
 	{
-		addValueToObject(currentObject, _name, createStringValue(&_value, 1));
+		JsonTools::AddValueToObject(currentObject, _name, JsonTools::CreateStringValue(&_value, 1));
 	}
 	return true;
 }
@@ -369,7 +371,7 @@ bool JsonSerializer::serialize(const char* _name, bool* _value, size_t _size)
 		// WRITE
 		[_value](json_array_element_s* _element, int _index) -> bool
 	{
-		_element->value = createBoolValue(_value[_index]);
+		_element->value = JsonTools::CreateBoolValue(_value[_index]);
 		return true;
 	}
 	);
@@ -394,7 +396,7 @@ bool JsonSerializer::serialize(const char* _name, uint8* _value, size_t _size)
 		// WRITE
 		[_value](json_array_element_s* _element, int _index) -> bool
 		{
-			_element->value = createNumberValue(_value[_index]);
+			_element->value = JsonTools::CreateNumberValue(_value[_index]);
 			return true;
 		}
 	);
@@ -419,7 +421,7 @@ bool JsonSerializer::serialize(const char* _name, uint16* _value, size_t _size)
 		// WRITE
 		[_value](json_array_element_s* _element, int _index) -> bool
 	{
-		_element->value = createNumberValue(_value[_index]);
+		_element->value = JsonTools::CreateNumberValue(_value[_index]);
 		return true;
 	}
 	);
@@ -444,7 +446,7 @@ bool JsonSerializer::serialize(const char* _name, uint32* _value, size_t _size)
 		// WRITE
 		[_value](json_array_element_s* _element, int _index) -> bool
 	{
-		_element->value = createNumberValue(_value[_index]);
+		_element->value = JsonTools::CreateNumberValue(_value[_index]);
 		return true;
 	}
 	);
@@ -469,7 +471,7 @@ bool JsonSerializer::serialize(const char* _name, uint64* _value, size_t _size)
 		// WRITE
 		[_value](json_array_element_s* _element, int _index) -> bool
 	{
-		_element->value = createNumberValue(_value[_index]);
+		_element->value = JsonTools::CreateNumberValue(_value[_index]);
 		return true;
 	}
 	);
@@ -494,7 +496,7 @@ bool JsonSerializer::serialize(const char* _name, int8* _value, size_t _size)
 		// WRITE
 		[_value](json_array_element_s* _element, int _index) -> bool
 	{
-		_element->value = createNumberValue(_value[_index]);
+		_element->value = JsonTools::CreateNumberValue(_value[_index]);
 		return true;
 	}
 	);
@@ -519,7 +521,7 @@ bool JsonSerializer::serialize(const char* _name, int16* _value, size_t _size)
 		// WRITE
 		[_value](json_array_element_s* _element, int _index) -> bool
 	{
-		_element->value = createNumberValue(_value[_index]);
+		_element->value = JsonTools::CreateNumberValue(_value[_index]);
 		return true;
 	}
 	);
@@ -544,7 +546,7 @@ bool JsonSerializer::serialize(const char* _name, int32* _value, size_t _size)
 		// WRITE
 		[_value](json_array_element_s* _element, int _index) -> bool
 	{
-		_element->value = createNumberValue(_value[_index]);
+		_element->value = JsonTools::CreateNumberValue(_value[_index]);
 		return true;
 	}
 	);
@@ -569,7 +571,7 @@ bool JsonSerializer::serialize(const char* _name, int64* _value, size_t _size)
 		// WRITE
 		[_value](json_array_element_s* _element, int _index) -> bool
 	{
-		_element->value = createNumberValue(_value[_index]);
+		_element->value = JsonTools::CreateNumberValue(_value[_index]);
 		return true;
 	}
 	);
@@ -594,7 +596,7 @@ bool JsonSerializer::serialize(const char* _name, float* _value, size_t _size)
 		// WRITE
 		[_value](json_array_element_s* _element, int _index) -> bool
 	{
-		_element->value = createNumberValue(_value[_index]);
+		_element->value = JsonTools::CreateNumberValue(_value[_index]);
 		return true;
 	}
 	);
@@ -619,7 +621,7 @@ bool JsonSerializer::serialize(const char* _name, double* _value, size_t _size)
 		// WRITE
 		[_value](json_array_element_s* _element, int _index) -> bool
 	{
-		_element->value = createNumberValue(_value[_index]);
+		_element->value = JsonTools::CreateNumberValue(_value[_index]);
 		return true;
 	}
 	);
@@ -634,7 +636,7 @@ bool JsonSerializer::serialize(const char* _name, char* _value, size_t _size)
 
 	if (isReading())
 	{
-		json_value_s* match = findObjectValue(currentObject, _name);
+		json_value_s* match = JsonTools::FindObjectValue(currentObject, _name);
 		if (!match || match->type != json_type_string)
 			return false;
 
@@ -649,8 +651,8 @@ bool JsonSerializer::serialize(const char* _name, char* _value, size_t _size)
 	{
 		json_value_s* jsonValue = new json_value_s;
 		jsonValue->type = json_type_string;
-		jsonValue->payload = createString(_value, _size);
-		addValueToObject(currentObject, _name, jsonValue);
+		jsonValue->payload = JsonTools::CreateString(_value, _size);
+		JsonTools::AddValueToObject(currentObject, _name, jsonValue);
 	}
 	return true;
 }
@@ -663,7 +665,7 @@ bool JsonSerializer::serialize(const char* _name, std::string& _value)
 
 		if (isReading())
 		{
-			json_value_s* match = findObjectValue(currentObject, _name);
+			json_value_s* match = JsonTools::FindObjectValue(currentObject, _name);
 			if (match && match->type == json_type_string)
 			{
 				_value = static_cast<char*>(static_cast<json_string_s*>(match->payload)->string);
@@ -674,8 +676,8 @@ bool JsonSerializer::serialize(const char* _name, std::string& _value)
 		{
 			json_value_s* jsonValue = new json_value_s;
 			jsonValue->type = json_type_string;
-			jsonValue->payload = createString(_value.c_str());
-			addValueToObject(currentObject, _name, jsonValue);
+			jsonValue->payload = JsonTools::CreateString(_value.c_str());
+			JsonTools::AddValueToObject(currentObject, _name, jsonValue);
 			return true;
 		}
 	}
@@ -701,19 +703,19 @@ bool JsonSerializer::serialize(const char* _name, std::string* _value, size_t _s
 		// WRITE
 		[_value](json_array_element_s* _element, int _index) -> bool
 	{
-		_element->value = createStringValue(_value[_index].c_str());
+		_element->value = JsonTools::CreateStringValue(_value[_index].c_str());
 		return true;
 	}
 	);
 }
 
-bool JsonSerializer::beginVectorSerialization(const char* _name, size_t& size)
+bool JsonSerializer::serializeVectorStart(const char* _name, size_t& size)
 {
 	// TODO
 	return true;
 }
 
-bool JsonSerializer::endVectorSerialization()
+bool JsonSerializer::serializeVectorStop()
 {
 	// TODO
 	return true;
@@ -729,7 +731,7 @@ bool JsonSerializer::serialize(const char* _name, void** _pointer, const ClassDe
 	json_value_s* prevValue = m_currentValue;
 	if (isReading())
 	{
-		json_value_s* match = findObjectValue(currentObject, _name, json_type_object);
+		json_value_s* match = JsonTools::FindObjectValue(currentObject, _name, json_type_object);
 		if (!match)
 			return false;
 
@@ -737,8 +739,8 @@ bool JsonSerializer::serialize(const char* _name, void** _pointer, const ClassDe
 	}
 	else
 	{
-		m_currentValue = createObjectValue();
-		addValueToObject(static_cast<json_object_s*>(prevValue->payload), _name, m_currentValue);
+		m_currentValue = JsonTools::CreateObjectValue();
+		JsonTools::AddValueToObject(static_cast<json_object_s*>(prevValue->payload), _name, m_currentValue);
 	}
 
 	bool result = serializeClassDesc(&_classDesc);
@@ -764,7 +766,7 @@ bool JsonSerializer::serialize(const char* _name, void* _pointer, const ClassDes
 	json_value_s* prevValue = m_currentValue;
 	if (isReading())
 	{
-		json_value_s* match = findObjectValue(currentObject, _name, json_type_object);
+		json_value_s* match = JsonTools::FindObjectValue(currentObject, _name, json_type_object);
 		if (!match)
 			return false;
 
@@ -772,8 +774,8 @@ bool JsonSerializer::serialize(const char* _name, void* _pointer, const ClassDes
 	}
 	else
 	{
-		m_currentValue = createObjectValue();
-		addValueToObject(static_cast<json_object_s*>(prevValue->payload), _name, m_currentValue);
+		m_currentValue = JsonTools::CreateObjectValue();
+		JsonTools::AddValueToObject(static_cast<json_object_s*>(prevValue->payload), _name, m_currentValue);
 	}
 
 	bool result = serializeClassDesc(&_classDesc);
@@ -792,7 +794,7 @@ bool JsonSerializer::serializeArray(const char* _name, size_t _size, std::functi
 
 	if (isReading())
 	{
-		json_value_s* match = findObjectValue(currentObject, _name, json_type_array);
+		json_value_s* match = JsonTools::FindObjectValue(currentObject, _name, json_type_array);
 		if (!match)
 			return false;
 
@@ -832,7 +834,7 @@ bool JsonSerializer::serializeArray(const char* _name, size_t _size, std::functi
 		}
 		*elementPtr = nullptr;
 
-		addValueToObject(currentObject, _name, jsonValue);
+		JsonTools::AddValueToObject(currentObject, _name, jsonValue);
 	}
 	return true;
 }
@@ -849,7 +851,7 @@ bool JsonSerializer::serializeClassDesc(const ClassDesc** _classDesc)
 
 	if (isReading())
 	{
-		*_classDesc = getClassDesc(className.c_str());
+		*_classDesc = GetClassDesc(className.c_str());
 
 		if (!*_classDesc)
 			result = false;
@@ -905,249 +907,4 @@ bool JsonSerializer::serializeMembers(void* _pointer, const ClassDesc* _classDes
 	};
 
 	return result;
-}
-
-void JsonSerializer::addValueToObject(json_object_s* _object, const char* _name, json_value_s* _value)
-{
-	json_object_element_s* nextElement = new json_object_element_s;
-	nextElement->value = _value;
-	nextElement->name = createString(_name);
-	nextElement->next = nullptr;
-
-	json_object_element_s* currentElement = _object->start;
-	if (!currentElement)
-	{
-		_object->start = nextElement;
-	}
-	else
-	{
-		while (currentElement->next)
-		{
-			currentElement = currentElement->next;
-		}
-		currentElement->next = nextElement;
-	}
-	++_object->length;
-}
-
-json_value_s* JsonSerializer::findObjectValue(json_object_s* _object, const char* _name)
-{
-	json_object_element_s* currentElement = _object->start;
-	while (currentElement)
-	{
-		if (strcmp(_name, static_cast<char*>(currentElement->name->string)) == 0)
-		{
-			return currentElement->value;
-		}
-		currentElement = currentElement->next;
-	}
-	return nullptr;
-}
-
-json_value_s* JsonSerializer::findObjectValue(json_object_s* _object, const char* _name, json_type_e _type)
-{
-	json_value_s* ret = findObjectValue(_object, _name);
-	if (!ret || ret->type != _type)
-	{
-		ret = nullptr;
-	}
-	return ret;
-}
-
-json_string_s* JsonSerializer::createString(const char* _str, int _size)
-{
-	json_string_s* result = new json_string_s;
-	result->string_size = _size < 0 ? strlen(_str) : _size;
-	char* strBuffer = new char[result->string_size + 1];
-	memcpy(strBuffer, _str, result->string_size);
-	strBuffer[result->string_size] = '\0';
-	result->string = strBuffer;
-	return result;
-}
-
-json_number_s* JsonSerializer::createNumber(double _number)
-{
-	json_number_s* result = new json_number_s;
-	result->number = new char[32]; 
-	sprintf(result->number, "%f\0", _number);
-	result->number_size = strlen(result->number);
-	return result;
-}
-
-json_number_s* JsonSerializer::createNumber(float _number)
-{
-	json_number_s* result = new json_number_s;
-	result->number = new char[32]; 
-	sprintf(result->number, "%f\0", _number);
-	result->number_size = strlen(result->number);
-	return result;
-}
-
-json_number_s* JsonSerializer::createNumber(int64 _number)
-{
-	json_number_s* result = new json_number_s;
-	result->number = new char[32]; 
-	sprintf(result->number, "%lld\0", _number);
-	result->number_size = strlen(result->number);
-	return result;
-}
-
-json_number_s* JsonSerializer::createNumber(int _number)
-{
-	json_number_s* result = new json_number_s;
-	result->number = new char[32]; 
-	sprintf(result->number, "%d\0", _number);
-	result->number_size = strlen(result->number);
-	return result;
-}
-
-json_number_s* JsonSerializer::createNumber(uint64 _number)
-{
-	json_number_s* result = new json_number_s;
-	result->number = new char[32]; 
-	sprintf(result->number, "%lld\0", _number);
-	result->number_size = strlen(result->number);
-	return result;
-}
-
-json_number_s* JsonSerializer::createNumber(unsigned int _number)
-{
-	json_number_s* result = new json_number_s;
-	result->number = new char[32]; 
-	sprintf(result->number, "%d\0", _number);
-	result->number_size = strlen(result->number);
-	return result;
-}
-
-json_value_s* JsonSerializer::createStringValue(const char* _str, int _size)
-{
-	json_value_s* ret = new json_value_s;
-	ret->type = json_type_string;
-	ret->payload = createString(_str, _size);
-	return ret;
-}
-
-json_value_s* JsonSerializer::createNumberValue(double _number)
-{
-	json_value_s* ret = new json_value_s;
-	ret->type = json_type_number;
-	ret->payload = createNumber(_number);
-	return ret;
-}
-
-json_value_s* JsonSerializer::createNumberValue(float _number)
-{
-	json_value_s* ret = new json_value_s;
-	ret->type = json_type_number;
-	ret->payload = createNumber(_number);
-	return ret;
-}
-
-json_value_s* JsonSerializer::createNumberValue(int64 _number)
-{
-	json_value_s* ret = new json_value_s;
-	ret->type = json_type_number;
-	ret->payload = createNumber(_number);
-	return ret;
-}
-
-json_value_s* JsonSerializer::createNumberValue(int _number)
-{
-	json_value_s* ret = new json_value_s;
-	ret->type = json_type_number;
-	ret->payload = createNumber(_number);
-	return ret;
-}
-
-json_value_s* JsonSerializer::createNumberValue(uint64 _number)
-{
-	json_value_s* ret = new json_value_s;
-	ret->type = json_type_number;
-	ret->payload = createNumber(_number);
-	return ret;
-}
-
-json_value_s* JsonSerializer::createNumberValue(unsigned _number)
-{
-	json_value_s* ret = new json_value_s;
-	ret->type = json_type_number;
-	ret->payload = createNumber(_number);
-	return ret;
-}
-
-json_value_s* JsonSerializer::createBoolValue(bool _value)
-{
-	json_value_s* ret = new json_value_s;
-	ret->type = _value ? json_type_true : json_type_false;
-	ret->payload = nullptr;
-	return ret;
-}
-
-json_value_s* JsonSerializer::createObjectValue()
-{
-	json_value_s* ret = new json_value_s;
-	ret->type = json_type_object;
-	json_object_s* object = new json_object_s;
-	ret->payload = object;
-	object->length = 0;
-	object->start = nullptr;
-	return ret;
-}
-
-void JsonSerializer::deleteJsonValue(json_value_s* _jsonValue)
-{
-	switch (_jsonValue->type)
-	{
-	case json_type_number:
-		{
-			json_number_s* payload = static_cast<json_number_s*>(_jsonValue->payload);
-			delete payload->number;
-		}
-		break;
-
-	case json_type_string:
-		{
-			json_string_s* payload = static_cast<json_string_s*>(_jsonValue->payload);
-			delete payload->string;
-		}
-		break;
-
-	case json_type_array:
-		{
-			json_array_s* payload = static_cast<json_array_s*>(_jsonValue->payload);
-			json_array_element_s* nextElement = payload->start;
-			while (nextElement)
-			{
-				json_array_element_s* element = nextElement;
-				nextElement = element->next;
-
-				deleteJsonValue(element->value);
-				delete element;
-			}
-		}
-		break;
-
-	case json_type_object:
-		{
-			json_object_s* payload = static_cast<json_object_s*>(_jsonValue->payload);
-			json_object_element_s* nextElement = payload->start;
-			while (nextElement)
-			{
-				json_object_element_s* element = nextElement;
-				nextElement = element->next;
-
-				delete element->name->string;
-				delete element->name;
-				deleteJsonValue(element->value);
-				delete element;
-			}
-		}
-		break;
-
-	default:
-		break;
-	}
-
-	delete _jsonValue->payload;
-	delete _jsonValue;
 }

@@ -25,26 +25,21 @@ void ClassDesc::addMember(const char* _name, uint32 _address, MemberType _type)
 
 void ClassDesc::addArrayMember(const char* _name, uint32 _address, MemberType _elementType, size_t _elementCount)
 {
-	m_members.push_back(ClassMember(_name, _address, _elementType, _elementCount));
+	m_members.push_back(ClassMember(_name, _address, TYPE_ARRAY, _elementType, _elementCount));
 }
 
-ClassDesc::ClassMember::ClassMember(const char* _name, uint32 _address, MemberType _type)
+void ClassDesc::addVectorMember(const char* _name, uint32 _address, MemberType _elementType)
+{
+	m_members.push_back(ClassMember(_name, _address, TYPE_VECTOR, _elementType));
+}
+
+ClassDesc::ClassMember::ClassMember(const char* _name, uint32 _address, MemberType _type, MemberType _elementType, size_t _elementCount)
 	: name(_name)
 	, address(_address)
 	, type(_type)
-	, elementType(TYPE_UNKNOWN)
-	, elementCount(0)
-{
-}
-
-ClassDesc::ClassMember::ClassMember(const char* _name, uint32 _address, MemberType _elementType, size_t _elementCount)
-	: name(_name)
-	, address(_address)
-	, type(TYPE_ARRAY)
 	, elementType(_elementType)
 	, elementCount(_elementCount)
 {
-
 }
 
 template <> ClassDesc::MemberType ClassDesc::getType(bool*) const			{ return TYPE_BOOL; }
@@ -81,7 +76,7 @@ void ClassSet::setClassDesc(const char* _className, ClassDesc* _classDesc)
 	classDesc = _classDesc;
 }
 
-ClassDesc* getClassDesc(const char* _className)
+ClassDesc* GetClassDesc(const char* _className)
 {
 	return g_classSet.getClassDesc(_className);
 }

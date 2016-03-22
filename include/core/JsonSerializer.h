@@ -52,8 +52,8 @@ public:
 	virtual bool serialize(const char* name, std::string* value, size_t size) override;
 
 	// TODO
-	virtual bool beginVectorSerialization(const char* _name, size_t& size) override;
-	virtual bool endVectorSerialization() override;
+	virtual bool serializeVectorStart(const char* _name, size_t& size) override;
+	virtual bool serializeVectorStop() override;
 
 	template <typename T>
 	bool serialize(const char* _name, T** _value) { return Serializer::serialize(_name, _value); }
@@ -69,28 +69,7 @@ private:
 	bool	serializeClassDesc(const ClassDesc** _classDesc);
 	bool	serializeMembers(void* _pointer, const ClassDesc* _classDesc);
 
-	static void				addValueToObject(json_object_s* _object, const char* _name, json_value_s* _value);
-	static json_value_s*	findObjectValue(json_object_s* _object, const char* _name);
-	static json_value_s*	findObjectValue(json_object_s* _object, const char* _name, json_type_e _type);
-	static json_string_s*	createString(const char* _str, int _size = -1);
-	static json_number_s*	createNumber(double _number);
-	static json_number_s*	createNumber(float _number);
-	static json_number_s*	createNumber(int64 _number);
-	static json_number_s*	createNumber(int _number);
-	static json_number_s*	createNumber(uint64 _number);
-	static json_number_s*	createNumber(unsigned int _number);
-	static json_value_s*	createStringValue(const char* _str, int _size = -1);
-	static json_value_s*	createNumberValue(double _number);
-	static json_value_s*	createNumberValue(float _number);
-	static json_value_s*	createNumberValue(int64 _number);
-	static json_value_s*	createNumberValue(int _number);
-	static json_value_s*	createNumberValue(uint64 _number);
-	static json_value_s*	createNumberValue(unsigned int _number);
-	static json_value_s*	createBoolValue(bool _value);
-	static json_value_s*	createObjectValue();
-
-	static void				deleteJsonValue(json_value_s* _jsonValue);
-
-	json_value_s*	m_root;
-	json_value_s*	m_currentValue;
+	json_value_s*			m_root;
+	json_value_s*			m_currentValue;
+	json_array_element_s*	m_currentArrayElement;
 };

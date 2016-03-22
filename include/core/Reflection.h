@@ -7,7 +7,7 @@
 private: \
 	static ClassDesc*	s_classDesc; \
 public: \
-	static const ClassDesc* getClassDesc() \
+	static const ClassDesc* GetClassDesc() \
 { \
 	ClassDesc* classDesc = g_classSet.getClassDesc(#_class); \
 	if (!classDesc) { \

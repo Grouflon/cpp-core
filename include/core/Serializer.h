@@ -10,17 +10,10 @@ public:
 	Serializer();
 	virtual ~Serializer();
 
-	// TODO: string error descriptions
-
+	// TODO-THINK: Not sure FileHandle* is the good choice here. Or at least we'll need a MemFileHandle
 	virtual bool beginRead(const FileHandle* _file);
 	virtual bool beginWrite(FileHandle* _file);
 	virtual bool end();
-
-	template <typename T>
-	bool serialize(const char* _name, std::vector<T>& _value);
-
-	virtual bool beginVectorSerialization(const char* _name, size_t& _size) = 0;
-	virtual bool endVectorSerialization() = 0;
 
 	virtual bool serialize(const char* _name, bool& _value) = 0;
 	virtual bool serialize(const char* _name, char& _value) = 0;
@@ -34,6 +27,7 @@ public:
 	virtual bool serialize(const char* _name, int64& _value) = 0;
 	virtual bool serialize(const char* _name, float& _value) = 0;
 	virtual bool serialize(const char* _name, double& _value) = 0;
+	virtual bool serialize(const char* _name, std::string& _value) = 0;
 
 	virtual bool serialize(const char* _name, bool* _value, size_t _size) = 0;
 	virtual bool serialize(const char* _name, char* _value, size_t _size) = 0;
@@ -47,9 +41,13 @@ public:
 	virtual bool serialize(const char* _name, int64* _value, size_t _size) = 0;
 	virtual bool serialize(const char* _name, float* _value, size_t _size) = 0;
 	virtual bool serialize(const char* _name, double* _value, size_t _size) = 0;
-
-	virtual bool serialize(const char* _name, std::string& _value) = 0;
 	virtual bool serialize(const char* _name, std::string* _value, size_t _size) = 0;
+
+	virtual bool serialize(const char* _name, void** _pointer, const ClassDesc* _classDesc) = 0;
+	virtual bool serialize(const char* _name, void* _pointer, const ClassDesc* _classDesc) = 0;
+
+	virtual bool serializeVectorStart(const char* _name, size_t& _size) = 0;
+	virtual bool serializeVectorStop() = 0;
 
 	template <typename T>
 	bool serialize(const char* _name, T** _value);
@@ -57,8 +55,8 @@ public:
 	template <typename T>
 	bool serialize(const char* _name, T* _value);
 
-	virtual bool serialize(const char* _name, void** _pointer, const ClassDesc* _classDesc) = 0;
-	virtual bool serialize(const char* _name, void* _pointer, const ClassDesc* _classDesc) = 0;
+	template <typename T>
+	bool serialize(const char* _name, std::vector<T>& _value);
 
 	bool isReading() const;
 	bool isWriting() const;

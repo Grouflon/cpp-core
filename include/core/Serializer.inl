@@ -2,7 +2,7 @@ template <typename T>
 bool Serializer::serialize(const char* _name, std::vector<T>& _value)
 {
 	size_t size = _value.size();
-	bool result = beginVectorSerialization(_name, size);
+	bool result = serializeVectorStart(_name, size);
 
 	if (!result)
 		return false;
@@ -13,7 +13,7 @@ bool Serializer::serialize(const char* _name, std::vector<T>& _value)
 	{
 		result = result && serialize(nullptr, element);
 	}
-	result = result && endVectorSerialization();
+	result = result && serializeVectorStop();
 	return result;
 }
 
@@ -21,11 +21,11 @@ bool Serializer::serialize(const char* _name, std::vector<T>& _value)
 template <typename T>
 bool Serializer::serialize(const char* _name, T** _value)
 {
-	return serialize(_name, reinterpret_cast<void**>(_value), (*_value)->getClassDesc());
+	return serialize(_name, reinterpret_cast<void**>(_value), (*_value)->GetClassDesc());
 }
 
 template <typename T>
 bool Serializer::serialize(const char* _name, T* _value)
 {
-	return serialize(_name, _value, _value->getClassDesc());
+	return serialize(_name, _value, _value->GetClassDesc());
 }
