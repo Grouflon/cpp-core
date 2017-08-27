@@ -1,8 +1,7 @@
-#include "stdafx.h"
-#include "core/File.h"
+#include <core/File.h>
 
-#include "core/Assert.h"
-#include "core/FileHandle.h"
+#include <core/Assert.h>
+#include <core/FileHandle.h>
 
 File::File(const char* path)
 {
@@ -23,8 +22,9 @@ void File::onLoad()
 	}
 
 	m_size = file.getSize();
-	m_buffer = new char[m_size];
+	m_buffer = new char[m_size + 1];
 	file.read(m_buffer, m_size);
+	m_buffer[m_size] = '\0';
 }
 
 void File::onRelease()

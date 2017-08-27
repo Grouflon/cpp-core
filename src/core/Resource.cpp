@@ -1,7 +1,6 @@
-﻿#include "stdafx.h"
-#include "core/Resource.h"
+﻿#include <core/Resource.h>
 
-#include "core/Assert.h"
+#include <core/Assert.h>
 
 Resource::Resource()
 	: m_uses(0u)
@@ -20,7 +19,7 @@ void Resource::use()
 	++m_uses;
 }
 
-void Resource::load()
+bool Resource::load()
 {
 	if (m_loads == 0)
 	{
@@ -28,12 +27,16 @@ void Resource::load()
 	}
 
 	++m_loads;
+
+	return m_error == ERROR_NONE;
 }
 
-void Resource::loadUse()
+bool Resource::loadUse()
 {
 	load();
 	use();
+
+	return m_error == ERROR_NONE;
 }
 
 void Resource::release()
@@ -77,12 +80,12 @@ void Resource::onRelease()
 {
 }
 
-uint32 Resource::getUseCount() const
+u32 Resource::getUseCount() const
 {
 	return m_uses;
 }
 
-uint32 Resource::getLoadCount() const
+u32 Resource::getLoadCount() const
 {
 	return m_loads;
 }

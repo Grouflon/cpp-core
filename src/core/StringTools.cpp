@@ -1,5 +1,4 @@
-﻿#include "stdafx.h"
-#include "core/StringTools.h"
+﻿#include "core/StringTools.h"
 
 void lowerCase(std::string& str)
 {

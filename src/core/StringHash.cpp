@@ -1,5 +1,4 @@
-﻿#include "stdafx.h"
-#include "core/StringHash.h"
+﻿#include "core/StringHash.h"
 
 #include "core/Assert.h"
 #include "core/HashTools.h"

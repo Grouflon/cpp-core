@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "core/AudioSample.h"
 
 #include "core/Assert.h"

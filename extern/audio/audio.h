@@ -14,13 +14,13 @@
 extern "C" {
 #endif
 
-struct audio_sample_s;
-enum audio_format_e;
-
-
-struct audio_sample_s* audio_read(const void* _data);
-
-
+enum audio_format_e
+{
+	audio_format_mono8,
+	audio_format_mono16,
+	audio_format_stereo8,
+	audio_format_stereo16,
+};
 
 struct audio_sample_s
 {
@@ -31,14 +31,7 @@ struct audio_sample_s
 	char data[0];
 };
 
-
-enum audio_format_e
-{
-	audio_format_mono8,
-	audio_format_mono16,
-	audio_format_stereo8,
-	audio_format_stereo16,
-};
+struct audio_sample_s* audio_read(const void* _data);
 
 #ifdef __cplusplus
 } // extern "C"

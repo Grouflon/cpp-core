@@ -1,8 +1,6 @@
-﻿#include "stdafx.h"
-#include "core/JsonSerializer.h"
+﻿#include "core/JsonSerializer.h"
 
-#include <json.h>
-
+#include <cstring>
 #include "core/Assert.h"
 #include "core/FileHandle.h"
 #include "core/ClassDesc.h"
@@ -21,7 +19,7 @@ JsonSerializer::~JsonSerializer()
 
 void JsonSerializer::beginRead(const json_value_s* _root)
 {
-	assert(!m_reading && !m_writing); // end() must be called before calling begin() again.
+	ASSERT(!m_reading && !m_writing); // end() must be called before calling begin() again.
 
 	m_root = const_cast<json_value_s*>(_root); // Seems ok but not sure
 	m_currentValue = m_root;

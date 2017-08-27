@@ -1,5 +1,4 @@
-﻿#include "stdafx.h"
-#include "core/ShaderManager.h"
+﻿#include "core/ShaderManager.h"
 
 #include "core/Log.h"
 #include "core/FileHandle.h"

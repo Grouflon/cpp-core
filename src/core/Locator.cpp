@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "core/Locator.h"
 
 uint32 Locator::s_nextIndex = 0u;

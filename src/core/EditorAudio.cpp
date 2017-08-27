@@ -1,9 +1,8 @@
-#include "stdafx.h"
 #include "core/EditorAudio.h"
 
 #include <algorithm>
-
-#include "imgui.h"
+#include <imgui.h>
+#include "core/Assert.h"
 #include "core/ResourceManager.h"
 #include "core/AudioFile.h"
 #include "core/Log.h"

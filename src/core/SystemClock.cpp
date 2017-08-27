@@ -1,5 +1,6 @@
-#include "stdafx.h"
 #include "core/SystemClock.h"
+
+#include <SDL.h>
 
 SystemClock::SystemClock()
 	: m_startTime(0u)

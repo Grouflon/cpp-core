@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "core/AudioManager.h"
 
 #include <portaudio.h>

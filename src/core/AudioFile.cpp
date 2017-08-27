@@ -1,6 +1,7 @@
-#include "stdafx.h"
 #include "core/AudioFile.h"
 
+#include <cstdlib>
+#include <cstring>
 #include <audio.h>
 
 #include "core/File.h"

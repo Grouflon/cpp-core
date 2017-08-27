@@ -1,5 +1,4 @@
-﻿#include "stdafx.h"
-#include "core/Factory.h"
+﻿#include "core/Factory.h"
 
 std::unordered_map<StringHash, void*(*)()> Factory::s_creatorsMap;
 

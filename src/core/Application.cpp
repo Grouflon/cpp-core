@@ -1,14 +1,15 @@
-﻿#include "stdafx.h"
-#include "core/Application.h"
+﻿#include "core/Application.h"
 
 #include <cstdio>
 #include <GL/gl3w.h>
 #include <imgui.h>
 #include <imgui_impl_sdl_gl3.h>
+#include <SDL.h>
 
 #include "core/Log.h"
 #include "core/Assert.h"
 #include "core/ResourceManager.h"
+#include "core/Locator.h"
 
 
 Application::Application()

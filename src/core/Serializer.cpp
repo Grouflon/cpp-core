@@ -1,5 +1,4 @@
-﻿#include "stdafx.h"
-#include "core/Serializer.h"
+﻿#include "core/Serializer.h"
 
 #include "core/Assert.h"
 #include "core/FileHandle.h"

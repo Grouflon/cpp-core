@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "core/Camera.h"
 
 #include <glm/gtc/matrix_transform.hpp>

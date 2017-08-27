@@ -1,5 +1,7 @@
-#include "stdafx.h"
 #include "core/Clock.h"
+
+#include <core/Assert.h>
+#include <algorithm>
 
 Clock::Clock()
 	: m_timeRatio(1.f)
@@ -15,7 +17,7 @@ Clock::~Clock()
 void Clock::update(Time _dt)
 {
 	m_realElapsedTime = _dt;
-	m_elapsedTime = static_cast<uint32>(static_cast<float>(_dt.asMilliseconds()) * m_timeRatio);
+	m_elapsedTime = static_cast<u32>(static_cast<float>(_dt.asMilliseconds()) * m_timeRatio);
 	m_realTime += m_realElapsedTime;
 	m_time += m_elapsedTime;
 
@@ -63,11 +65,8 @@ float Clock::getTimeRatio() const
 
 void Clock::addChild(Clock* _clock)
 {
-#ifdef _DEBUG
 	ASSERT(std::find(m_children.begin(), m_children.end(), _clock) == m_children.end());
-#endif
 	m_children.push_back(_clock);
-	_clock->loadUse();
 }
 
 void Clock::removeChild(Clock* _clock)
@@ -76,6 +75,5 @@ void Clock::removeChild(Clock* _clock)
 	if (it != m_children.end())
 	{
 		m_children.erase(it);
-		_clock->releaseUnuse();
 	}
 }

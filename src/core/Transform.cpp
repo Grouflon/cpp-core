@@ -1,5 +1,4 @@
-﻿#include "stdafx.h"
-#include "core/Transform.h"
+﻿#include "core/Transform.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 

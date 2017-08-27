@@ -1,8 +1,12 @@
-#include "stdafx.h"
 #include "imgui_user.h"
 
+#include <vector>
+#include <algorithm>
+#include <cstring>
 #include <dirent.h>		// Lists files in directory
-
+#include <imgui.h>
+#include <malloc.h>
+#include "core/Types.h"
 #include "core/Path.h"
 #include "core/FileHandle.h"
 
@@ -111,7 +115,7 @@ namespace ImGui
 					++pow;
 				}
 
-				char* unit;
+				const char* unit;
 				switch(pow)
 				{
 				default: unit = "b"; break;

@@ -1,7 +1,6 @@
-﻿#include "stdafx.h"
-#include "core/FileHandle.h"
+﻿#include <core/FileHandle.h>
 
-#include "core/Log.h"
+#include <core/Log.h>
 
 FileHandle::FileHandle(const char* path)
 	: m_file(nullptr)
@@ -22,22 +21,22 @@ bool FileHandle::open(OpenMode mode)
 	}
 
 	m_openMode = mode;
-	char modeStr[8] = "";
+	char* modeStr = "";
 	switch (m_openMode)
 	{
 	case OPENMODE_READ:
 		{
-			sprintf(modeStr, "rb");
+			modeStr = "rb";
 		} break;
 
 	case OPENMODE_WRITE:
 		{
-			sprintf(modeStr, "wb");
+			modeStr = "wb";
 		} break;
 
 	case OPENMODE_APPEND:
 		{
-			sprintf(modeStr, "ab");
+			modeStr = "ab";
 		} break;
 
 	default:

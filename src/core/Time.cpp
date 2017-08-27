@@ -1,8 +1,8 @@
-#include "stdafx.h"
 #include "core/Time.h"
 
+#include <cstdio>
 
-Time::Time(uint32 _milliseconds)
+Time::Time(u32 _milliseconds)
 	: m_time(_milliseconds)
 {
 }
@@ -21,7 +21,7 @@ double Time::asSeconds() const
 	return static_cast<double>(m_time) / 1000.0;
 }
 
-uint32 Time::asMilliseconds() const
+u32 Time::asMilliseconds() const
 {
 	return m_time;
 }

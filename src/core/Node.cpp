@@ -1,6 +1,6 @@
-#include "stdafx.h"
 #include "core/Node.h"
 
+#include <algorithm>
 #include "core/Assert.h"
 
 Node::Node()

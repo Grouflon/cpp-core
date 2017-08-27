@@ -1,5 +1,7 @@
-﻿#include "stdafx.h"
-#include "core/JsonTools.h"
+﻿#include "core/JsonTools.h"
+
+#include <cstring>
+#include <cstdio>
 
 namespace JsonTools {
 	

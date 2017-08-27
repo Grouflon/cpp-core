@@ -1,6 +1,6 @@
-#include "stdafx.h"
 #include "core/Fbx.h"
 
+#include <cstring>
 #include "core/Assert.h"
 
 #define FBX_BUFFER_SIZE 256

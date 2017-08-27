@@ -1,6 +1,6 @@
-#include "stdafx.h"
 #include "core/Mesh.h"
 
+#include <cstring>
 #include "core/Fbx.h"
 #include "core/File.h"
 #include "core/Assert.h"
